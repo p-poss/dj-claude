@@ -522,6 +522,11 @@ export function DJInterface() {
                     <pre className="m-0 flex-1"> Theme: {theme.name}</pre>
                     <pre className="m-0">║</pre>
                   </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
+                    <pre className="m-0">║</pre>
+                  </div>
                   <pre className="m-0">╚{'═'.repeat(46)}╝</pre>
                 </div>
               </div>
