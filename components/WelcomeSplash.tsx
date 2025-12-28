@@ -124,7 +124,7 @@ export function WelcomeSplash({ visible }: WelcomeSplashProps) {
 
           {/* Subtitle */}
           <div className="mt-8 text-neutral-500 text-sm font-mono">
-            Type a prompt below to start making music
+            Give DJ Claude a prompt below to start coding music
           </div>
         </>
       )}
