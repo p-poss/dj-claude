@@ -62,6 +62,30 @@ export function DJInterface() {
     "The decks are hot! Ready when you are, let's create!",
   ];
 
+  // Short hype phrases for idle DJ commentary
+  const idleHypePhrases = [
+    "Yeah!",
+    "Let's go!",
+    "Feel that!",
+    "Keep it going!",
+    "This is it!",
+    "Ohhh yes!",
+    "That's the groove!",
+    "Fire!",
+    "Smooth!",
+    "Nice!",
+    "Here we go!",
+    "Feeling it!",
+    "Yo!",
+    "Ayy!",
+    "That's what I'm talking about!",
+    "Stay with me!",
+    "Love this energy!",
+    "Yes yes yes!",
+    "Let's dance!",
+    "Claude the DJ god!",
+  ];
+
   // Greet user on page load with random welcome message (speech bubble only)
   // Note: TTS is skipped because browsers block audio until user interaction
   useEffect(() => {
@@ -75,6 +99,29 @@ export function DJInterface() {
     // Only run once when editor becomes ready
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorReady]);
+
+  // Idle DJ commentary - periodically say hype phrases while music plays
+  useEffect(() => {
+    // Only run when: playing, MC enabled, not streaming, not already speaking
+    if (!isPlaying || !mcEnabled || state.isStreaming || isSpeaking) {
+      return;
+    }
+
+    // Random delay between 12-25 seconds for natural feel
+    const getRandomDelay = () => 12000 + Math.random() * 13000;
+
+    const scheduleNextPhrase = () => {
+      return setTimeout(() => {
+        // Double-check conditions before speaking (state may have changed)
+        const randomPhrase = idleHypePhrases[Math.floor(Math.random() * idleHypePhrases.length)];
+        setCurrentMcCommentary(randomPhrase);
+        speak(randomPhrase);
+      }, getRandomDelay());
+    };
+
+    const timer = scheduleNextPhrase();
+    return () => clearTimeout(timer);
+  }, [isPlaying, mcEnabled, state.isStreaming, isSpeaking, speak]);
 
   // Update strudel editor code as streaming happens
   // This shows the code being "typed" in the editor
