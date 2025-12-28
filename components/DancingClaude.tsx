@@ -10,8 +10,7 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
   const [frame, setFrame] = useState(0);
   const [horizontalOffset, setHorizontalOffset] = useState(0);
   const blockColor = '#737373'; // neutral-500 grey
-  const eyeColor = '#0a0a0a';
-  const mouthColor = '#0a0a0a'; // black for mouth
+  const eyeColor = '#000000'; // black for eyes
 
   // Track cursor position and slide left/right
   useEffect(() => {
@@ -43,12 +42,17 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
     return () => clearInterval(interval);
   }, [isPlaying]);
 
-  // Cell types: 0 = empty, 1 = body, 2 = eye, 3 = mouth
+  // Cell types: 0 = empty, 1 = body, 2 = eye, 3 = mouth, 4 = shadow (30% opacity)
   const renderBlock = (cellType: number) => {
     let bgColor = 'transparent';
+    let opacity = 1;
     if (cellType === 1) bgColor = blockColor;
     if (cellType === 2) bgColor = eyeColor;
-    if (cellType === 3) bgColor = mouthColor;
+    if (cellType === 3) bgColor = eyeColor; // mouth is also black
+    if (cellType === 4) {
+      bgColor = blockColor;
+      opacity = 0.3; // anti-aliasing/shadow pixels
+    }
 
     return (
       <div
@@ -56,86 +60,100 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
           width: '6px',
           height: '6px',
           backgroundColor: bgColor,
+          opacity: opacity,
         }}
       />
     );
   };
 
-  // Head section (rows 0-2)
-  const head = [
-    // Row 0: head top (10 wide, centered)
-    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-    // Row 1: eyes top (1 wide × 2 tall eyes)
-    [0, 0, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 0, 0],
-    // Row 2: eyes bottom
-    [0, 0, 1, 1, 2, 1, 1, 1, 1, 2, 1, 1, 0, 0],
+  // Character design from Figma node 25:1047
+  // 17 wide x 10 tall body
+  // 4 = headphone pixels (opacity 30%)
+  // Headphones at cols 0-1 (left) and 15-16 (right)
+  // Animated: when right leg shrinks, left headphone shrinks (cross-body) and vice versa
+  const bodyFrames = [
+    // Frame 0: neutral - both headphones full
+    [
+      [0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0],
+      [4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4],
+      [0, 0, 1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    ],
+    // Frame 1: left legs up → RIGHT headphone shrinks (row 6 right side removed)
+    [
+      [0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0],
+      [4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    ],
+    // Frame 2: neutral - both headphones full
+    [
+      [0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0],
+      [4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4],
+      [0, 0, 1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    ],
+    // Frame 3: right legs up → LEFT headphone shrinks (row 6 left side removed)
+    [
+      [0, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 0],
+      [4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [4, 4, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 4, 4],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4],
+      [0, 0, 1, 1, 1, 1, 1, 3, 3, 3, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+    ],
   ];
 
-  // Arm frames - left arm (0-1) and right arm (12-13) animate, middle stays solid
-  // Frame 0: neutral (both arms level)
-  // Frame 1: left arm down, right arm up
-  // Frame 2: neutral
-  // Frame 3: left arm up, right arm down
-  const armFrames = [
-    // Frame 0: neutral (both arm extensions in both rows)
-    [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    ],
-    // Frame 1: left arm down, right arm up
-    [
-      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // left extension gone, right extension present
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // left extension present, right extension gone
-    ],
-    // Frame 2: neutral
-    [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    ],
-    // Frame 3: left arm up, right arm down
-    [
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0], // left extension present, right extension gone
-      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // left extension gone, right extension present
-    ],
-  ];
+  const currentBody = bodyFrames[frame];
 
-  // Lower body section (below arms)
-  const lowerBody = [
-    // Row 5: body with mouth (2 black blocks in center)
-    [0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 1, 1, 0, 0],
-    // Row 6: body
-    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-    // Row 7: body bottom
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-  ];
-
-  // Leg patterns for different frames
-  // 4 legs, each 1 block wide, 2 rows tall
+  // Leg patterns for different frames - 17 wide grid
+  // 4 legs at positions 3, 5, 11, 13
   // When legs lift, the BOTTOM block disappears (lifts from the ground)
   const legFrames = [
     // Frame 0: all legs down (neutral)
     [
-      [0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
-      [0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
     ],
     // Frame 1: left legs up (bottom block removed)
     [
-      [0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
     ],
     // Frame 2: all legs down (neutral)
     [
-      [0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
-      [0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
     ],
     // Frame 3: right legs up (bottom block removed)
     [
-      [0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0],
-      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0],
+      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ],
   ];
 
-  const currentArms = armFrames[frame];
   const currentLegs = legFrames[frame];
 
   // Body bob: slight vertical offset on frames 1 and 3
@@ -150,26 +168,8 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
         transition: 'transform 0.15s ease-out',
       }}
     >
-      {/* Head */}
-      {head.map((row, rowIdx) => (
-        <div key={`head-${rowIdx}`} className="flex">
-          {row.map((cell, cellIdx) => (
-            <div key={cellIdx}>{renderBlock(cell)}</div>
-          ))}
-        </div>
-      ))}
-
-      {/* Arms (animated) */}
-      {currentArms.map((row, rowIdx) => (
-        <div key={`arm-${rowIdx}`} className="flex">
-          {row.map((cell, cellIdx) => (
-            <div key={cellIdx}>{renderBlock(cell)}</div>
-          ))}
-        </div>
-      ))}
-
-      {/* Lower Body */}
-      {lowerBody.map((row, rowIdx) => (
+      {/* Body (animated with headphones) */}
+      {currentBody.map((row, rowIdx) => (
         <div key={`body-${rowIdx}`} className="flex">
           {row.map((cell, cellIdx) => (
             <div key={cellIdx}>{renderBlock(cell)}</div>

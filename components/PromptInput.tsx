@@ -42,7 +42,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           .terminal-cursor {
             display: inline-block;
             width: 8px;
-            height: 1.1em;
+            height: 1.2em;
             background-color: #737373;
             animation: blink 1.5s step-end infinite;
             vertical-align: text-bottom;
@@ -69,6 +69,10 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           }
           .prompt-input:focus::placeholder {
             color: transparent;
+          }
+          .prompt-input::selection {
+            background-color: #737373;
+            color: #0a0a0a;
           }
           .cursor-overlay {
             position: absolute;
