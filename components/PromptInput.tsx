@@ -6,10 +6,11 @@ interface PromptInputProps {
   onSubmit: (prompt: string) => void;
   disabled: boolean;
   placeholder?: string;
+  isStreaming?: boolean;
 }
 
 export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
-  function PromptInput({ onSubmit, disabled, placeholder }, ref) {
+  function PromptInput({ onSubmit, disabled, placeholder, isStreaming }, ref) {
     const [value, setValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -80,12 +81,32 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             color: transparent;
             z-index: 10;
           }
+          @keyframes spin {
+            0% { content: '⠋'; }
+            8% { content: '⠙'; }
+            16% { content: '⠹'; }
+            24% { content: '⠸'; }
+            32% { content: '⠼'; }
+            40% { content: '⠴'; }
+            48% { content: '⠦'; }
+            56% { content: '⠧'; }
+            64% { content: '⠇'; }
+            72% { content: '⠏'; }
+            80% { content: '⠋'; }
+            100% { content: '⠋'; }
+          }
+          .streaming-spinner::before {
+            content: '⠋';
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+          }
         `}</style>
         {/* Input box with ASCII border style - top and bottom only */}
         <div className="w-full overflow-hidden">
           <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(75)}</pre>
           <div className="flex items-center gap-2">
             <span className="text-neutral-500">{'>'}</span>
+            {isStreaming && <span className="streaming-spinner text-neutral-500" />}
             <div className="prompt-input-wrapper">
               <input
                 ref={inputRef}
@@ -96,7 +117,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 disabled={disabled}
-                placeholder={!isFocused ? (placeholder || 'give claude direction...') : ''}
+                placeholder={disabled || !isFocused ? (placeholder || 'give claude direction...') : ''}
                 className="prompt-input text-xs disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ fontFamily: 'inherit' }}
               />

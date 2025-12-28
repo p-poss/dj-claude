@@ -21,6 +21,15 @@ export function DJInterface() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [streamingMessageIndex, setStreamingMessageIndex] = useState(0);
+
+  const streamingMessages = [
+    'Mixing...',
+    'Vibing...',
+    'Cooking...',
+    'Dropping beats...',
+    'Finding the groove...',
+  ];
 
   // Update strudel editor code as streaming happens
   // This shows the code being "typed" in the editor
@@ -62,6 +71,20 @@ export function DJInterface() {
       hasExecutedRef.current = false;
     }
   }, [state.isStreaming]);
+
+  // Rotate streaming messages while streaming
+  useEffect(() => {
+    if (!state.isStreaming) {
+      setStreamingMessageIndex(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setStreamingMessageIndex((prev) => (prev + 1) % streamingMessages.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [state.isStreaming, streamingMessages.length]);
 
   // Initialize audio context - must be called during user gesture
   const initAudioContext = useCallback(async () => {
@@ -210,7 +233,7 @@ export function DJInterface() {
             <pre className="m-0">╔{'═'.repeat(46)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">Welcome to DJ Claude</pre>
+              <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚{'═'.repeat(46)}╝</pre>
@@ -225,19 +248,6 @@ export function DJInterface() {
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">
                   {isPlaying ? '● Playing' : '○ Stopped'}
-                </pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(16)}╝</pre>
-            </div>
-
-            {/* Audio status box */}
-            <div style={{ width: 'fit-content' }}>
-              <pre className="m-0">╔{'═'.repeat(16)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">
-                  Audio: {editorReady ? 'Ready' : '...'}
                 </pre>
                 <pre className="m-0">║</pre>
               </div>
@@ -298,7 +308,14 @@ export function DJInterface() {
               ref={promptInputRef}
               onSubmit={handlePromptSubmit}
               disabled={state.isStreaming || !editorReady}
-              placeholder={editorReady ? "make it darker, add percussion, speed it up..." : "Initializing..."}
+              isStreaming={state.isStreaming}
+              placeholder={
+                state.isStreaming
+                  ? streamingMessages[streamingMessageIndex]
+                  : editorReady
+                    ? "Make it darker, Add percussion, Speed it up..."
+                    : "Initializing..."
+              }
             />
           </div>
 
