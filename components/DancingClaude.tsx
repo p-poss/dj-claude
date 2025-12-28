@@ -4,29 +4,14 @@ import { useEffect, useState } from 'react';
 
 interface DancingClaudeProps {
   isPlaying: boolean;
+  isSpeaking?: boolean;
 }
 
-export function DancingClaude({ isPlaying }: DancingClaudeProps) {
+export function DancingClaude({ isPlaying, isSpeaking = false }: DancingClaudeProps) {
   const [frame, setFrame] = useState(0);
-  const [horizontalOffset, setHorizontalOffset] = useState(0);
+  const [mouthOpen, setMouthOpen] = useState(false);
   const blockColor = '#737373'; // neutral-500 grey
   const eyeColor = '#000000'; // black for eyes
-
-  // Track cursor position and slide left/right
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const windowWidth = window.innerWidth;
-      const centerX = windowWidth / 2;
-      // Calculate offset: -1 to 1 based on cursor position
-      const normalizedX = (e.clientX - centerX) / centerX;
-      // Max offset of 50px in either direction
-      const offset = normalizedX * 50;
-      setHorizontalOffset(offset);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Animate between frames when playing
   useEffect(() => {
@@ -41,6 +26,21 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
 
     return () => clearInterval(interval);
   }, [isPlaying]);
+
+  // Mouth animation while speaking
+  useEffect(() => {
+    if (!isSpeaking) {
+      setMouthOpen(false);
+      return;
+    }
+
+    // Toggle mouth open/closed at ~150ms for natural speech rhythm
+    const interval = setInterval(() => {
+      setMouthOpen((prev) => !prev);
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, [isSpeaking]);
 
   // Cell types: 0 = empty, 1 = body, 2 = eye, 3 = mouth, 4 = shadow (30% opacity)
   const renderBlock = (cellType: number) => {
@@ -127,7 +127,23 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
     ],
   ];
 
-  const currentBody = bodyFrames[frame];
+  // Get body frame with mouth animation applied
+  const getBodyWithMouth = (baseFrame: number[][]): number[][] => {
+    if (!mouthOpen) return baseFrame;
+
+    // Clone the frame and modify row 8 for open mouth
+    // Mouth extends down: row 8, cols 8-10 change from 1 (body) to 3 (mouth)
+    return baseFrame.map((row, rowIdx) => {
+      if (rowIdx === 8) {
+        return row.map((cell, colIdx) =>
+          colIdx >= 8 && colIdx <= 10 ? 3 : cell
+        );
+      }
+      return row;
+    });
+  };
+
+  const currentBody = getBodyWithMouth(bodyFrames[frame]);
 
   // Leg patterns for different frames - 19 wide grid
   // 4 legs at positions 4, 6, 12, 14
@@ -165,7 +181,7 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
       className="flex flex-col items-center"
       style={{
         marginTop: '8px',
-        transform: `translate(${horizontalOffset}px, ${bodyOffset}px)`,
+        transform: `translateY(${bodyOffset}px)`,
         transition: 'transform 0.15s ease-out',
       }}
     >

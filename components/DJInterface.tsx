@@ -4,14 +4,17 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { useDJ } from '@/context/DJContext';
 import { useClaudeStream } from '@/hooks/useClaudeStream';
 import { useCodeParser } from '@/hooks/useCodeParser';
+import { useTTS } from '@/hooks/useTTS';
 import { StrudelEditor, StrudelEditorAPI } from './StrudelEditor';
 import { PromptInput } from './PromptInput';
 import { DancingClaude } from './DancingClaude';
+import { SpeechBubble } from './SpeechBubble';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
   const { streamCode } = useClaudeStream();
-  const { isComplete, extractedCode, displayCode } = useCodeParser(state.streamingCode);
+  const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
+  const { speak, stop: stopTTS, isSpeaking } = useTTS();
 
   const editorRef = useRef<StrudelEditorAPI>(null);
   const promptInputRef = useRef<HTMLInputElement>(null);
@@ -22,6 +25,23 @@ export function DJInterface() {
   const [copied, setCopied] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [streamingMessageIndex, setStreamingMessageIndex] = useState(0);
+  const [currentMcCommentary, setCurrentMcCommentary] = useState('');
+  const [mcEnabled, setMcEnabled] = useState(true);
+  const [characterOffset, setCharacterOffset] = useState(0);
+
+  // Track cursor position to slide character left/right
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const windowWidth = window.innerWidth;
+      const centerX = windowWidth / 2;
+      const normalizedX = (e.clientX - centerX) / centerX;
+      const offset = normalizedX * 50; // Max 50px in either direction
+      setCharacterOffset(offset);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   const streamingMessages = [
     'Mixing...',
@@ -30,6 +50,31 @@ export function DJInterface() {
     'Dropping beats...',
     'Finding the groove...',
   ];
+
+  const welcomeMessages = [
+    "Yo! DJ Claude in the booth! Let's make some noise!",
+    "What's good! Ready to drop some beats? Let's go!",
+    "Ayy, welcome to the session! Tell me what vibe you're feeling!",
+    "DJ Claude here! Time to cook up something fire!",
+    "Let's gooo! The booth is open, drop me a prompt!",
+    "Welcome to the mix! What kind of sound are we making today?",
+    "Hey hey! DJ Claude spinning up. What's the vibe?",
+    "The decks are hot! Ready when you are, let's create!",
+  ];
+
+  // Greet user on page load with random welcome message (speech bubble only)
+  // Note: TTS is skipped because browsers block audio until user interaction
+  useEffect(() => {
+    if (editorReady) {
+      const timer = setTimeout(() => {
+        const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+        setCurrentMcCommentary(randomMessage);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+    // Only run once when editor becomes ready
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorReady]);
 
   // Update strudel editor code as streaming happens
   // This shows the code being "typed" in the editor
@@ -47,6 +92,14 @@ export function DJInterface() {
       // Set final code in editor
       editorRef.current.setCode(extractedCode);
 
+      // Start MC commentary TTS if available and MC mode is enabled
+      if (mcCommentary) {
+        setCurrentMcCommentary(mcCommentary);
+        if (mcEnabled) {
+          speak(mcCommentary);
+        }
+      }
+
       // Small delay to ensure code is set, then evaluate
       // This triggers mini locations (highlighting) and visualizations
       setTimeout(() => {
@@ -63,14 +116,27 @@ export function DJInterface() {
           });
       }, 100);
     }
-  }, [isComplete, extractedCode, dispatch]);
+  }, [isComplete, extractedCode, mcCommentary, dispatch, speak, mcEnabled]);
 
-  // Reset execution flag when new stream starts
+  // Reset execution flag and stop TTS when new stream starts
   useEffect(() => {
     if (state.isStreaming) {
       hasExecutedRef.current = false;
+      // Stop any ongoing TTS when new stream starts
+      stopTTS();
+      setCurrentMcCommentary('');
     }
-  }, [state.isStreaming]);
+  }, [state.isStreaming, stopTTS]);
+
+  // Clear commentary display after TTS finishes (or after longer delay if MC is off)
+  useEffect(() => {
+    if (!isSpeaking && currentMcCommentary) {
+      // Keep bubble visible for a bit after TTS finishes
+      const delay = mcEnabled ? 3000 : 8000;
+      const timer = setTimeout(() => setCurrentMcCommentary(''), delay);
+      return () => clearTimeout(timer);
+    }
+  }, [isSpeaking, currentMcCommentary, mcEnabled]);
 
   // Rotate streaming messages while streaming
   useEffect(() => {
@@ -201,6 +267,17 @@ export function DJInterface() {
     }
   }, [state.currentCode]);
 
+  // Toggle MC mode (TTS on/off)
+  const handleToggleMC = useCallback(() => {
+    setMcEnabled((prev) => {
+      if (prev) {
+        // Turning off - stop any current speech
+        stopTTS();
+      }
+      return !prev;
+    });
+  }, [stopTTS]);
+
   // Handle go back - restore previous code
   const handleGoBack = useCallback(async () => {
     if (state.previousCode && editorRef.current) {
@@ -254,6 +331,25 @@ export function DJInterface() {
               <pre className="m-0">╚{'═'.repeat(16)}╝</pre>
             </div>
 
+            {/* MC Mode toggle button */}
+            <button
+              onClick={handleToggleMC}
+              className="group"
+              style={{ width: 'fit-content' }}
+            >
+              <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">
+                  <span className="group-hover:border group-hover:border-neutral-500">
+                    {mcEnabled ? 'MC: On' : 'MC: Off'}
+                  </span>
+                </pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
+            </button>
+
             {/* Play/Pause button - show when there's code */}
             {state.currentCode && (
               <button
@@ -285,8 +381,19 @@ export function DJInterface() {
  ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
  ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
 
-        {/* Dancing Claude character */}
-        <DancingClaude isPlaying={isPlaying} />
+        {/* Dancing Claude character with speech bubble */}
+        <div className="flex justify-center">
+          <div
+            style={{
+              position: 'relative',
+              transform: `translateX(${characterOffset}px)`,
+              transition: 'transform 0.15s ease-out',
+            }}
+          >
+            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} />
+            <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} />
+          </div>
+        </div>
       </div>
 
       {/* Main content area - Strudel Editor as primary view */}
