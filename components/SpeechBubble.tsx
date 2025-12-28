@@ -5,9 +5,10 @@ import { useEffect, useState } from 'react';
 interface SpeechBubbleProps {
   text: string;
   isVisible: boolean;
+  color?: string;
 }
 
-export function SpeechBubble({ text, isVisible }: SpeechBubbleProps) {
+export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbleProps) {
   const [shouldRender, setShouldRender] = useState(false);
   const [opacity, setOpacity] = useState(0);
 
@@ -71,7 +72,7 @@ export function SpeechBubble({ text, isVisible }: SpeechBubbleProps) {
         transition: 'opacity 0.3s ease-in-out',
         fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
         fontSize: '12px',
-        color: '#737373',
+        color: color,
         whiteSpace: 'pre',
         lineHeight: '13.5px',
         zIndex: 100,

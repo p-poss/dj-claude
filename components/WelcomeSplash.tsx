@@ -1,12 +1,15 @@
 'use client';
 
+import { useTheme } from '@/context/ThemeContext';
+
 interface WelcomeSplashProps {
   visible: boolean;
 }
 
 export function WelcomeSplash({ visible }: WelcomeSplashProps) {
-  // Block color matching Claude Code style
-  const blockColor = '#d4a574';
+  const { theme } = useTheme();
+  // Use theme accent color for blocks
+  const blockColor = theme.accent;
 
   // Each letter is represented as a grid of blocks (wider blocks like the original)
   // 1 = filled block, 0 = empty
@@ -97,7 +100,7 @@ export function WelcomeSplash({ visible }: WelcomeSplashProps) {
       className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none transition-opacity duration-500"
       style={{
         opacity: visible ? 1 : 0,
-        backgroundColor: visible ? '#0a0a0a' : 'transparent',
+        backgroundColor: visible ? theme.background : 'transparent',
       }}
     >
       {visible && (
@@ -108,8 +111,8 @@ export function WelcomeSplash({ visible }: WelcomeSplashProps) {
             style={{ borderColor: blockColor }}
           >
             <span style={{ color: blockColor }}>✱</span>
-            <span className="text-neutral-300 ml-2">Welcome to</span>
-            <span className="text-neutral-100 ml-2 italic">DJ Claude</span>
+            <span style={{ color: theme.text, marginLeft: '0.5rem' }}>Welcome to</span>
+            <span style={{ color: theme.text, marginLeft: '0.5rem', fontStyle: 'italic' }}>DJ Claude</span>
           </div>
 
           {/* DJ text */}
@@ -123,7 +126,7 @@ export function WelcomeSplash({ visible }: WelcomeSplashProps) {
           </div>
 
           {/* Subtitle */}
-          <div className="mt-8 text-neutral-500 text-sm font-mono">
+          <div className="mt-8 text-sm font-mono" style={{ color: theme.textMuted }}>
             Give DJ Claude a prompt below to start coding music
           </div>
         </>

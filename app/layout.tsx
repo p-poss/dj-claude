@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DJProvider } from "@/context/DJContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <DJProvider>
-          {children}
-        </DJProvider>
+        <ThemeProvider>
+          <DJProvider>
+            {children}
+          </DJProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

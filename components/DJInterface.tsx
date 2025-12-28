@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useDJ } from '@/context/DJContext';
+import { useTheme } from '@/context/ThemeContext';
 import { useClaudeStream } from '@/hooks/useClaudeStream';
 import { useCodeParser } from '@/hooks/useCodeParser';
 import { useTTS } from '@/hooks/useTTS';
@@ -12,6 +13,7 @@ import { SpeechBubble } from './SpeechBubble';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
+  const { theme, cycleTheme } = useTheme();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
@@ -346,10 +348,10 @@ export function DJInterface() {
   }, [state.previousCode, dispatch]);
 
   return (
-    <div className="h-screen flex flex-col bg-neutral-950 gap-3" style={{ padding: '4px 8px' }}>
+    <div className="h-screen flex flex-col gap-3" style={{ padding: '4px 8px', backgroundColor: theme.background }}>
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
-      <div className="pt-4 pb-2 text-xs text-neutral-500 select-none" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace' }}>
+      <div className="pt-4 pb-2 text-xs select-none" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}>
         {/* Header row with welcome box and status boxes */}
         <div className="flex items-start justify-between gap-4">
           {/* Welcome box */}
@@ -388,7 +390,7 @@ export function DJInterface() {
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">
-                  <span className="group-hover:border group-hover:border-neutral-500">
+                  <span className="group-hover:border group-hover:border-current">
                     {mcEnabled ? 'MC: On' : 'MC: Off'}
                   </span>
                 </pre>
@@ -408,7 +410,7 @@ export function DJInterface() {
                 <div className="flex" style={{ fontFamily: 'inherit' }}>
                   <pre className="m-0">║</pre>
                   <pre className="m-0 flex-1 text-center">
-                    <span className="group-hover:border group-hover:border-neutral-500">
+                    <span className="group-hover:border group-hover:border-current">
                       {isPlaying ? '⏸ pause' : '▶ play'}
                     </span>
                   </pre>
@@ -437,8 +439,8 @@ export function DJInterface() {
               transition: 'transform 0.15s ease-out',
             }}
           >
-            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} />
-            <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} />
+            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.character} />
+            <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.textMuted} />
           </div>
         </div>
       </div>
@@ -470,13 +472,18 @@ export function DJInterface() {
                     ? "Make it darker, Add percussion, Speed it up..."
                     : "Initializing..."
               }
+              themeColors={{
+                text: theme.textMuted,
+                textDim: theme.textDim,
+                border: theme.border,
+              }}
             />
           </div>
 
-          {/* Info button */}
+          {/* Info button with modal */}
           <div
-            className="text-xs text-neutral-500 select-none group"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace' }}
+            className="text-xs select-none group relative"
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
           >
@@ -489,13 +496,63 @@ export function DJInterface() {
               </div>
               <pre className="m-0">╚═══╝</pre>
             </div>
+
+            {/* Info modal - positioned relative to info button */}
+            {showInfo && (
+              <div
+                className="absolute text-xs select-none"
+                style={{
+                  right: 0,
+                  top: 0,
+                  lineHeight: '1.2',
+                  fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+                  color: theme.textMuted,
+                  zIndex: 10,
+                }}
+              >
+                <div className="flex flex-col" style={{ backgroundColor: theme.background }}>
+                  <pre className="m-0">╔{'═'.repeat(46)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1"> AI-powered live coding music in Strudel</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1"> Theme: {theme.name}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(46)}╝</pre>
+                </div>
+              </div>
+            )}
           </div>
+
+          {/* Theme toggle button */}
+          <button
+            onClick={cycleTheme}
+            className="text-xs select-none group"
+            style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
+            title="Change color theme"
+          >
+            <pre className="m-0">╔{'═'.repeat(8)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">
+                <span className="group-hover:border group-hover:border-current">
+                  Color
+                </span>
+              </pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚{'═'.repeat(8)}╝</pre>
+          </button>
         </div>
 
         {/* Action buttons - always visible, greyed out when disabled */}
         <div
-          className="pb-4 text-xs text-neutral-500 select-none flex gap-2"
-          style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace' }}
+          className="pb-4 text-xs select-none flex gap-2"
+          style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
         >
           {/* Export button */}
           <button
@@ -508,7 +565,7 @@ export function DJInterface() {
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
-                <span className={state.currentCode ? 'group-hover:border group-hover:border-neutral-500' : ''}>
+                <span className={state.currentCode ? 'group-hover:border group-hover:border-current' : ''}>
                   {copied ? 'Copied!' : 'Export'}
                 </span>
               </pre>
@@ -528,7 +585,7 @@ export function DJInterface() {
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
-                <span className={state.previousCode ? 'group-hover:border group-hover:border-neutral-500' : ''}>
+                <span className={state.previousCode ? 'group-hover:border group-hover:border-current' : ''}>
                   Go Back
                 </span>
               </pre>
@@ -538,49 +595,6 @@ export function DJInterface() {
           </button>
         </div>
 
-        {/* Info modal - appears on hover, to the left of info button */}
-        {showInfo && (
-          <div
-            className="absolute text-xs text-neutral-500 select-none"
-            style={{
-              right: 'calc(5ch + 8px)',
-              top: 0,
-              bottom: 0,
-              lineHeight: '1.2',
-              fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-              zIndex: 10,
-            }}
-            onMouseEnter={() => setShowInfo(true)}
-            onMouseLeave={() => setShowInfo(false)}
-          >
-            <div className="h-full flex flex-col bg-neutral-950">
-              <pre className="m-0">╔{'═'.repeat(46)}╗</pre>
-              <div className="flex-1 flex flex-col">
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1"> AI-powered live coding music in Strudel</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1">{' '.repeat(46)}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1"> Created by Patrick Poss</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1"> hey@patrickposs.com</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(46)}╝</pre>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -2,15 +2,23 @@
 
 import { useState, KeyboardEvent, forwardRef, useRef, useEffect } from 'react';
 
+interface ThemeColors {
+  text: string;
+  textDim: string;
+  border: string;
+}
+
 interface PromptInputProps {
   onSubmit: (prompt: string) => void;
   disabled: boolean;
   placeholder?: string;
   isStreaming?: boolean;
+  themeColors?: ThemeColors;
 }
 
 export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
-  function PromptInput({ onSubmit, disabled, placeholder, isStreaming }, ref) {
+  function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors }, ref) {
+    const colors = themeColors || { text: '#737373', textDim: '#525252', border: '#737373' };
     const [value, setValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -31,22 +39,13 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
 
     return (
       <div
-        className="text-xs text-neutral-500 select-none"
-        style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace' }}
+        className="text-xs select-none"
+        style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: colors.text }}
       >
         <style>{`
           @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
-          }
-          .terminal-cursor {
-            display: inline-block;
-            width: 8px;
-            height: 1.2em;
-            background-color: #737373;
-            animation: blink 1.5s step-end infinite;
-            vertical-align: text-bottom;
-            margin-left: 1px;
           }
           .prompt-input-wrapper {
             position: relative;
@@ -56,7 +55,6 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             background: transparent;
             border: none;
             outline: none;
-            color: #737373;
             width: 100%;
             caret-color: transparent;
             padding: 0;
@@ -65,14 +63,11 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             line-height: 1.2;
           }
           .prompt-input::placeholder {
-            color: #525252;
+            color: inherit;
+            opacity: 0.3;
           }
           .prompt-input:focus::placeholder {
             color: transparent;
-          }
-          .prompt-input::selection {
-            background-color: #737373;
-            color: #0a0a0a;
           }
           .cursor-overlay {
             position: absolute;
@@ -109,8 +104,8 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
         <div className="w-full overflow-hidden">
           <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(75)}</pre>
           <div className="flex items-center gap-2">
-            <span className="text-neutral-500">{'>'}</span>
-            {isStreaming && <span className="streaming-spinner text-neutral-500" />}
+            <span>{'>'}</span>
+            {isStreaming && <span className="streaming-spinner" />}
             <div className="prompt-input-wrapper">
               <input
                 ref={inputRef}
@@ -123,13 +118,23 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                 disabled={disabled}
                 placeholder={disabled || !isFocused ? (placeholder || 'give claude direction...') : ''}
                 className="prompt-input text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontFamily: 'inherit' }}
+                style={{ fontFamily: 'inherit', color: colors.text }}
               />
               {/* Cursor overlay - positioned after the text */}
               {isFocused && !disabled && (
                 <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit' }}>
                   <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{value}</span>
-                  <span className="terminal-cursor" />
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      width: '8px',
+                      height: '1.2em',
+                      backgroundColor: colors.text,
+                      animation: 'blink 1.5s step-end infinite',
+                      verticalAlign: 'text-bottom',
+                      marginLeft: '1px',
+                    }}
+                  />
                 </div>
               )}
             </div>

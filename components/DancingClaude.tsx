@@ -5,12 +5,13 @@ import { useEffect, useState } from 'react';
 interface DancingClaudeProps {
   isPlaying: boolean;
   isSpeaking?: boolean;
+  color?: string;
 }
 
-export function DancingClaude({ isPlaying, isSpeaking = false }: DancingClaudeProps) {
+export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373' }: DancingClaudeProps) {
   const [frame, setFrame] = useState(0);
   const [mouthOpen, setMouthOpen] = useState(false);
-  const blockColor = '#737373'; // neutral-500 grey
+  const blockColor = color;
   const eyeColor = '#000000'; // black for eyes
 
   // Animate between frames when playing
