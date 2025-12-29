@@ -544,17 +544,17 @@ export function DJInterface() {
             className="text-xs select-none group phosphor-glow"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted, width: 'fit-content' }}
           >
-            <pre className="m-0">╔═══╗</pre>
+            <pre className="m-0">╔{'═'.repeat(9)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
                 <span className="group-hover:border group-hover:border-current">
-                  {' * '}
+                  {' Theme '}
                 </span>
               </pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚═══╝</pre>
+            <pre className="m-0">╚{'═'.repeat(9)}╝</pre>
           </button>
 
           {/* CRT toggle button */}
