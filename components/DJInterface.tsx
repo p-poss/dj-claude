@@ -13,7 +13,7 @@ import { SpeechBubble } from './SpeechBubble';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
-  const { theme, cycleTheme } = useTheme();
+  const { theme } = useTheme();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
@@ -30,6 +30,16 @@ export function DJInterface() {
   const [currentMcCommentary, setCurrentMcCommentary] = useState('');
   const [mcEnabled, setMcEnabled] = useState(true);
   const [characterOffset, setCharacterOffset] = useState(0);
+  const [crtEnabled, setCrtEnabled] = useState(true);
+
+  // Toggle CRT effects on body element
+  useEffect(() => {
+    if (crtEnabled) {
+      document.body.classList.add('crt-screen');
+    } else {
+      document.body.classList.remove('crt-screen');
+    }
+  }, [crtEnabled]);
 
   // Track cursor position to slide character left/right
   useEffect(() => {
@@ -351,7 +361,7 @@ export function DJInterface() {
     <div className="h-screen flex flex-col gap-3" style={{ padding: '4px 8px', backgroundColor: theme.background }}>
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
-      <div className="pt-4 pb-2 text-xs select-none" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}>
+      <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}>
         {/* Header row with welcome box and status boxes */}
         <div className="flex items-start justify-between gap-4">
           {/* Welcome box */}
@@ -383,7 +393,7 @@ export function DJInterface() {
             {/* MC Mode toggle button */}
             <button
               onClick={handleToggleMC}
-              className="group"
+              className="group phosphor-glow"
               style={{ width: 'fit-content' }}
             >
               <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
@@ -403,7 +413,7 @@ export function DJInterface() {
             {state.currentCode && (
               <button
                 onClick={handleTogglePlayback}
-                className="group"
+                className="group phosphor-glow"
                 style={{ width: 'fit-content' }}
               >
                 <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
@@ -439,7 +449,7 @@ export function DJInterface() {
               transition: 'transform 0.15s ease-out',
             }}
           >
-            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.character} />
+            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.textMuted} />
             <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.textMuted} />
           </div>
         </div>
@@ -456,7 +466,7 @@ export function DJInterface() {
       </div>
 
       {/* Bottom section with info button and modal */}
-      <div className="relative">
+      <div className="relative phosphor-glow">
         {/* Prompt input row with info button */}
         <div className="flex items-start gap-2">
           <div className="flex-1">
@@ -482,7 +492,7 @@ export function DJInterface() {
 
           {/* Info button with modal */}
           <div
-            className="text-xs select-none group relative"
+            className="text-xs select-none group relative phosphor-glow"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
@@ -519,11 +529,6 @@ export function DJInterface() {
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> Theme: {theme.name}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
                     <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
@@ -533,37 +538,37 @@ export function DJInterface() {
             )}
           </div>
 
-          {/* Theme toggle button */}
+          {/* CRT toggle button */}
           <button
-            onClick={cycleTheme}
-            className="text-xs select-none group"
-            style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
-            title="Change color theme"
+            onClick={() => setCrtEnabled((prev) => !prev)}
+            className="text-xs select-none group phosphor-glow"
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted, width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(8)}╗</pre>
+            <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
                 <span className="group-hover:border group-hover:border-current">
-                  Color
+                  {crtEnabled ? 'CRT: On' : 'CRT: Off'}
                 </span>
               </pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(8)}╝</pre>
+            <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
           </button>
+
         </div>
 
         {/* Action buttons - always visible, greyed out when disabled */}
         <div
-          className="pb-4 text-xs select-none flex gap-2"
+          className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
           style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
         >
           {/* Export button */}
           <button
             onClick={state.currentCode ? handleExport : undefined}
             disabled={!state.currentCode}
-            className={state.currentCode ? 'group' : 'opacity-30 cursor-not-allowed'}
+            className={state.currentCode ? 'group phosphor-glow' : 'opacity-30 cursor-not-allowed phosphor-glow'}
             style={{ width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(14)}╗</pre>
@@ -583,7 +588,7 @@ export function DJInterface() {
           <button
             onClick={state.previousCode ? handleGoBack : undefined}
             disabled={!state.previousCode}
-            className={state.previousCode ? 'group' : 'opacity-30 cursor-not-allowed'}
+            className={state.previousCode ? 'group phosphor-glow' : 'opacity-30 cursor-not-allowed phosphor-glow'}
             style={{ width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(14)}╗</pre>

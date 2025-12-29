@@ -12,7 +12,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
   const [frame, setFrame] = useState(0);
   const [mouthOpen, setMouthOpen] = useState(false);
   const blockColor = color;
-  const eyeColor = '#000000'; // black for eyes
+  const eyeColor = 'transparent'; // transparent to show background
 
   // Animate between frames when playing
   useEffect(() => {
@@ -62,6 +62,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
           height: '6px',
           backgroundColor: bgColor,
           opacity: opacity,
+          boxShadow: cellType === 1 ? `0 0 3px ${blockColor}, 0 0 6px ${blockColor}` : 'none',
         }}
       />
     );

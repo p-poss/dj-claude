@@ -61,6 +61,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             margin: 0;
             height: auto;
             line-height: 1.2;
+            text-shadow: 0 0 2px currentColor, 0 0 4px currentColor;
           }
           .prompt-input::placeholder {
             color: inherit;
@@ -133,6 +134,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                       animation: 'blink 1.5s step-end infinite',
                       verticalAlign: 'text-bottom',
                       marginLeft: '1px',
+                      boxShadow: `0 0 4px ${colors.text}, 0 0 8px ${colors.text}`,
                     }}
                   />
                 </div>

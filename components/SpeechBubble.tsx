@@ -77,6 +77,7 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
         lineHeight: '13.5px',
         zIndex: 100,
         pointerEvents: 'none',
+        textShadow: `0 0 2px ${color}, 0 0 4px ${color}`,
       }}
     >
       {/* Top border */}

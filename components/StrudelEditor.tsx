@@ -407,7 +407,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
     return (
       <>
         <style>{`
-          /* Strudel editor wrapper */
+          /* Strudel editor wrapper - Fairlight CMI styling */
           .strudel-editor-wrapper {
             position: absolute;
             top: 0;
@@ -427,7 +427,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             right: 0 !important;
             bottom: 0 !important;
           }
-          /* Force CodeMirror to fill container */
+          /* Force CodeMirror to fill container with Fairlight colors */
           .strudel-editor-wrapper .cm-editor {
             height: 100% !important;
             position: absolute !important;
@@ -435,10 +435,12 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
+            background-color: #0d140d !important;
           }
           .strudel-editor-wrapper .cm-scroller {
             overflow: auto !important;
             height: 100% !important;
+            background-color: #0d140d !important;
             /* Hide scrollbar visually but keep scroll functionality */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE/Edge */
@@ -446,16 +448,60 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper .cm-scroller::-webkit-scrollbar {
             display: none; /* Chrome/Safari/Opera */
           }
+          /* Fairlight CMI phosphor green syntax */
+          .strudel-editor-wrapper .cm-content {
+            color: #33ff33 !important;
+            caret-color: #66ff66 !important;
+          }
+          .strudel-editor-wrapper .cm-cursor {
+            border-left-color: #66ff66 !important;
+            border-left-width: 2px !important;
+          }
+          .strudel-editor-wrapper .cm-selectionBackground {
+            background-color: rgba(51, 255, 51, 0.3) !important;
+          }
+          .strudel-editor-wrapper .cm-gutters {
+            background-color: #0a0f0a !important;
+            border-right: 1px solid #116611 !important;
+            color: #116611 !important;
+          }
+          .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
+            color: #116611 !important;
+          }
+          .strudel-editor-wrapper .cm-activeLine {
+            background-color: rgba(51, 255, 51, 0.05) !important;
+          }
+          .strudel-editor-wrapper .cm-activeLineGutter {
+            background-color: rgba(51, 255, 51, 0.1) !important;
+          }
+          /* Strudel mini locations (active highlighting) */
+          .strudel-editor-wrapper .cm-strudel-highlight,
+          .strudel-editor-wrapper .cm-strudel-flash {
+            background-color: rgba(102, 255, 102, 0.2) !important;
+            box-shadow: 0 0 8px rgba(51, 255, 51, 0.4);
+          }
+          /* Syntax highlighting - all shades of phosphor green */
+          .strudel-editor-wrapper .cm-string { color: #66ff66 !important; }
+          .strudel-editor-wrapper .cm-number { color: #44dd44 !important; }
+          .strudel-editor-wrapper .cm-keyword { color: #88ff88 !important; }
+          .strudel-editor-wrapper .cm-comment { color: #116611 !important; }
+          .strudel-editor-wrapper .cm-function { color: #55ff55 !important; }
+          .strudel-editor-wrapper .cm-variableName { color: #33ff33 !important; }
+          .strudel-editor-wrapper .cm-operator { color: #22aa22 !important; }
+          .strudel-editor-wrapper .cm-punctuation { color: #22aa22 !important; }
+          .strudel-editor-wrapper .cm-propertyName { color: #44cc44 !important; }
+          .strudel-editor-wrapper .cm-bracket { color: #22aa22 !important; }
         `}</style>
         <div
           ref={containerRef}
           className="strudel-editor-wrapper"
           style={{
             width: '100%',
-            height: '100%', // Fill parent container (flex-1 handles sizing)
-            backgroundColor: '#1e1e1e',
+            height: '100%',
+            backgroundColor: '#0d140d',
+            border: '1px solid #22aa22',
             borderRadius: '8px',
-            overflow: 'hidden', // Clip content to rounded corners
+            overflow: 'hidden',
             position: 'relative',
           }}
           suppressHydrationWarning

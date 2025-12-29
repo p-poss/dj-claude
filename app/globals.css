@@ -2,12 +2,19 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
-  --foreground: #e0e0e0;
-  --accent: #00ff00;
-  --accent-dim: #00aa00;
-  --dimmed: #4a4a4a;
-  --error: #ff4444;
+  /* Fairlight CMI phosphor green palette */
+  --background: #0a0f0a;
+  --foreground: #33ff33;
+  --accent: #66ff66;
+  --accent-dim: #22aa22;
+  --dimmed: #116611;
+  --error: #ff3333;
+
+  /* CRT-specific variables */
+  --phosphor-green: #33ff33;
+  --phosphor-bright: #66ff66;
+  --phosphor-dim: #116611;
+  --crt-black: #0a0f0a;
 }
 
 @theme inline {
@@ -98,4 +105,88 @@ input:focus {
 /* Syntax highlighter overrides */
 pre, code {
   font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FAIRLIGHT CMI CRT EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* CRT screen container - applies scanlines and vignette */
+.crt-screen {
+  position: relative;
+  animation: crt-flicker 8s infinite;
+}
+
+/* Scanlines overlay - horizontal lines simulating CRT phosphor gaps */
+.crt-screen::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+
+/* Subtle CRT flicker animation */
+@keyframes crt-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.98; }
+  94% { opacity: 1; }
+  96% { opacity: 0.97; }
+  97% { opacity: 1; }
+}
+
+/* Phosphor glow effect for text elements */
+.phosphor-glow {
+  text-shadow:
+    0 0 2px var(--phosphor-green),
+    0 0 4px var(--phosphor-green),
+    0 0 8px rgba(51, 255, 51, 0.5);
+}
+
+/* Stronger phosphor glow for bright/active elements */
+.phosphor-glow-strong {
+  text-shadow:
+    0 0 2px var(--phosphor-bright),
+    0 0 6px var(--phosphor-green),
+    0 0 12px rgba(51, 255, 51, 0.6),
+    0 0 20px rgba(51, 255, 51, 0.3);
+}
+
+/* Accessibility: respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .crt-screen {
+    animation: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CRT OFF - Disable all glow effects when CRT is disabled
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Remove text glow from phosphor-glow class */
+body:not(.crt-screen) .phosphor-glow,
+body:not(.crt-screen) .phosphor-glow-strong {
+  text-shadow: none !important;
+}
+
+/* Remove glow from all elements with inline text-shadow */
+body:not(.crt-screen) * {
+  text-shadow: none !important;
+}
+
+/* Remove all box-shadow glow effects from any element */
+body:not(.crt-screen) * {
+  box-shadow: none !important;
 }
