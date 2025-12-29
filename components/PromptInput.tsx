@@ -23,6 +23,8 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
     const colors = themeColors || { text: '#737373', textDim: '#525252', border: '#737373', background: '#0a0a0a' };
     const [value, setValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
+    const [scrollLeft, setScrollLeft] = useState(0);
+    const [cursorPosition, setCursorPosition] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
     // Combine refs - sync on every render to ensure ref is always current
@@ -32,10 +34,23 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       }
     });
 
+    // Sync scrollLeft when value changes (for cursor positioning during overflow)
+    useEffect(() => {
+      if (inputRef.current) {
+        requestAnimationFrame(() => {
+          if (inputRef.current) {
+            setScrollLeft(inputRef.current.scrollLeft);
+          }
+        });
+      }
+    }, [value]);
+
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' && !disabled && value.trim()) {
         onSubmit(value.trim());
         setValue('');
+        setScrollLeft(0);
+        setCursorPosition(0);
       }
     };
 
@@ -43,6 +58,8 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       if (!disabled && value.trim()) {
         onSubmit(value.trim());
         setValue('');
+        setScrollLeft(0);
+        setCursorPosition(0);
       }
     };
 
@@ -53,7 +70,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       >
         <style>{`
           @keyframes blink {
-            0%, 50% { opacity: 1; }
+            0%, 50% { opacity: 0.3; }
             51%, 100% { opacity: 0; }
           }
           .prompt-input-wrapper {
@@ -129,10 +146,17 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                     ref={inputRef}
                     type="text"
                     value={value}
-                    onChange={(e) => setValue(e.target.value)}
+                    onChange={(e) => {
+                      setValue(e.target.value);
+                      setCursorPosition(e.target.selectionStart || 0);
+                    }}
                     onKeyDown={handleKeyDown}
+                    onKeyUp={(e) => setCursorPosition(e.currentTarget.selectionStart || 0)}
+                    onSelect={(e) => setCursorPosition(e.currentTarget.selectionStart || 0)}
+                    onClick={(e) => setCursorPosition(e.currentTarget.selectionStart || 0)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
+                    onScroll={(e) => setScrollLeft(e.currentTarget.scrollLeft)}
                     disabled={disabled}
                     placeholder={disabled || !isFocused ? (placeholder || 'give claude direction...') : ''}
                     className="prompt-input text-xs disabled:opacity-50 disabled:cursor-not-allowed"
@@ -140,8 +164,8 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                   />
                   {/* Cursor overlay - positioned after the text */}
                   {isFocused && !disabled && (
-                    <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit' }}>
-                      <span style={{ visibility: 'hidden', whiteSpace: 'pre', marginLeft: '4px' }}>{value}</span>
+                    <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit', transform: `translateX(-${scrollLeft}px)` }}>
+                      <span style={{ visibility: 'hidden', whiteSpace: 'pre', marginLeft: '4px' }}>{value.slice(0, cursorPosition)}</span>
                       <span
                         style={{
                           display: 'inline-block',
