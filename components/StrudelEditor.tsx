@@ -522,6 +522,13 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
               inset 0 0 4px ${theme.textMuted},
               inset 0 0 8px ${theme.textMuted} !important;
           }
+          /* Keyboard hint glow when CRT mode is enabled */
+          body.crt-screen .keyboard-hint {
+            text-shadow:
+              0 0 2px ${theme.text},
+              0 0 4px ${theme.text},
+              0 0 8px ${theme.text};
+          }
           .strudel-editor-wrapper .cm-activeLine {
             background-color: ${hexToRgba(theme.text, 0.05)} !important;
           }
@@ -557,6 +564,24 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           }}
           suppressHydrationWarning
         />
+        {/* Keyboard shortcut hint */}
+        <div
+          className="keyboard-hint"
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+            fontSize: '12px',
+            lineHeight: 1,
+            color: theme.text,
+            pointerEvents: 'none',
+            zIndex: 10,
+            opacity: 0.7,
+          }}
+        >
+          Ctrl+Enter = run
+        </div>
       </>
     );
   }
