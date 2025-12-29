@@ -156,15 +156,6 @@ pre, code {
     0 0 8px currentColor;
 }
 
-/* Stronger phosphor glow for bright/active elements */
-.phosphor-glow-strong {
-  text-shadow:
-    0 0 2px currentColor,
-    0 0 6px currentColor,
-    0 0 12px currentColor,
-    0 0 20px currentColor;
-}
-
 /* Accessibility: respect reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .crt-screen {
@@ -177,8 +168,7 @@ pre, code {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Remove text glow from phosphor-glow class */
-body:not(.crt-screen) .phosphor-glow,
-body:not(.crt-screen) .phosphor-glow-strong {
+body:not(.crt-screen) .phosphor-glow {
   text-shadow: none !important;
 }
 

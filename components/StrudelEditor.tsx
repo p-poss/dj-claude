@@ -482,36 +482,29 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
             text-shadow: 0 0 2px ${theme.textMuted}, 0 0 4px ${theme.textMuted}, 0 0 8px ${theme.textMuted} !important;
           }
-          /* Gutter border glow when CRT mode is enabled - using pseudo-element for centered glow */
+          /* Gutter border glow when CRT mode is enabled - glow from gutter side (right edge inward) */
           body.crt-screen .strudel-editor-wrapper .cm-gutters {
-            position: relative !important;
-          }
-          body.crt-screen .strudel-editor-wrapper .cm-gutters::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: ${theme.textMuted};
             box-shadow:
-              0 0 4px ${theme.textMuted},
-              0 0 8px ${theme.textMuted},
-              0 0 16px ${hexToRgba(theme.textMuted, 0.4)},
-              0 0 4px ${theme.textMuted},
-              0 0 8px ${theme.textMuted},
-              0 0 16px ${hexToRgba(theme.textMuted, 0.4)};
-            pointer-events: none;
+              inset 0 0 2px ${theme.textMuted},
+              inset 0 0 4px ${theme.textMuted},
+              inset 0 0 8px ${theme.textMuted} !important;
+          }
+          /* Gutter border glow - glow from content side (left edge inward) */
+          body.crt-screen .strudel-editor-wrapper .cm-content {
+            box-shadow:
+              inset 0 0 2px ${theme.textMuted},
+              inset 0 0 4px ${theme.textMuted},
+              inset 0 0 8px ${theme.textMuted} !important;
           }
           /* Outer border glow when CRT mode is enabled - both outward and inward */
           body.crt-screen .strudel-editor-wrapper {
             box-shadow:
+              0 0 2px ${theme.textMuted},
               0 0 4px ${theme.textMuted},
               0 0 8px ${theme.textMuted},
-              0 0 16px ${hexToRgba(theme.textMuted, 0.4)},
+              inset 0 0 2px ${theme.textMuted},
               inset 0 0 4px ${theme.textMuted},
-              inset 0 0 8px ${theme.textMuted},
-              inset 0 0 16px ${hexToRgba(theme.textMuted, 0.4)} !important;
+              inset 0 0 8px ${theme.textMuted} !important;
           }
           .strudel-editor-wrapper .cm-activeLine {
             background-color: ${hexToRgba(theme.text, 0.05)} !important;
