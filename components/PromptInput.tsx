@@ -108,9 +108,9 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           }
         `}</style>
         {/* Input box with ASCII border style - top and bottom only */}
-        <div className="w-full overflow-hidden">
+        <div className="w-fit overflow-hidden">
           <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(70)}</pre>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-hidden">
             <span>{'>'}</span>
             {isStreaming && <span className="streaming-spinner" />}
             <div className="prompt-input-wrapper">
