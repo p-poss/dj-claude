@@ -126,7 +126,7 @@ export function WelcomeSplash({ visible }: WelcomeSplashProps) {
           </div>
 
           {/* Subtitle */}
-          <div className="mt-8 text-sm font-mono" style={{ color: theme.textMuted }}>
+          <div className="mt-8 text-sm font-mono" style={{ color: theme.text }}>
             Give DJ Claude a prompt below to start coding music
           </div>
         </>

@@ -8,8 +8,6 @@ export interface ThemeColors {
   background: string;
   backgroundAlt: string;
   text: string;
-  textMuted: string;
-  textDim: string;
   accent: string;
   border: string;
   character: string;
@@ -20,9 +18,7 @@ export const fairlightTheme: ThemeColors = {
   name: 'Fairlight',
   background: '#0a0f0a',
   backgroundAlt: '#0d140d',
-  text: '#33ff33',
-  textMuted: '#22aa22',
-  textDim: '#116611',
+  text: '#22aa22',
   accent: '#22aa22',
   border: '#22aa22',
   character: '#33ff33',
@@ -33,9 +29,7 @@ export const amberTheme: ThemeColors = {
   name: 'Amber',
   background: '#0f0a05',
   backgroundAlt: '#140d08',
-  text: '#ffaa33',
-  textMuted: '#aa7722',
-  textDim: '#664411',
+  text: '#aa7722',
   accent: '#aa7722',
   border: '#aa7722',
   character: '#ffaa33',
@@ -46,9 +40,7 @@ export const blueTheme: ThemeColors = {
   name: 'Blue',
   background: '#050a0f',
   backgroundAlt: '#080d14',
-  text: '#33aaff',
-  textMuted: '#2277aa',
-  textDim: '#114466',
+  text: '#2277aa',
   accent: '#2277aa',
   border: '#2277aa',
   character: '#33aaff',
@@ -59,9 +51,7 @@ export const terminalTheme: ThemeColors = {
   name: 'Terminal',
   background: '#0a0a0a',
   backgroundAlt: '#141414',
-  text: '#e0e0e0',
-  textMuted: '#a0a0a0',
-  textDim: '#606060',
+  text: '#a0a0a0',
   accent: '#a0a0a0',
   border: '#a0a0a0',
   character: '#e0e0e0',
@@ -72,9 +62,7 @@ export const anthropicTheme: ThemeColors = {
   name: 'Anthropic',
   background: '#0a0808',
   backgroundAlt: '#140f0d',
-  text: '#d97757',
-  textMuted: '#a85a42',
-  textDim: '#6b3a2a',
+  text: '#a85a42',
   accent: '#a85a42',
   border: '#a85a42',
   character: '#d97757',
@@ -110,8 +98,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     root.style.setProperty('--theme-background', theme.background);
     root.style.setProperty('--theme-text', theme.text);
-    root.style.setProperty('--theme-text-muted', theme.textMuted);
-    root.style.setProperty('--theme-text-dim', theme.textDim);
     root.style.setProperty('--theme-border', theme.border);
   }, [theme]);
 

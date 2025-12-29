@@ -461,17 +461,17 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           /* Theme-aware syntax styling */
           .strudel-editor-wrapper .cm-content {
             color: ${theme.text} !important;
-            caret-color: ${theme.textMuted} !important;
+            caret-color: ${theme.text} !important;
           }
           .strudel-editor-wrapper .cm-cursor {
-            border-left-color: ${theme.textMuted} !important;
+            border-left-color: ${theme.text} !important;
             border-left-width: 2px !important;
           }
           .strudel-editor-wrapper .cm-selectionBackground {
             background-color: ${hexToRgba(theme.text, 0.3)} !important;
           }
           .strudel-editor-wrapper .cm-gutters {
-            background-color: ${theme.textMuted} !important;
+            background-color: ${theme.text} !important;
             border-right: none !important;
             width: 32px !important;
             min-width: 32px !important;
@@ -501,26 +501,26 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           /* Circle inner glow when CRT mode is enabled */
           body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
             box-shadow:
-              inset 0 0 2px ${theme.textMuted},
-              inset 0 0 4px ${theme.textMuted},
-              inset 0 0 8px ${theme.textMuted};
+              inset 0 0 2px ${theme.text},
+              inset 0 0 4px ${theme.text},
+              inset 0 0 8px ${theme.text};
           }
           /* Glowing gutter when CRT mode is enabled */
           body.crt-screen .strudel-editor-wrapper .cm-gutters {
             box-shadow:
-              0 0 2px ${theme.textMuted},
-              0 0 4px ${theme.textMuted},
-              0 0 8px ${theme.textMuted} !important;
+              0 0 2px ${theme.text},
+              0 0 4px ${theme.text},
+              0 0 8px ${theme.text} !important;
           }
           /* Outer border glow when CRT mode is enabled - both outward and inward */
           body.crt-screen .strudel-editor-wrapper {
             box-shadow:
-              0 0 2px ${theme.textMuted},
-              0 0 4px ${theme.textMuted},
-              0 0 8px ${theme.textMuted},
-              inset 0 0 2px ${theme.textMuted},
-              inset 0 0 4px ${theme.textMuted},
-              inset 0 0 8px ${theme.textMuted} !important;
+              0 0 2px ${theme.text},
+              0 0 4px ${theme.text},
+              0 0 8px ${theme.text},
+              inset 0 0 2px ${theme.text},
+              inset 0 0 4px ${theme.text},
+              inset 0 0 8px ${theme.text} !important;
           }
           /* Keyboard hint glow when CRT mode is enabled */
           body.crt-screen .keyboard-hint {
@@ -532,23 +532,37 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper .cm-activeLine {
             background-color: ${hexToRgba(theme.text, 0.05)} !important;
           }
+          /* Override Strudel's CSS variables for theming */
+          .strudel-editor-wrapper {
+            --foreground: ${theme.text};
+            --background: ${theme.background};
+          }
           /* Strudel mini locations (active highlighting) */
           .strudel-editor-wrapper .cm-strudel-highlight,
           .strudel-editor-wrapper .cm-strudel-flash {
             background-color: ${hexToRgba(theme.text, 0.2)} !important;
-            box-shadow: 0 0 8px ${hexToRgba(theme.text, 0.4)};
+            box-shadow: 0 0 8px ${hexToRgba(theme.text, 0.4)} !important;
+          }
+          /* Mini location glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper .cm-strudel-highlight,
+          body.crt-screen .strudel-editor-wrapper .cm-strudel-flash,
+          body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
+            filter:
+              drop-shadow(0 0 2px ${theme.text})
+              drop-shadow(0 0 4px ${theme.text})
+              drop-shadow(0 0 6px ${theme.text}) !important;
           }
           /* Syntax highlighting - monochromatic theme shades */
-          .strudel-editor-wrapper .cm-string { color: ${theme.textMuted} !important; }
+          .strudel-editor-wrapper .cm-string { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-number { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-keyword { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-comment { color: ${theme.textDim} !important; }
+          .strudel-editor-wrapper .cm-comment { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-function { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-variableName { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-operator { color: ${theme.textMuted} !important; }
-          .strudel-editor-wrapper .cm-punctuation { color: ${theme.textMuted} !important; }
+          .strudel-editor-wrapper .cm-operator { color: ${theme.text} !important; }
+          .strudel-editor-wrapper .cm-punctuation { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-propertyName { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-bracket { color: ${theme.textMuted} !important; }
+          .strudel-editor-wrapper .cm-bracket { color: ${theme.text} !important; }
         `}</style>
         <div
           ref={containerRef}
@@ -557,7 +571,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             width: '100%',
             height: '100%',
             backgroundColor: theme.background,
-            border: `1px solid ${theme.textMuted}`,
+            border: `1px solid ${theme.text}`,
             borderRadius: '2px',
             overflow: 'hidden',
             position: 'relative',

@@ -361,7 +361,7 @@ export function DJInterface() {
     <div className="h-screen flex flex-col gap-3" style={{ padding: '4px 8px', backgroundColor: theme.background }}>
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
-      <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}>
+      <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
         {/* Header row with welcome box and status boxes */}
         <div className="flex items-start justify-between gap-4">
           {/* Welcome box */}
@@ -449,8 +449,8 @@ export function DJInterface() {
               transition: 'transform 0.15s ease-out',
             }}
           >
-            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.textMuted} />
-            <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.textMuted} />
+            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} />
+            <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.text} />
           </div>
         </div>
       </div>
@@ -483,8 +483,7 @@ export function DJInterface() {
                     : "Initializing..."
               }
               themeColors={{
-                text: theme.textMuted,
-                textDim: theme.textDim,
+                text: theme.text,
                 border: theme.border,
                 background: theme.background,
               }}
@@ -495,7 +494,7 @@ export function DJInterface() {
           {/* Info button with modal */}
           <div
             className="text-xs select-none group relative phosphor-glow"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
           >
@@ -518,7 +517,7 @@ export function DJInterface() {
                   top: 0,
                   lineHeight: '1.2',
                   fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-                  color: theme.textMuted,
+                  color: theme.text,
                   zIndex: 10,
                 }}
               >
@@ -544,7 +543,7 @@ export function DJInterface() {
           <button
             onClick={cycleTheme}
             className="text-xs select-none group phosphor-glow"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted, width: 'fit-content' }}
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
@@ -563,7 +562,7 @@ export function DJInterface() {
           <button
             onClick={() => setCrtEnabled((prev) => !prev)}
             className="text-xs select-none group phosphor-glow"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted, width: 'fit-content' }}
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
@@ -583,7 +582,7 @@ export function DJInterface() {
         {/* Action buttons - always visible, greyed out when disabled */}
         <div
           className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
-          style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted }}
+          style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
         >
           {/* Export button */}
           <button
