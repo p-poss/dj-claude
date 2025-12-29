@@ -4,7 +4,6 @@ import { useState, KeyboardEvent, forwardRef, useRef, useEffect } from 'react';
 
 interface ThemeColors {
   text: string;
-  border: string;
   background: string;
 }
 
@@ -19,7 +18,7 @@ interface PromptInputProps {
 
 export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
   function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors, crtEnabled = false }, ref) {
-    const colors = themeColors || { text: '#737373', border: '#737373', background: '#0a0a0a' };
+    const colors = themeColors || { text: '#737373', background: '#0a0a0a' };
     const [value, setValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const [scrollLeft, setScrollLeft] = useState(0);

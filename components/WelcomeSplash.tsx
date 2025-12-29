@@ -8,8 +8,8 @@ interface WelcomeSplashProps {
 
 export function WelcomeSplash({ visible }: WelcomeSplashProps) {
   const { theme } = useTheme();
-  // Use theme accent color for blocks
-  const blockColor = theme.accent;
+  // Use theme text color for blocks
+  const blockColor = theme.text;
 
   // Each letter is represented as a grid of blocks (wider blocks like the original)
   // 1 = filled block, 0 = empty
