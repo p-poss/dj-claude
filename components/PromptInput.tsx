@@ -63,7 +63,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
 
     return (
       <div
-        className="text-xs select-none"
+        className="text-xs select-none phosphor-glow"
         style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: colors.text }}
       >
         <style>{`
@@ -187,16 +187,16 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           <button
             onClick={handleSubmitClick}
             disabled={disabled || !value.trim()}
-            className={`group phosphor-glow ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`group ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
             style={{ width: 'fit-content' }}
           >
-            <pre className="m-0">╔═══╗</pre>
+            <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔═══╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center"><span className={disabled || !value.trim() ? '' : 'group-hover:border group-hover:border-current'}>⬆</span></pre>
-              <pre className="m-0">║</pre>
+              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
+              <pre className="m-0 flex-1 text-center" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}><span className={disabled || !value.trim() ? '' : 'group-hover:border group-hover:border-current'}>⬆</span></pre>
+              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
             </div>
-            <pre className="m-0">╚═══╝</pre>
+            <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╚═══╝</pre>
           </button>
         </div>
       </div>

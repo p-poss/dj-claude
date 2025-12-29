@@ -65,6 +65,11 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
           animation: party-bounce-react 1s linear infinite !important;
         }
 
+        /* Don't bounce buttons inside phosphor-glow containers (they get the parent's pulse instead) */
+        body.party-mode .phosphor-glow button {
+          animation: none !important;
+        }
+
         @keyframes party-bounce-react {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-4px); }
