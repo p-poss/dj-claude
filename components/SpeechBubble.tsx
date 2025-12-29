@@ -29,70 +29,49 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
 
   if (!shouldRender || !text) return null;
 
-  // Fixed number of content rows to match character height
-  // Character: 12 rows × 6px = 72px + 8px margin = 80px
-  // Bubble: top border + 2 content rows + bottom border + tail = 5 lines
-  const fixedContentRows = 3;
-  const maxLineLength = 60; // Allow wider bubbles for more text
-
-  // Word wrap text
-  const words = text.split(' ');
-  const textLines: string[] = [];
-  let currentLine = '';
-
-  for (const word of words) {
-    if (currentLine.length + word.length + 1 <= maxLineLength) {
-      currentLine += (currentLine ? ' ' : '') + word;
-    } else {
-      if (currentLine) textLines.push(currentLine);
-      currentLine = word;
-    }
-  }
-  if (currentLine) textLines.push(currentLine);
-
-  // Pad with empty lines to fill fixed height, text at top
-  const contentLines = [...textLines];
-  while (contentLines.length < fixedContentRows) {
-    contentLines.push('');
-  }
-  // If text is longer than fixed rows, truncate (shouldn't happen with short commentary)
-  const displayLines = contentLines.slice(0, fixedContentRows);
-
-  // Calculate bubble width based on longest line (can expand wider)
-  const longestLine = Math.max(...textLines.map(l => l.length), 20);
-  const bubbleWidth = longestLine + 4;
-
   return (
     <div
       style={{
         position: 'absolute',
         left: '130px',
-        top: '1.5px', // Aligned so tail bottom matches character feet
+        top: '8px',
         opacity,
         transition: 'opacity 0.3s ease-in-out',
         fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
         fontSize: '12px',
         color: color,
-        whiteSpace: 'pre',
-        lineHeight: '13.5px',
         zIndex: 100,
         pointerEvents: 'none',
-        textShadow: `0 0 2px ${color}, 0 0 4px ${color}, 0 0 8px ${color}`,
       }}
     >
-      {/* Top border */}
-      <div>{'╭' + '─'.repeat(bubbleWidth) + '╮'}</div>
-
-      {/* Fixed content rows */}
-      {displayLines.map((line, i) => (
-        <div key={i}>{'│ '}{line.padEnd(bubbleWidth - 2)}{' │'}</div>
-      ))}
-
-      {/* Bottom border */}
-      <div>{'╰' + '─'.repeat(bubbleWidth) + '╯'}</div>
+      {/* Bubble container */}
+      <div
+        style={{
+          border: `1px solid ${color}`,
+          borderRadius: '2px',
+          padding: '8px 12px',
+          width: 'max-content',
+          maxWidth: '400px',
+          height: '60px',
+          boxShadow: `0 0 2px ${color}, 0 0 4px ${color}, 0 0 8px ${color}, inset 0 0 2px ${color}, inset 0 0 4px ${color}, inset 0 0 8px ${color}`,
+          whiteSpace: 'pre-wrap',
+          overflow: 'hidden',
+        }}
+      >
+        {text}
+      </div>
 
       {/* Tail pointing to character */}
-      <div style={{ paddingLeft: '2ch' }}>{'◢'}</div>
+      <div
+        style={{
+          marginLeft: '12px',
+          marginTop: '0.5px',
+          color: color,
+          textShadow: `0 0 2px ${color}, 0 0 4px ${color}, 0 0 8px ${color}`,
+        }}
+      >
+        ◢
+      </div>
     </div>
   );
 }
