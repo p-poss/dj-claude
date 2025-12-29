@@ -570,7 +570,7 @@ export function DJInterface() {
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
                 <span className="group-hover:border group-hover:border-current">
-                  {crtEnabled ? 'CRT: On' : 'CRT: Off'}
+                  {crtEnabled ? 'TRON: On' : 'TRON: Off'}
                 </span>
               </pre>
               <pre className="m-0">║</pre>

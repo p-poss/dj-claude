@@ -98,7 +98,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeIndex, setThemeIndex] = useState(0);
+  const [themeIndex, setThemeIndex] = useState(3); // Default to Terminal (black/white) theme
   const theme = themes[themeIndex];
 
   const cycleTheme = useCallback(() => {

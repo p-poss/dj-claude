@@ -62,7 +62,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
           height: '6px',
           backgroundColor: bgColor,
           opacity: opacity,
-          boxShadow: cellType === 1 ? `0 0 3px ${blockColor}, 0 0 6px ${blockColor}` : 'none',
+          boxShadow: cellType === 1 ? `0 0 2px ${blockColor}, 0 0 4px ${blockColor}, 0 0 8px ${blockColor}` : 'none',
         }}
       />
     );
