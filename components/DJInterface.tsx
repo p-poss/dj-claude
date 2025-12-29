@@ -43,8 +43,8 @@ export function DJInterface() {
     }
 
     const interval = setInterval(() => {
-      setPartyHue((h) => (h + 5) % 360);
-    }, 100); // Smooth color cycling
+      setPartyHue((h) => h + 5); // No modulo - CSS handles values > 360
+    }, 200); // Smooth color cycling
 
     return () => clearInterval(interval);
   }, [partyEnabled]);
