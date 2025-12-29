@@ -44,7 +44,7 @@ export function DJInterface() {
 
     const interval = setInterval(() => {
       setPartyHue((h) => (h + 5) % 360);
-    }, 50); // Smooth color cycling
+    }, 100); // Smooth color cycling
 
     return () => clearInterval(interval);
   }, [partyEnabled]);

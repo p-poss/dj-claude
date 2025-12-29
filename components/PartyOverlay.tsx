@@ -62,7 +62,7 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
 
         /* Party mode bouncing buttons */
         body.party-mode button {
-          animation: party-bounce-react 0.5s ease-in-out infinite !important;
+          animation: party-bounce-react 1s linear infinite !important;
         }
 
         @keyframes party-bounce-react {
@@ -72,7 +72,7 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
 
         /* Party mode wobbling pre elements */
         body.party-mode pre {
-          animation: party-wobble-react 0.6s ease-in-out infinite !important;
+          animation: party-wobble-react 1s linear infinite !important;
         }
 
         @keyframes party-wobble-react {
@@ -83,7 +83,7 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
 
         /* Enhanced glow pulse */
         body.party-mode .phosphor-glow {
-          animation: party-glow-react 0.4s ease-in-out infinite !important;
+          animation: party-glow-react 1s linear infinite !important;
         }
 
         @keyframes party-glow-react {
