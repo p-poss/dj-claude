@@ -39,6 +39,13 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       }
     };
 
+    const handleSubmitClick = () => {
+      if (!disabled && value.trim()) {
+        onSubmit(value.trim());
+        setValue('');
+      }
+    };
+
     return (
       <div
         className="text-xs select-none"
@@ -107,47 +114,68 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             display: inline-block;
           }
         `}</style>
-        {/* Input box with ASCII border style - top and bottom only */}
-        <div className="w-fit overflow-hidden">
-          <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(70)}</pre>
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span>{'>'}</span>
-            {isStreaming && <span className="streaming-spinner" />}
-            <div className="prompt-input-wrapper">
-              <input
-                ref={inputRef}
-                type="text"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                disabled={disabled}
-                placeholder={disabled || !isFocused ? (placeholder || 'give claude direction...') : ''}
-                className="prompt-input text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontFamily: 'inherit', color: colors.text }}
-              />
-              {/* Cursor overlay - positioned after the text */}
-              {isFocused && !disabled && (
-                <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit' }}>
-                  <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{value}</span>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      width: '8px',
-                      height: '1.2em',
-                      backgroundColor: colors.text,
-                      animation: 'blink 1.5s step-end infinite',
-                      verticalAlign: 'text-bottom',
-                      marginLeft: '1px',
-                      boxShadow: `0 0 4px ${colors.text}, 0 0 8px ${colors.text}`,
-                    }}
-                  />
-                </div>
-              )}
+        {/* Input row with submit button */}
+        <div className="flex items-start gap-2">
+          {/* Input box with ASCII border style - top and bottom only */}
+          <div className="w-fit overflow-hidden">
+            <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(70)}</pre>
+            <div className="flex items-center gap-2 overflow-hidden">
+              <span>{'>'}</span>
+              {isStreaming && <span className="streaming-spinner" />}
+              <div className="prompt-input-wrapper">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setIsFocused(false)}
+                  disabled={disabled}
+                  placeholder={disabled || !isFocused ? (placeholder || 'give claude direction...') : ''}
+                  className="prompt-input text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: 'inherit', color: colors.text }}
+                />
+                {/* Cursor overlay - positioned after the text */}
+                {isFocused && !disabled && (
+                  <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit' }}>
+                    <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{value}</span>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '8px',
+                        height: '1.2em',
+                        backgroundColor: colors.text,
+                        animation: 'blink 1.5s step-end infinite',
+                        verticalAlign: 'text-bottom',
+                        marginLeft: '1px',
+                        boxShadow: `0 0 4px ${colors.text}, 0 0 8px ${colors.text}`,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
+            <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(70)}</pre>
           </div>
-          <pre className="m-0 whitespace-nowrap overflow-hidden">{'═'.repeat(70)}</pre>
+
+          {/* Submit button */}
+          <button
+            onClick={handleSubmitClick}
+            disabled={disabled || !value.trim()}
+            className={`group ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+            style={{ width: 'fit-content' }}
+          >
+            <pre className="m-0">╔═══╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">
+                {' ↵ '}
+              </pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚═══╝</pre>
+          </button>
         </div>
       </div>
     );
