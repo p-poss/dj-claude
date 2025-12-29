@@ -23,7 +23,7 @@ export const fairlightTheme: ThemeColors = {
   text: '#33ff33',            // Classic P31 phosphor green
   textMuted: '#22aa22',       // Medium phosphor green
   textDim: '#116611',         // Dim phosphor green (afterglow)
-  accent: '#66ff66',          // Bright highlight green (bloom)
+  accent: '#22aa22',          // Muted phosphor green (consistent)
   border: '#22aa22',          // Border color matching muted
   character: '#33ff33',       // Dancing Claude in phosphor green
 };

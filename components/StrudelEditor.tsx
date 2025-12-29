@@ -435,12 +435,12 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
-            background-color: #0d140d !important;
+            background-color: #0a0f0a !important;
           }
           .strudel-editor-wrapper .cm-scroller {
             overflow: auto !important;
             height: 100% !important;
-            background-color: #0d140d !important;
+            background-color: #0a0f0a !important;
             /* Hide scrollbar visually but keep scroll functionality */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE/Edge */
@@ -451,10 +451,10 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           /* Fairlight CMI phosphor green syntax */
           .strudel-editor-wrapper .cm-content {
             color: #33ff33 !important;
-            caret-color: #66ff66 !important;
+            caret-color: #22aa22 !important;
           }
           .strudel-editor-wrapper .cm-cursor {
-            border-left-color: #66ff66 !important;
+            border-left-color: #22aa22 !important;
             border-left-width: 2px !important;
           }
           .strudel-editor-wrapper .cm-selectionBackground {
@@ -462,11 +462,11 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           }
           .strudel-editor-wrapper .cm-gutters {
             background-color: #0a0f0a !important;
-            border-right: 1px solid #116611 !important;
+            border-right: 1px solid #22aa22 !important;
             color: #116611 !important;
           }
           .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
-            color: #116611 !important;
+            color: #22aa22 !important;
           }
           .strudel-editor-wrapper .cm-activeLine {
             background-color: rgba(51, 255, 51, 0.05) !important;
@@ -481,7 +481,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             box-shadow: 0 0 8px rgba(51, 255, 51, 0.4);
           }
           /* Syntax highlighting - all shades of phosphor green */
-          .strudel-editor-wrapper .cm-string { color: #66ff66 !important; }
+          .strudel-editor-wrapper .cm-string { color: #22aa22 !important; }
           .strudel-editor-wrapper .cm-number { color: #44dd44 !important; }
           .strudel-editor-wrapper .cm-keyword { color: #88ff88 !important; }
           .strudel-editor-wrapper .cm-comment { color: #116611 !important; }
@@ -498,7 +498,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           style={{
             width: '100%',
             height: '100%',
-            backgroundColor: '#0d140d',
+            backgroundColor: '#0a0f0a',
             border: '1px solid #22aa22',
             borderRadius: '2px',
             overflow: 'hidden',

@@ -5,14 +5,13 @@
   /* Fairlight CMI phosphor green palette */
   --background: #0a0f0a;
   --foreground: #33ff33;
-  --accent: #66ff66;
+  --accent: #22aa22;
   --accent-dim: #22aa22;
   --dimmed: #116611;
   --error: #ff3333;
 
   /* CRT-specific variables */
   --phosphor-green: #33ff33;
-  --phosphor-bright: #66ff66;
   --phosphor-dim: #116611;
   --crt-black: #0a0f0a;
 }
@@ -155,10 +154,15 @@ pre, code {
     0 0 8px rgba(51, 255, 51, 0.5);
 }
 
+/* Phosphor glow for button hover borders */
+.crt-screen .group:hover .group-hover\:border {
+  box-shadow: 0 0 4px var(--phosphor-green), 0 0 8px rgba(51, 255, 51, 0.4);
+}
+
 /* Stronger phosphor glow for bright/active elements */
 .phosphor-glow-strong {
   text-shadow:
-    0 0 2px var(--phosphor-bright),
+    0 0 2px var(--phosphor-green),
     0 0 6px var(--phosphor-green),
     0 0 12px rgba(51, 255, 51, 0.6),
     0 0 20px rgba(51, 255, 51, 0.3);
