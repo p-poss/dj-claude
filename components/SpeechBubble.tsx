@@ -39,6 +39,7 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
         transition: 'opacity 0.3s ease-in-out',
         fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
         fontSize: '12px',
+        lineHeight: '15px',
         color: color,
         zIndex: 100,
         pointerEvents: 'none',
@@ -49,7 +50,7 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
         style={{
           border: `1px solid ${color}`,
           borderRadius: '2px',
-          padding: '8px 12px',
+          padding: '6px 12px',
           width: 'max-content',
           maxWidth: '335px',
           height: '60px',
