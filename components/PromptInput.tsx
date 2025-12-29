@@ -70,7 +70,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       >
         <style>{`
           @keyframes blink {
-            0%, 50% { opacity: 0.3; }
+            0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
           }
           .prompt-input-wrapper {
