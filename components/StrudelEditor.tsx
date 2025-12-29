@@ -585,7 +585,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           style={{
             width: '100%',
             height: '100%',
-            backgroundColor: theme.background,
+            backgroundColor: 'transparent',
             border: `1px solid ${theme.text}`,
             borderRadius: '2px',
             overflow: 'hidden',

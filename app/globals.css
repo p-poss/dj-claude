@@ -105,7 +105,6 @@ pre, code {
 /* CRT screen container - applies scanlines and vignette */
 .crt-screen {
   position: relative;
-  animation: crt-flicker 8s infinite;
 }
 
 /* Scanlines overlay - horizontal lines simulating CRT phosphor gaps */
@@ -128,16 +127,6 @@ pre, code {
 }
 
 
-/* Subtle CRT flicker animation */
-@keyframes crt-flicker {
-  0%, 100% { opacity: 1; }
-  92% { opacity: 1; }
-  93% { opacity: 0.98; }
-  94% { opacity: 1; }
-  96% { opacity: 0.97; }
-  97% { opacity: 1; }
-}
-
 /* Phosphor glow effect for text elements - uses currentColor to inherit from element */
 .phosphor-glow {
   text-shadow:
@@ -152,13 +141,6 @@ pre, code {
     0 0 2px currentColor,
     0 0 4px currentColor,
     0 0 8px currentColor;
-}
-
-/* Accessibility: respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .crt-screen {
-    animation: none;
-  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
