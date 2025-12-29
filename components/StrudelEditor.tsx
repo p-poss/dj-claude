@@ -525,9 +525,6 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper .cm-activeLine {
             background-color: ${hexToRgba(theme.text, 0.05)} !important;
           }
-          .strudel-editor-wrapper .cm-activeLineGutter {
-            background-color: ${hexToRgba(theme.text, 0.1)} !important;
-          }
           /* Strudel mini locations (active highlighting) */
           .strudel-editor-wrapper .cm-strudel-highlight,
           .strudel-editor-wrapper .cm-strudel-flash {
