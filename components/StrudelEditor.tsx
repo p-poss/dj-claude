@@ -559,6 +559,14 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
               0 0 4px currentColor,
               0 0 8px currentColor;
           }
+          /* Slider glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper input[type="range"] {
+            color: #7C7C7C; /* Set color to match slider handle for currentColor */
+            filter:
+              drop-shadow(0 0 2px currentColor)
+              drop-shadow(0 0 4px currentColor)
+              drop-shadow(0 0 8px currentColor);
+          }
           /* Syntax highlighting - monochromatic theme shades */
           .strudel-editor-wrapper .cm-string { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-number { color: ${theme.text} !important; }
