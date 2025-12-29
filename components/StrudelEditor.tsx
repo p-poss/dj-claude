@@ -471,30 +471,46 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             background-color: ${hexToRgba(theme.text, 0.3)} !important;
           }
           .strudel-editor-wrapper .cm-gutters {
-            background-color: transparent !important;
-            border-right: 1px solid ${theme.textMuted} !important;
-            color: ${theme.textDim} !important;
+            background-color: ${theme.textMuted} !important;
+            border-right: none !important;
+            width: 32px !important;
+            min-width: 32px !important;
+          }
+          .strudel-editor-wrapper .cm-lineNumbers {
+            width: 32px !important;
+            min-width: 32px !important;
           }
           .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
-            color: ${theme.textMuted} !important;
+            color: transparent !important;
+            font-size: 0 !important;
+            width: 32px !important;
+            min-width: 32px !important;
+            position: relative !important;
           }
-          /* Line number glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
-            text-shadow: 0 0 2px ${theme.textMuted}, 0 0 4px ${theme.textMuted}, 0 0 8px ${theme.textMuted} !important;
+          .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 11px;
+            height: 11px;
+            border-radius: 1px;
+            background: ${theme.background};
           }
-          /* Gutter border glow when CRT mode is enabled - glow from gutter side (right edge inward) */
+          /* Circle inner glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
+            box-shadow:
+              inset 0 0 2px ${theme.textMuted},
+              inset 0 0 4px ${theme.textMuted},
+              inset 0 0 8px ${theme.textMuted};
+          }
+          /* Glowing gutter when CRT mode is enabled */
           body.crt-screen .strudel-editor-wrapper .cm-gutters {
             box-shadow:
-              inset 0 0 2px ${theme.textMuted},
-              inset 0 0 4px ${theme.textMuted},
-              inset 0 0 8px ${theme.textMuted} !important;
-          }
-          /* Gutter border glow - glow from content side (left edge inward) */
-          body.crt-screen .strudel-editor-wrapper .cm-content {
-            box-shadow:
-              inset 0 0 2px ${theme.textMuted},
-              inset 0 0 4px ${theme.textMuted},
-              inset 0 0 8px ${theme.textMuted} !important;
+              0 0 2px ${theme.textMuted},
+              0 0 4px ${theme.textMuted},
+              0 0 8px ${theme.textMuted} !important;
           }
           /* Outer border glow when CRT mode is enabled - both outward and inward */
           body.crt-screen .strudel-editor-wrapper {
