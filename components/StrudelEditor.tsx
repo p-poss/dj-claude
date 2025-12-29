@@ -591,7 +591,6 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             color: theme.text,
             pointerEvents: 'none',
             zIndex: 10,
-            opacity: 0.7,
           }}
         >
           Ctrl+Enter = run
