@@ -581,7 +581,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
         `}</style>
         <div
           ref={containerRef}
-          className="strudel-editor-wrapper"
+          className="strudel-editor-wrapper phosphor-glow"
           style={{
             width: '100%',
             height: '100%',
