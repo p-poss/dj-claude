@@ -67,11 +67,10 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             width: 100%;
             caret-color: transparent;
             padding: 0;
-            padding-left: 8px;
             margin: 0;
-            margin-left: -8px;
             height: auto;
             line-height: 1.2;
+            text-indent: 4px;
             text-shadow: 0 0 2px currentColor, 0 0 4px currentColor;
           }
           .prompt-input::placeholder {
@@ -124,7 +123,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             <div className="flex items-center gap-2">
               <span>{'>'}</span>
               {isStreaming && <span className="streaming-spinner" />}
-              <div style={{ overflowX: 'hidden', overflowY: 'visible', paddingLeft: '10px', marginLeft: '-10px', paddingTop: '8px', paddingBottom: '8px', marginTop: '-8px', marginBottom: '-8px' }}>
+              <div style={{ overflowX: 'hidden', overflowY: 'visible', paddingLeft: '10px', marginLeft: '-10px', paddingTop: '8px', paddingBottom: '8px', marginTop: '-8px', marginBottom: '-8px', width: '500px' }}>
                 <div className="prompt-input-wrapper">
                   <input
                     ref={inputRef}
@@ -142,7 +141,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                   {/* Cursor overlay - positioned after the text */}
                   {isFocused && !disabled && (
                     <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit' }}>
-                      <span style={{ visibility: 'hidden', whiteSpace: 'pre' }}>{value}</span>
+                      <span style={{ visibility: 'hidden', whiteSpace: 'pre', marginLeft: '4px' }}>{value}</span>
                       <span
                         style={{
                           display: 'inline-block',
