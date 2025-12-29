@@ -6,6 +6,7 @@ interface ThemeColors {
   text: string;
   textDim: string;
   border: string;
+  background: string;
 }
 
 interface PromptInputProps {
@@ -14,11 +15,12 @@ interface PromptInputProps {
   placeholder?: string;
   isStreaming?: boolean;
   themeColors?: ThemeColors;
+  crtEnabled?: boolean;
 }
 
 export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
-  function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors }, ref) {
-    const colors = themeColors || { text: '#737373', textDim: '#525252', border: '#737373' };
+  function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors, crtEnabled = false }, ref) {
+    const colors = themeColors || { text: '#737373', textDim: '#525252', border: '#737373', background: '#0a0a0a' };
     const [value, setValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -66,6 +68,10 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           .prompt-input::placeholder {
             color: inherit;
             opacity: 0.3;
+          }
+          .prompt-input::selection {
+            background-color: ${colors.text};
+            color: ${colors.background};
           }
           .prompt-input:focus::placeholder {
             color: transparent;

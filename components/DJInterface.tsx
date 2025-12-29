@@ -457,7 +457,7 @@ export function DJInterface() {
 
       {/* Main content area - Strudel Editor as primary view */}
       {/* This enables inline visualizations (pianoroll, scope) and mini locations (active highlighting) */}
-      <div className="flex-1 relative" style={{ overflow: 'hidden' }}>
+      <div className="flex-1 relative">
         <StrudelEditor
           ref={editorRef}
           onReady={handleEditorReady}
@@ -486,7 +486,9 @@ export function DJInterface() {
                 text: theme.textMuted,
                 textDim: theme.textDim,
                 border: theme.border,
+                background: theme.background,
               }}
+              crtEnabled={crtEnabled}
             />
           </div>
 

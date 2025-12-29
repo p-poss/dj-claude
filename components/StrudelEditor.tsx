@@ -445,12 +445,12 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
-            background-color: ${theme.background} !important;
+            background-color: transparent !important;
           }
           .strudel-editor-wrapper .cm-scroller {
             overflow: auto !important;
             height: 100% !important;
-            background-color: ${theme.background} !important;
+            background-color: transparent !important;
             /* Hide scrollbar visually but keep scroll functionality */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE/Edge */
@@ -471,7 +471,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             background-color: ${hexToRgba(theme.text, 0.3)} !important;
           }
           .strudel-editor-wrapper .cm-gutters {
-            background-color: ${theme.background} !important;
+            background-color: transparent !important;
             border-right: 1px solid ${theme.textMuted} !important;
             color: ${theme.textDim} !important;
           }
@@ -482,9 +482,36 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
             text-shadow: 0 0 2px ${theme.textMuted}, 0 0 4px ${theme.textMuted}, 0 0 8px ${theme.textMuted} !important;
           }
-          /* Gutter border glow when CRT mode is enabled */
+          /* Gutter border glow when CRT mode is enabled - using pseudo-element for centered glow */
           body.crt-screen .strudel-editor-wrapper .cm-gutters {
-            box-shadow: 1px 0 4px ${theme.textMuted}, 1px 0 8px ${hexToRgba(theme.textMuted, 0.5)} !important;
+            position: relative !important;
+          }
+          body.crt-screen .strudel-editor-wrapper .cm-gutters::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 100%;
+            background: ${theme.textMuted};
+            box-shadow:
+              0 0 4px ${theme.textMuted},
+              0 0 8px ${theme.textMuted},
+              0 0 16px ${hexToRgba(theme.textMuted, 0.4)},
+              0 0 4px ${theme.textMuted},
+              0 0 8px ${theme.textMuted},
+              0 0 16px ${hexToRgba(theme.textMuted, 0.4)};
+            pointer-events: none;
+          }
+          /* Outer border glow when CRT mode is enabled - both outward and inward */
+          body.crt-screen .strudel-editor-wrapper {
+            box-shadow:
+              0 0 4px ${theme.textMuted},
+              0 0 8px ${theme.textMuted},
+              0 0 16px ${hexToRgba(theme.textMuted, 0.4)},
+              inset 0 0 4px ${theme.textMuted},
+              inset 0 0 8px ${theme.textMuted},
+              inset 0 0 16px ${hexToRgba(theme.textMuted, 0.4)} !important;
           }
           .strudel-editor-wrapper .cm-activeLine {
             background-color: ${hexToRgba(theme.text, 0.05)} !important;
