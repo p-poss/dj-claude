@@ -552,6 +552,13 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
               drop-shadow(0 0 4px ${theme.text})
               drop-shadow(0 0 8px ${theme.text}) !important;
           }
+          /* Code content glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper .cm-content {
+            text-shadow:
+              0 0 2px currentColor,
+              0 0 4px currentColor,
+              0 0 8px currentColor;
+          }
           /* Syntax highlighting - monochromatic theme shades */
           .strudel-editor-wrapper .cm-string { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-number { color: ${theme.text} !important; }
