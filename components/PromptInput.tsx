@@ -169,12 +169,11 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                       <span
                         style={{
                           display: 'inline-block',
-                          width: '8px',
+                          width: '1ch',
                           height: '1.2em',
                           backgroundColor: colors.text,
                           animation: 'blink 1.5s step-end infinite',
                           verticalAlign: 'text-bottom',
-                          marginLeft: '1px',
                           boxShadow: `0 0 4px ${colors.text}, 0 0 8px ${colors.text}`,
                         }}
                       />
