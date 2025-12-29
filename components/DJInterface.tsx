@@ -366,20 +366,20 @@ export function DJInterface() {
         <div className="flex items-start justify-between gap-4">
           {/* Welcome box */}
           <div style={{ width: 'fit-content' }}>
-            <pre className="m-0">╔{'═'.repeat(46)}╗</pre>
+            <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(46)}╝</pre>
+            <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
           </div>
 
           {/* Status boxes */}
           <div className="flex items-start gap-2">
             {/* Playing status box */}
             <div style={{ width: 'fit-content' }}>
-              <pre className="m-0">╔{'═'.repeat(16)}╗</pre>
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">
@@ -387,7 +387,7 @@ export function DJInterface() {
                 </pre>
                 <pre className="m-0">║</pre>
               </div>
-              <pre className="m-0">╚{'═'.repeat(16)}╝</pre>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
             </div>
 
             {/* MC Mode toggle button */}
@@ -546,17 +546,17 @@ export function DJInterface() {
             className="text-xs select-none group phosphor-glow"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted, width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(9)}╗</pre>
+            <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
                 <span className="group-hover:border group-hover:border-current">
-                  {' Theme '}
+                  Theme
                 </span>
               </pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(9)}╝</pre>
+            <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
           </button>
 
           {/* CRT toggle button */}
@@ -592,7 +592,7 @@ export function DJInterface() {
             className={state.currentCode ? 'group phosphor-glow' : 'opacity-30 cursor-not-allowed phosphor-glow'}
             style={{ width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(14)}╗</pre>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
@@ -602,7 +602,7 @@ export function DJInterface() {
               </pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(14)}╝</pre>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
           </button>
 
           {/* Go Back button */}
@@ -612,7 +612,7 @@ export function DJInterface() {
             className={state.previousCode ? 'group phosphor-glow' : 'opacity-30 cursor-not-allowed phosphor-glow'}
             style={{ width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(14)}╗</pre>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
@@ -622,7 +622,7 @@ export function DJInterface() {
               </pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(14)}╝</pre>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
           </button>
         </div>
 
