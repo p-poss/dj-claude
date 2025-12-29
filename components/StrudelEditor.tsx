@@ -500,7 +500,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             height: '100%',
             backgroundColor: '#0d140d',
             border: '1px solid #22aa22',
-            borderRadius: '8px',
+            borderRadius: '2px',
             overflow: 'hidden',
             position: 'relative',
           }}
