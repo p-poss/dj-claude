@@ -10,6 +10,7 @@ import { StrudelEditor, StrudelEditorAPI } from './StrudelEditor';
 import { PromptInput } from './PromptInput';
 import { DancingClaude } from './DancingClaude';
 import { SpeechBubble } from './SpeechBubble';
+import { PartyOverlay } from './PartyOverlay';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
@@ -31,6 +32,22 @@ export function DJInterface() {
   const [mcEnabled, setMcEnabled] = useState(true);
   const [characterOffset, setCharacterOffset] = useState(0);
   const [crtEnabled, setCrtEnabled] = useState(true);
+  const [partyEnabled, setPartyEnabled] = useState(false);
+  const [partyHue, setPartyHue] = useState(0);
+
+  // Party mode: cycle through rainbow hues
+  useEffect(() => {
+    if (!partyEnabled) {
+      setPartyHue(0);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setPartyHue((h) => (h + 5) % 360);
+    }, 50); // Smooth color cycling
+
+    return () => clearInterval(interval);
+  }, [partyEnabled]);
 
   // Toggle CRT effects on body element
   useEffect(() => {
@@ -40,6 +57,15 @@ export function DJInterface() {
       document.body.classList.remove('crt-screen');
     }
   }, [crtEnabled]);
+
+  // Toggle Party mode effects on body element
+  useEffect(() => {
+    if (partyEnabled) {
+      document.body.classList.add('party-mode');
+    } else {
+      document.body.classList.remove('party-mode');
+    }
+  }, [partyEnabled]);
 
   // Track cursor position to slide character left/right
   useEffect(() => {
@@ -358,7 +384,16 @@ export function DJInterface() {
   }, [state.previousCode, dispatch]);
 
   return (
-    <div className="h-screen flex flex-col gap-3" style={{ padding: '4px 8px', backgroundColor: theme.background }}>
+    <>
+    <div
+      className="h-screen flex flex-col gap-3"
+      style={{
+        padding: '4px 8px',
+        backgroundColor: theme.background,
+        filter: partyEnabled ? `hue-rotate(${partyHue}deg)` : 'none',
+        transition: 'filter 0.05s linear',
+      }}
+    >
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
@@ -493,7 +528,11 @@ export function DJInterface() {
           {/* Info button with modal */}
           <div
             className="text-xs select-none group relative phosphor-glow"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
+            style={{
+              lineHeight: '1.2',
+              fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+              color: theme.text,
+            }}
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
           >
@@ -576,6 +615,25 @@ export function DJInterface() {
             <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
           </button>
 
+          {/* Party toggle button */}
+          <button
+            onClick={() => setPartyEnabled((prev) => !prev)}
+            className="text-xs select-none group phosphor-glow"
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
+          >
+            <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">
+                <span className="group-hover:border group-hover:border-current">
+                  {partyEnabled ? 'PARTY: On' : 'PARTY: Off'}
+                </span>
+              </pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
+          </button>
+
         </div>
 
         {/* Action buttons - always visible, greyed out when disabled */}
@@ -625,6 +683,11 @@ export function DJInterface() {
         </div>
 
       </div>
+
     </div>
+
+    {/* Party mode overlay - outside the hue-rotated container */}
+    <PartyOverlay enabled={partyEnabled} />
+    </>
   );
 }

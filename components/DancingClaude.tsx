@@ -11,6 +11,8 @@ interface DancingClaudeProps {
 export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373' }: DancingClaudeProps) {
   const [frame, setFrame] = useState(0);
   const [mouthOpen, setMouthOpen] = useState(false);
+
+  // Use the theme color - the parent's hue-rotate filter handles rainbow effect in party mode
   const blockColor = color;
   const eyeColor = 'transparent'; // transparent to show background
 

@@ -179,3 +179,9 @@ body:not(.crt-screen) * {
 body:not(.crt-screen) * {
   box-shadow: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PARTY MODE - Effects handled by PartyOverlay.tsx React component
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Party mode marker class - actual effects in PartyOverlay.tsx */
