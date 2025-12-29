@@ -2,18 +2,13 @@
 @import "tailwindcss";
 
 :root {
-  /* Fairlight CMI phosphor green palette */
+  /* Base palette - used for initial page load before React hydrates */
   --background: #0a0f0a;
   --foreground: #33ff33;
   --accent: #22aa22;
   --accent-dim: #22aa22;
   --dimmed: #116611;
   --error: #ff3333;
-
-  /* CRT-specific variables */
-  --phosphor-green: #33ff33;
-  --phosphor-dim: #116611;
-  --crt-black: #0a0f0a;
 }
 
 @theme inline {
@@ -146,26 +141,28 @@ pre, code {
   97% { opacity: 1; }
 }
 
-/* Phosphor glow effect for text elements */
+/* Phosphor glow effect for text elements - uses currentColor to inherit from element */
 .phosphor-glow {
   text-shadow:
-    0 0 2px var(--phosphor-green),
-    0 0 4px var(--phosphor-green),
-    0 0 8px rgba(51, 255, 51, 0.5);
+    0 0 2px currentColor,
+    0 0 4px currentColor,
+    0 0 8px currentColor;
 }
 
 /* Phosphor glow for button hover borders */
 .crt-screen .group:hover .group-hover\:border {
-  box-shadow: 0 0 4px var(--phosphor-green), 0 0 8px rgba(51, 255, 51, 0.4);
+  box-shadow:
+    0 0 4px currentColor,
+    0 0 8px currentColor;
 }
 
 /* Stronger phosphor glow for bright/active elements */
 .phosphor-glow-strong {
   text-shadow:
-    0 0 2px var(--phosphor-green),
-    0 0 6px var(--phosphor-green),
-    0 0 12px rgba(51, 255, 51, 0.6),
-    0 0 20px rgba(51, 255, 51, 0.3);
+    0 0 2px currentColor,
+    0 0 6px currentColor,
+    0 0 12px currentColor,
+    0 0 20px currentColor;
 }
 
 /* Accessibility: respect reduced motion preference */

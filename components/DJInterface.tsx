@@ -13,7 +13,7 @@ import { SpeechBubble } from './SpeechBubble';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
-  const { theme } = useTheme();
+  const { theme, cycleTheme } = useTheme();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
@@ -537,6 +537,25 @@ export function DJInterface() {
               </div>
             )}
           </div>
+
+          {/* Theme cycle button */}
+          <button
+            onClick={cycleTheme}
+            className="text-xs select-none group phosphor-glow"
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.textMuted, width: 'fit-content' }}
+          >
+            <pre className="m-0">╔═══╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">
+                <span className="group-hover:border group-hover:border-current">
+                  {' * '}
+                </span>
+              </pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚═══╝</pre>
+          </button>
 
           {/* CRT toggle button */}
           <button

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 
 // Editor API interface
 export interface StrudelEditorAPI {
@@ -19,6 +20,7 @@ interface StrudelEditorProps {
 
 export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
   function StrudelEditor({ initialCode = '', onReady, onError }, ref) {
+    const { theme } = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
     const editorElementRef = useRef<HTMLElement | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -404,10 +406,18 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
       waitForComponent();
     }, [scriptLoaded, initialCode, isLoaded, onReady, onError]);
 
+    // Helper to convert hex to rgba
+    const hexToRgba = (hex: string, alpha: number) => {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
     return (
       <>
         <style>{`
-          /* Strudel editor wrapper - Fairlight CMI styling */
+          /* Strudel editor wrapper - dynamic theme styling */
           .strudel-editor-wrapper {
             position: absolute;
             top: 0;
@@ -427,7 +437,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             right: 0 !important;
             bottom: 0 !important;
           }
-          /* Force CodeMirror to fill container with Fairlight colors */
+          /* Force CodeMirror to fill container */
           .strudel-editor-wrapper .cm-editor {
             height: 100% !important;
             position: absolute !important;
@@ -435,12 +445,12 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             left: 0 !important;
             right: 0 !important;
             bottom: 0 !important;
-            background-color: #0a0f0a !important;
+            background-color: ${theme.background} !important;
           }
           .strudel-editor-wrapper .cm-scroller {
             overflow: auto !important;
             height: 100% !important;
-            background-color: #0a0f0a !important;
+            background-color: ${theme.background} !important;
             /* Hide scrollbar visually but keep scroll functionality */
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE/Edge */
@@ -448,49 +458,49 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper .cm-scroller::-webkit-scrollbar {
             display: none; /* Chrome/Safari/Opera */
           }
-          /* Fairlight CMI phosphor green syntax */
+          /* Theme-aware syntax styling */
           .strudel-editor-wrapper .cm-content {
-            color: #33ff33 !important;
-            caret-color: #22aa22 !important;
+            color: ${theme.text} !important;
+            caret-color: ${theme.textMuted} !important;
           }
           .strudel-editor-wrapper .cm-cursor {
-            border-left-color: #22aa22 !important;
+            border-left-color: ${theme.textMuted} !important;
             border-left-width: 2px !important;
           }
           .strudel-editor-wrapper .cm-selectionBackground {
-            background-color: rgba(51, 255, 51, 0.3) !important;
+            background-color: ${hexToRgba(theme.text, 0.3)} !important;
           }
           .strudel-editor-wrapper .cm-gutters {
-            background-color: #0a0f0a !important;
-            border-right: 1px solid #22aa22 !important;
-            color: #116611 !important;
+            background-color: ${theme.background} !important;
+            border-right: 1px solid ${theme.textMuted} !important;
+            color: ${theme.textDim} !important;
           }
           .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
-            color: #22aa22 !important;
+            color: ${theme.textMuted} !important;
           }
           .strudel-editor-wrapper .cm-activeLine {
-            background-color: rgba(51, 255, 51, 0.05) !important;
+            background-color: ${hexToRgba(theme.text, 0.05)} !important;
           }
           .strudel-editor-wrapper .cm-activeLineGutter {
-            background-color: rgba(51, 255, 51, 0.1) !important;
+            background-color: ${hexToRgba(theme.text, 0.1)} !important;
           }
           /* Strudel mini locations (active highlighting) */
           .strudel-editor-wrapper .cm-strudel-highlight,
           .strudel-editor-wrapper .cm-strudel-flash {
-            background-color: rgba(102, 255, 102, 0.2) !important;
-            box-shadow: 0 0 8px rgba(51, 255, 51, 0.4);
+            background-color: ${hexToRgba(theme.text, 0.2)} !important;
+            box-shadow: 0 0 8px ${hexToRgba(theme.text, 0.4)};
           }
-          /* Syntax highlighting - all shades of phosphor green */
-          .strudel-editor-wrapper .cm-string { color: #22aa22 !important; }
-          .strudel-editor-wrapper .cm-number { color: #44dd44 !important; }
-          .strudel-editor-wrapper .cm-keyword { color: #88ff88 !important; }
-          .strudel-editor-wrapper .cm-comment { color: #116611 !important; }
-          .strudel-editor-wrapper .cm-function { color: #55ff55 !important; }
-          .strudel-editor-wrapper .cm-variableName { color: #33ff33 !important; }
-          .strudel-editor-wrapper .cm-operator { color: #22aa22 !important; }
-          .strudel-editor-wrapper .cm-punctuation { color: #22aa22 !important; }
-          .strudel-editor-wrapper .cm-propertyName { color: #44cc44 !important; }
-          .strudel-editor-wrapper .cm-bracket { color: #22aa22 !important; }
+          /* Syntax highlighting - monochromatic theme shades */
+          .strudel-editor-wrapper .cm-string { color: ${theme.textMuted} !important; }
+          .strudel-editor-wrapper .cm-number { color: ${theme.text} !important; }
+          .strudel-editor-wrapper .cm-keyword { color: ${theme.text} !important; }
+          .strudel-editor-wrapper .cm-comment { color: ${theme.textDim} !important; }
+          .strudel-editor-wrapper .cm-function { color: ${theme.text} !important; }
+          .strudel-editor-wrapper .cm-variableName { color: ${theme.text} !important; }
+          .strudel-editor-wrapper .cm-operator { color: ${theme.textMuted} !important; }
+          .strudel-editor-wrapper .cm-punctuation { color: ${theme.textMuted} !important; }
+          .strudel-editor-wrapper .cm-propertyName { color: ${theme.text} !important; }
+          .strudel-editor-wrapper .cm-bracket { color: ${theme.textMuted} !important; }
         `}</style>
         <div
           ref={containerRef}
@@ -498,8 +508,8 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           style={{
             width: '100%',
             height: '100%',
-            backgroundColor: '#0a0f0a',
-            border: '1px solid #22aa22',
+            backgroundColor: theme.background,
+            border: `1px solid ${theme.textMuted}`,
             borderRadius: '2px',
             overflow: 'hidden',
             position: 'relative',
