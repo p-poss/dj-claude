@@ -163,15 +163,13 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           <button
             onClick={handleSubmitClick}
             disabled={disabled || !value.trim()}
-            className={`group ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`group phosphor-glow ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
             style={{ width: 'fit-content' }}
           >
             <pre className="m-0">╔═══╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                {' ↵ '}
-              </pre>
+              <pre className="m-0 flex-1 text-center"><span className={disabled || !value.trim() ? '' : 'group-hover:border group-hover:border-current'}>⬆</span></pre>
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚═══╝</pre>
