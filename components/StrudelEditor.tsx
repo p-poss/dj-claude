@@ -478,6 +478,14 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
             color: ${theme.textMuted} !important;
           }
+          /* Line number glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
+            text-shadow: 0 0 2px ${theme.textMuted}, 0 0 4px ${theme.textMuted}, 0 0 8px ${theme.textMuted} !important;
+          }
+          /* Gutter border glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper .cm-gutters {
+            box-shadow: 1px 0 4px ${theme.textMuted}, 1px 0 8px ${hexToRgba(theme.textMuted, 0.5)} !important;
+          }
           .strudel-editor-wrapper .cm-activeLine {
             background-color: ${hexToRgba(theme.text, 0.05)} !important;
           }
