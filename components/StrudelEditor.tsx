@@ -550,7 +550,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             filter:
               drop-shadow(0 0 2px ${theme.text})
               drop-shadow(0 0 4px ${theme.text})
-              drop-shadow(0 0 6px ${theme.text}) !important;
+              drop-shadow(0 0 8px ${theme.text}) !important;
           }
           /* Syntax highlighting - monochromatic theme shades */
           .strudel-editor-wrapper .cm-string { color: ${theme.text} !important; }
