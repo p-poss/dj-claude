@@ -523,7 +523,7 @@ export function DJInterface() {
                 }}
               >
                 <div className="flex flex-col" style={{ backgroundColor: theme.background }}>
-                  <pre className="m-0">╔{'═'.repeat(46)}╗</pre>
+                  <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> AI-powered live coding music in Strudel</pre>
@@ -534,7 +534,7 @@ export function DJInterface() {
                     <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
-                  <pre className="m-0">╚{'═'.repeat(46)}╝</pre>
+                  <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
                 </div>
               </div>
             )}

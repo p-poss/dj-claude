@@ -51,7 +51,7 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
           borderRadius: '2px',
           padding: '8px 12px',
           width: 'max-content',
-          maxWidth: '400px',
+          maxWidth: '335px',
           height: '60px',
           boxShadow: `0 0 2px ${color}, 0 0 4px ${color}, 0 0 8px ${color}, inset 0 0 2px ${color}, inset 0 0 4px ${color}, inset 0 0 8px ${color}`,
           whiteSpace: 'pre-wrap',
