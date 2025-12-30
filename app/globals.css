@@ -140,6 +140,11 @@ body.crt-screen .phosphor-glow {
   filter: brightness(1.5);
 }
 
+/* Prevent brightness stacking on nested phosphor-glow elements */
+body.crt-screen .phosphor-glow .phosphor-glow {
+  filter: none;
+}
+
 /* Phosphor glow for button hover borders */
 .crt-screen .group:hover .group-hover\:border {
   box-shadow:
