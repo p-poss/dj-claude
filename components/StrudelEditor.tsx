@@ -547,11 +547,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper span[style*="outline"] {
             border-radius: 1px !important;
           }
-          /* Outline glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
-            filter: drop-shadow(0 0 1px ${theme.text}) drop-shadow(0 0 1px ${theme.text}) !important;
-          }
-                    /* Code content glow when CRT mode is enabled */
+                              /* Code content glow when CRT mode is enabled */
           body.crt-screen .strudel-editor-wrapper .cm-content {
             text-shadow:
               0 0 2px currentColor,
