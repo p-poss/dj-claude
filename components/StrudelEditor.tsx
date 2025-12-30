@@ -543,13 +543,15 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             background-color: ${hexToRgba(theme.text, 0.2)} !important;
             box-shadow: 0 0 8px ${hexToRgba(theme.text, 0.4)} !important;
           }
-          /* Mini location glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper .cm-strudel-highlight,
-          body.crt-screen .strudel-editor-wrapper .cm-strudel-flash,
-          body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
-            filter: drop-shadow(0 0 2px ${theme.text}) drop-shadow(0 0 4px ${theme.text}) !important;
+          /* Border radius for outlined spans */
+          .strudel-editor-wrapper span[style*="outline"] {
+            border-radius: 1px !important;
           }
-          /* Code content glow when CRT mode is enabled */
+          /* Outline glow when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
+            filter: drop-shadow(0 0 1px ${theme.text}) drop-shadow(0 0 1px ${theme.text}) !important;
+          }
+                    /* Code content glow when CRT mode is enabled */
           body.crt-screen .strudel-editor-wrapper .cm-content {
             text-shadow:
               0 0 2px currentColor,
