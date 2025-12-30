@@ -431,17 +431,15 @@ export function DJInterface() {
               className="group phosphor-glow ascii-box"
               style={{ width: 'fit-content' }}
             >
-              <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">
-                  <span className="group-hover:border group-hover:border-current">
-                    {mcEnabled ? 'MC: On' : 'MC: Off'}
-                  </span>
-                </pre>
-                <pre className="m-0">║</pre>
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{mcEnabled ? 'MC: On' : 'MC: Off'}</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
               </div>
-              <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
             </button>
 
             {/* Play/Pause button - show when there's code */}
@@ -451,17 +449,15 @@ export function DJInterface() {
                 className="group phosphor-glow ascii-box"
                 style={{ width: 'fit-content' }}
               >
-                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">
-                    <span className="group-hover:border group-hover:border-current">
-                      {isPlaying ? '⏸ pause' : '▶ play'}
-                    </span>
-                  </pre>
-                  <pre className="m-0">║</pre>
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ pause' : '▶ play'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
                 </div>
-                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
               </button>
             )}
           </div>
@@ -583,17 +579,15 @@ export function DJInterface() {
             className="text-xs select-none group phosphor-glow ascii-box"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                <span className="group-hover:border group-hover:border-current">
-                  Theme
-                </span>
-              </pre>
-              <pre className="m-0">║</pre>
+            <div className="group-hover:opacity-30">
+              <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">Theme</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
           </button>
 
           {/* CRT toggle button */}
@@ -602,17 +596,15 @@ export function DJInterface() {
             className="text-xs select-none group phosphor-glow ascii-box"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                <span className="group-hover:border group-hover:border-current">
-                  {crtEnabled ? 'TRON: On' : 'TRON: Off'}
-                </span>
-              </pre>
-              <pre className="m-0">║</pre>
+            <div className="group-hover:opacity-30">
+              <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{crtEnabled ? 'NEON: On' : 'NEON: Off'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
           </button>
 
           {/* Party toggle button */}
@@ -621,17 +613,15 @@ export function DJInterface() {
             className="text-xs select-none group phosphor-glow ascii-box"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                <span className="group-hover:border group-hover:border-current">
-                  {partyEnabled ? 'PARTY: On' : 'PARTY: Off'}
-                </span>
-              </pre>
-              <pre className="m-0">║</pre>
+            <div className="group-hover:opacity-30">
+              <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{partyEnabled ? 'PARTY: On' : 'PARTY: Off'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
           </button>
 
         </div>
@@ -648,17 +638,15 @@ export function DJInterface() {
             className={state.currentCode ? 'group phosphor-glow ascii-box' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
             style={{ width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                <span className={state.currentCode ? 'group-hover:border group-hover:border-current' : ''}>
-                  {copied ? 'Copied!' : 'Export'}
-                </span>
-              </pre>
-              <pre className="m-0">║</pre>
+            <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{copied ? 'Copied!' : 'Export'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
           </button>
 
           {/* Go Back button */}
@@ -668,17 +656,15 @@ export function DJInterface() {
             className={state.previousCode ? 'group phosphor-glow ascii-box' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
             style={{ width: 'fit-content' }}
           >
-            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                <span className={state.previousCode ? 'group-hover:border group-hover:border-current' : ''}>
-                  Go Back
-                </span>
-              </pre>
-              <pre className="m-0">║</pre>
+            <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">Go Back</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
           </button>
         </div>
 

@@ -145,13 +145,6 @@ body.crt-screen .phosphor-glow .phosphor-glow {
   filter: none;
 }
 
-/* Phosphor glow for button hover borders */
-.crt-screen .group:hover .group-hover\:border {
-  box-shadow:
-    0 0 2px currentColor,
-    0 0 4px currentColor,
-    0 0 8px currentColor;
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CRT OFF - Disable all glow effects when CRT is disabled
