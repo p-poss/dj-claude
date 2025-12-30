@@ -2,16 +2,26 @@
 
 interface PartyOverlayProps {
   enabled: boolean;
+  color: string;
+  hue: number;
+  crtEnabled: boolean;
 }
 
-export function PartyOverlay({ enabled }: PartyOverlayProps) {
+export function PartyOverlay({ enabled, color, hue, crtEnabled }: PartyOverlayProps) {
   if (!enabled) return null;
 
-  // Generate confetti particles
-  const confettiEmojis = ['🎉', '✨', '🎊', '💫', '⭐', '🌟', '🎵', '🎶', '🪩', '💜', '💙', '💚', '💛', '🧡', '❤️'];
+  // Generate confetti particles with ASCII/pixel art
+  const confettiChars = [
+    // Unicode block characters (pixel-like)
+    '█', '▓', '▒', '░', '▀', '▄',
+    // ASCII symbols
+    '*', '#', '@', '+', '×', '·', '○', '◆',
+    // Small ASCII art shapes
+    '[*]', '<>', '{}', '/*', '*/', '::',
+  ];
   const confettiParticles = Array.from({ length: 20 }, (_, i) => ({
     id: i,
-    emoji: confettiEmojis[i % confettiEmojis.length],
+    char: confettiChars[i % confettiChars.length],
     left: `${(i * 5) % 100}%`,
     animationDelay: `${(i * 0.3) % 4}s`,
     animationDuration: `${3 + (i % 3)}s`,
@@ -20,7 +30,7 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
 
   return (
     <>
-      {/* Confetti container - rendered outside the hue-rotated container */}
+      {/* Confetti container */}
       <div
         style={{
           position: 'fixed',
@@ -28,6 +38,8 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
           pointerEvents: 'none',
           zIndex: 9999,
           overflow: 'hidden',
+          filter: crtEnabled ? `hue-rotate(${hue}deg) brightness(1.5)` : `hue-rotate(${hue}deg)`,
+          transition: 'filter 0.05s linear',
         }}
       >
         {confettiParticles.map((particle) => (
@@ -38,11 +50,14 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
               left: particle.left,
               top: '-50px',
               fontSize: particle.fontSize,
+              fontFamily: 'monospace',
+              color: color,
+              textShadow: crtEnabled ? '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' : 'none',
               animation: `confetti-fall-react ${particle.animationDuration} linear infinite`,
               animationDelay: particle.animationDelay,
             }}
           >
-            {particle.emoji}
+            {particle.char}
           </div>
         ))}
       </div>
@@ -52,11 +67,9 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
         @keyframes confetti-fall-react {
           0% {
             transform: translateY(-50px) rotate(0deg);
-            opacity: 1;
           }
           100% {
-            transform: translateY(100vh) rotate(720deg);
-            opacity: 0.7;
+            transform: translateY(calc(100vh + 50px)) rotate(720deg);
           }
         }
 

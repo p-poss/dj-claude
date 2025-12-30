@@ -672,8 +672,8 @@ export function DJInterface() {
 
     </div>
 
-    {/* Party mode overlay - outside the hue-rotated container */}
-    <PartyOverlay enabled={partyEnabled} />
+    {/* Party mode overlay */}
+    <PartyOverlay enabled={partyEnabled} color={theme.text} hue={partyHue} crtEnabled={crtEnabled} />
     </>
   );
 }
