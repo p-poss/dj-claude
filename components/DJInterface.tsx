@@ -400,7 +400,7 @@ export function DJInterface() {
         {/* Header row with welcome box and status boxes */}
         <div className="flex items-start justify-between gap-4">
           {/* Welcome box */}
-          <div style={{ width: 'fit-content' }}>
+          <div className="ascii-box" style={{ width: 'fit-content' }}>
             <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
@@ -413,7 +413,7 @@ export function DJInterface() {
           {/* Status boxes */}
           <div className="flex items-start gap-2">
             {/* Playing status box */}
-            <div style={{ width: 'fit-content' }}>
+            <div className="ascii-box" style={{ width: 'fit-content' }}>
               <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
@@ -428,7 +428,7 @@ export function DJInterface() {
             {/* MC Mode toggle button */}
             <button
               onClick={handleToggleMC}
-              className="group phosphor-glow"
+              className="group phosphor-glow ascii-box"
               style={{ width: 'fit-content' }}
             >
               <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
@@ -448,7 +448,7 @@ export function DJInterface() {
             {state.currentCode && (
               <button
                 onClick={handleTogglePlayback}
-                className="group phosphor-glow"
+                className="group phosphor-glow ascii-box"
                 style={{ width: 'fit-content' }}
               >
                 <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
@@ -536,7 +536,7 @@ export function DJInterface() {
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
           >
-            <div style={{ width: 'fit-content' }}>
+            <div className="ascii-box" style={{ width: 'fit-content' }}>
               <pre className="m-0">╔═══╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
@@ -559,7 +559,7 @@ export function DJInterface() {
                   zIndex: 10,
                 }}
               >
-                <div className="flex flex-col" style={{ backgroundColor: theme.background }}>
+                <div className="flex flex-col ascii-box" style={{ backgroundColor: theme.background }}>
                   <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
@@ -580,7 +580,7 @@ export function DJInterface() {
           {/* Theme cycle button */}
           <button
             onClick={cycleTheme}
-            className="text-xs select-none group phosphor-glow"
+            className="text-xs select-none group phosphor-glow ascii-box"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
@@ -599,7 +599,7 @@ export function DJInterface() {
           {/* CRT toggle button */}
           <button
             onClick={() => setCrtEnabled((prev) => !prev)}
-            className="text-xs select-none group phosphor-glow"
+            className="text-xs select-none group phosphor-glow ascii-box"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
@@ -618,7 +618,7 @@ export function DJInterface() {
           {/* Party toggle button */}
           <button
             onClick={() => setPartyEnabled((prev) => !prev)}
-            className="text-xs select-none group phosphor-glow"
+            className="text-xs select-none group phosphor-glow ascii-box"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
@@ -645,7 +645,7 @@ export function DJInterface() {
           <button
             onClick={state.currentCode ? handleExport : undefined}
             disabled={!state.currentCode}
-            className={state.currentCode ? 'group phosphor-glow' : 'opacity-30 cursor-not-allowed phosphor-glow'}
+            className={state.currentCode ? 'group phosphor-glow ascii-box' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
             style={{ width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
@@ -665,7 +665,7 @@ export function DJInterface() {
           <button
             onClick={state.previousCode ? handleGoBack : undefined}
             disabled={!state.previousCode}
-            className={state.previousCode ? 'group phosphor-glow' : 'opacity-30 cursor-not-allowed phosphor-glow'}
+            className={state.previousCode ? 'group phosphor-glow ascii-box' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
             style={{ width: 'fit-content' }}
           >
             <pre className="m-0">╔{'═'.repeat(15)}╗</pre>

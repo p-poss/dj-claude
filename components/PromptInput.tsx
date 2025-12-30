@@ -187,7 +187,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           <button
             onClick={handleSubmitClick}
             disabled={disabled || !value.trim()}
-            className={`group ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+            className={`group ascii-box ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
             style={{ width: 'fit-content' }}
           >
             <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔═══╗</pre>

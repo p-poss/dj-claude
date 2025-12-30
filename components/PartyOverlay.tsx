@@ -65,8 +65,8 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
           animation: party-bounce-react 1s linear infinite !important;
         }
 
-        /* Don't bounce buttons inside phosphor-glow containers (they get the parent's pulse instead) */
-        body.party-mode .phosphor-glow button {
+        /* Don't bounce buttons inside phosphor-glow containers (unless they're ascii-box) */
+        body.party-mode .phosphor-glow button:not(.ascii-box) {
           animation: none !important;
         }
 
@@ -78,6 +78,14 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
         /* Party mode wobbling pre elements */
         body.party-mode pre {
           animation: party-wobble-react 1s linear infinite !important;
+        }
+
+        /* ASCII boxes wobble as a unit - the container wobbles, not individual pre elements */
+        body.party-mode .ascii-box {
+          animation: party-wobble-react 1s linear infinite !important;
+        }
+        body.party-mode .ascii-box pre {
+          animation: none !important;
         }
 
         @keyframes party-wobble-react {
