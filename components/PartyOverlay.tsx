@@ -85,20 +85,6 @@ export function PartyOverlay({ enabled }: PartyOverlayProps) {
           25% { transform: rotate(-1deg); }
           75% { transform: rotate(1deg); }
         }
-
-        /* Enhanced glow pulse */
-        body.party-mode .phosphor-glow {
-          animation: party-glow-react 1s linear infinite !important;
-        }
-
-        @keyframes party-glow-react {
-          0%, 100% {
-            filter: brightness(1);
-          }
-          50% {
-            filter: brightness(1.5);
-          }
-        }
       `}</style>
     </>
   );

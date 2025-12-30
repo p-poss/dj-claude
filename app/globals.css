@@ -135,6 +135,17 @@ pre, code {
     0 0 8px currentColor;
 }
 
+/* Brightness pulse animation for phosphor glow */
+@keyframes crt-glow-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+}
+
+/* Apply pulse to phosphor-glow elements when CRT is enabled */
+body.crt-screen .phosphor-glow {
+  animation: crt-glow-pulse 1s linear infinite;
+}
+
 /* Phosphor glow for button hover borders */
 .crt-screen .group:hover .group-hover\:border {
   box-shadow:
