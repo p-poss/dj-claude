@@ -543,9 +543,12 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             background-color: ${hexToRgba(theme.text, 0.2)} !important;
             box-shadow: 0 0 8px ${hexToRgba(theme.text, 0.4)} !important;
           }
-          /* Border radius and glow for outlined spans */
+          /* Border radius for outlined spans */
           .strudel-editor-wrapper span[style*="outline"] {
             border-radius: 1px !important;
+          }
+          /* Glow for outlined spans when CRT mode is enabled */
+          body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
             filter: drop-shadow(0 0 1.5px ${theme.text}) !important;
           }
                               /* Code content glow when CRT mode is enabled */
