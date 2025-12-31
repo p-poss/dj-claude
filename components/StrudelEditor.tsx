@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
+// Module-level flag to track if editor has been initialized (persists across remounts)
+let editorHasBeenInitialized = false;
+
 // Editor API interface
 export interface StrudelEditorAPI {
   setCode: (code: string) => void;
@@ -22,9 +25,13 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
   function StrudelEditor({ initialCode = '', onReady, onError }, ref) {
     const { theme } = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
+    const keyboardHintRef = useRef<HTMLDivElement>(null);
     const editorElementRef = useRef<HTMLElement | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [scriptLoaded, setScriptLoaded] = useState(false);
+    const [scriptLoaded, setScriptLoaded] = useState(
+      typeof window !== 'undefined' &&
+      !!((window as any).StrudelEditor || document.querySelector('script[src*="strudel/repl"]'))
+    );
 
     // Expose API to parent via ref
     useImperativeHandle(ref, () => ({
@@ -395,6 +402,32 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
               canvas.style.display = 'block';
             }
 
+            // Trigger fade-in of editor content via direct DOM manipulation (bypasses React re-renders)
+            if (!editorHasBeenInitialized) {
+              editorHasBeenInitialized = true;
+
+              // Set transition first, then opacity to trigger animation
+              if (containerRef.current) {
+                containerRef.current.style.setProperty('--editor-transition', 'opacity 0.4s ease-out');
+              }
+              if (keyboardHintRef.current) {
+                keyboardHintRef.current.style.transition = 'opacity 0.4s ease-out';
+              }
+
+              // Use requestAnimationFrame to ensure transition is registered before opacity change
+              requestAnimationFrame(() => {
+                containerRef.current?.style.setProperty('--editor-opacity', '1');
+                if (keyboardHintRef.current) {
+                  keyboardHintRef.current.style.opacity = '1';
+                }
+              });
+            } else {
+              // Already initialized, just ensure visible (no animation)
+              containerRef.current?.style.setProperty('--editor-opacity', '1');
+              if (keyboardHintRef.current) {
+                keyboardHintRef.current.style.opacity = '1';
+              }
+            }
             onReady?.();
           }, 500);
         } catch (err) {
@@ -580,6 +613,11 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           .strudel-editor-wrapper .cm-punctuation { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-propertyName { color: ${theme.text} !important; }
           .strudel-editor-wrapper .cm-bracket { color: ${theme.text} !important; }
+          /* Fade-in: start hidden, JS will animate in */
+          .strudel-editor-wrapper .cm-editor {
+            opacity: var(--editor-opacity, 0);
+            transition: var(--editor-transition, none);
+          }
         `}</style>
         <div
           ref={containerRef}
@@ -597,6 +635,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
         />
         {/* Keyboard shortcut hint */}
         <div
+          ref={keyboardHintRef}
           className="keyboard-hint phosphor-glow"
           style={{
             position: 'absolute',
@@ -608,9 +647,10 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             color: theme.text,
             pointerEvents: 'none',
             zIndex: 10,
+            opacity: editorHasBeenInitialized ? 1 : 0,
           }}
         >
-          Ctrl+Enter = run
+          Ctrl+Enter = re-run
         </div>
       </>
     );
