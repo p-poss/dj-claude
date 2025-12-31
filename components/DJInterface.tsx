@@ -3,6 +3,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useDJ } from '@/context/DJContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useVoice } from '@/context/VoiceContext';
 import { useClaudeStream } from '@/hooks/useClaudeStream';
 import { useCodeParser } from '@/hooks/useCodeParser';
 import { useTTS } from '@/hooks/useTTS';
@@ -16,6 +17,7 @@ import { VoiceSelector } from './VoiceSelector';
 export function DJInterface() {
   const { state, dispatch } = useDJ();
   const { theme, cycleTheme } = useTheme();
+  const { selectedVoiceName, resolvedAutoVoice } = useVoice();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
@@ -23,6 +25,8 @@ export function DJInterface() {
   const editorRef = useRef<StrudelEditorAPI>(null);
   const promptInputRef = useRef<HTMLInputElement>(null);
   const hasExecutedRef = useRef(false);
+  const isFirstVoiceRender = useRef(true);
+  const prevMcEnabledRef = useRef(true); // MC starts ON by default
   const [editorReady, setEditorReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -223,6 +227,66 @@ export function DJInterface() {
       return () => clearTimeout(timer);
     }
   }, [isSpeaking, currentMcCommentary, mcEnabled]);
+
+  // DJ announcement messages
+  const getDjAnnouncement = useCallback(() => {
+    // Use resolved auto voice name instead of "Auto" for better announcements
+    const voiceName = selectedVoiceName || resolvedAutoVoice || 'Auto';
+    const messages = [
+      `DJ ${voiceName} in the house!`,
+      `${voiceName} on the ones and twos!`,
+      `DJ ${voiceName} on the ones and twos!`,
+      `It's DJ ${voiceName}, dropping the beats!`,
+      `${voiceName} taking over the decks!`,
+      `DJ ${voiceName} taking over the decks!`,
+      `Give it up for DJ ${voiceName}!`,
+      `${voiceName} ready to rock!`,
+      `DJ ${voiceName} ready to rock!`,
+      `Let's go, ${voiceName}!`,
+      `Let's go, DJ ${voiceName}!`,
+      `${voiceName} spinning the tracks!`,
+      `DJ ${voiceName} spinning the tracks!`,
+      `Make some noise for ${voiceName}!`,
+      `Make some noise for DJ ${voiceName}!`,
+      `${voiceName} bringing the vibes!`,
+      `DJ ${voiceName} bringing the vibes!`,
+      `It's ${voiceName} time!`,
+      `It's DJ ${voiceName} time!`,
+      `${voiceName} on the mic!`,
+      `DJ ${voiceName} on the mic!`,
+      `Here comes ${voiceName}!`,
+      `Here comes DJ ${voiceName}!`,
+      `${voiceName} is live!`,
+      `DJ ${voiceName} is live!`,
+      `The one and only, ${voiceName}!`,
+      `The one and only, DJ ${voiceName}!`,
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  }, [selectedVoiceName, resolvedAutoVoice]);
+
+  // Announce voice change with DJ-themed message
+  useEffect(() => {
+    if (isFirstVoiceRender.current) {
+      isFirstVoiceRender.current = false;
+      return;
+    }
+
+    const randomMessage = getDjAnnouncement();
+    setCurrentMcCommentary(randomMessage);
+    speak(randomMessage);
+  }, [selectedVoiceName, speak, getDjAnnouncement]);
+
+  // Announce when MC is turned ON (not on page load)
+  useEffect(() => {
+    const wasOff = !prevMcEnabledRef.current;
+    prevMcEnabledRef.current = mcEnabled;
+
+    if (wasOff && mcEnabled) {
+      const randomMessage = getDjAnnouncement();
+      setCurrentMcCommentary(randomMessage);
+      speak(randomMessage);
+    }
+  }, [mcEnabled, speak, getDjAnnouncement]);
 
   // Rotate streaming messages while streaming
   useEffect(() => {

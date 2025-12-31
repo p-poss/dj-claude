@@ -4,9 +4,12 @@ import { useState, useRef, useEffect } from 'react';
 import { useVoice } from '@/context/VoiceContext';
 
 export function VoiceSelector() {
-  const { selectedVoiceName, setSelectedVoiceName, availableVoices, currentVoiceName } = useVoice();
+  const { selectedVoiceName, setSelectedVoiceName, availableVoices, currentVoiceName, resolvedAutoVoice } = useVoice();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Filter out the voice that Auto resolves to (avoid duplicate)
+  const filteredVoices = availableVoices.filter(v => v !== resolvedAutoVoice);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -86,8 +89,8 @@ export function VoiceSelector() {
             </div>
           </button>
 
-          {/* Available voices */}
-          {availableVoices.map((voiceName) => (
+          {/* Available voices (excluding Auto's resolved voice to avoid duplicate) */}
+          {filteredVoices.map((voiceName) => (
             <button
               key={voiceName}
               onClick={() => handleSelect(voiceName)}

@@ -11,6 +11,9 @@ const CURATED_VOICES: Record<string, string> = {
   'Microsoft David': 'Microsoft David',
 };
 
+// Priority order for Auto mode (matches useTTS.ts)
+const AUTO_VOICE_PRIORITY = ['Samantha', 'Alex', 'Daniel', 'Google US', 'Microsoft David'];
+
 // Get the voice match string from display name
 export function getVoiceMatchString(displayName: string): string {
   return CURATED_VOICES[displayName] || displayName;
@@ -21,6 +24,7 @@ interface VoiceContextType {
   setSelectedVoiceName: (name: string | null) => void;
   availableVoices: string[];  // Curated voices that exist on this system
   currentVoiceName: string;   // Resolved display name ("Auto" or voice name)
+  resolvedAutoVoice: string | null;  // Which voice Auto mode resolves to
 }
 
 const VoiceContext = createContext<VoiceContextType | null>(null);
@@ -28,6 +32,7 @@ const VoiceContext = createContext<VoiceContextType | null>(null);
 export function VoiceProvider({ children }: { children: ReactNode }) {
   const [selectedVoiceName, setSelectedVoiceNameState] = useState<string | null>(null);
   const [availableVoices, setAvailableVoices] = useState<string[]>([]);
+  const [resolvedAutoVoice, setResolvedAutoVoice] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load voices and filter to curated list
@@ -41,6 +46,10 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
         .filter(([, matchString]) => voices.some(v => v.name.includes(matchString)))
         .map(([displayName]) => displayName);
       setAvailableVoices(available);
+
+      // Determine which voice Auto mode would use (first available in priority order)
+      const autoVoice = AUTO_VOICE_PRIORITY.find(name => available.includes(name)) || null;
+      setResolvedAutoVoice(autoVoice);
     };
 
     // Load immediately
@@ -96,6 +105,7 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
       setSelectedVoiceName,
       availableVoices,
       currentVoiceName,
+      resolvedAutoVoice,
     }}>
       {children}
     </VoiceContext.Provider>
