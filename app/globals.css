@@ -33,6 +33,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Invert all colors when swap button is pressed */
+body.inverted {
+  filter: invert(1);
+}
+
 /* Blinking cursor */
 @keyframes blink {
   0%, 49% { opacity: 1; }

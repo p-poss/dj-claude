@@ -16,7 +16,7 @@ import { VoiceSelector } from './VoiceSelector';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
-  const { theme, cycleTheme } = useTheme();
+  const { theme, cycleTheme, toggleSwap, isSwapped } = useTheme();
   const { selectedVoiceName, resolvedAutoVoice } = useVoice();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
@@ -71,6 +71,15 @@ export function DJInterface() {
       document.body.classList.remove('party-mode');
     }
   }, [partyEnabled]);
+
+  // Toggle inverted colors on body element
+  useEffect(() => {
+    if (isSwapped) {
+      document.body.classList.add('inverted');
+    } else {
+      document.body.classList.remove('inverted');
+    }
+  }, [isSwapped]);
 
   // Track cursor position to slide character left/right
   useEffect(() => {
@@ -630,6 +639,23 @@ export function DJInterface() {
               </div>
             )}
           </div>
+
+          {/* Swap colors button */}
+          <button
+            onClick={toggleSwap}
+            className="text-xs select-none group phosphor-glow ascii-box"
+            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
+          >
+            <div className="group-hover:opacity-30">
+              <pre className="m-0">╔═══╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">↔</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚═══╝</pre>
+            </div>
+          </button>
 
           {/* Theme cycle button */}
           <button

@@ -57,21 +57,29 @@ interface ThemeContextType {
   theme: ThemeColors;
   themeName: string;
   cycleTheme: () => void;
+  isSwapped: boolean;
+  toggleSwap: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [themeIndex, setThemeIndex] = useState(3); // Default to Terminal (black/white) theme
-  const theme = themes[themeIndex];
+  const [isSwapped, setIsSwapped] = useState(false);
+  const baseTheme = themes[themeIndex];
+
+  const theme = baseTheme; // Colors handled by CSS filter invert on body
 
   const cycleTheme = useCallback(() => {
     setThemeIndex((prev) => (prev + 1) % themes.length);
   }, []);
 
+  const toggleSwap = useCallback(() => {
+    setIsSwapped((prev) => !prev);
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, themeName: theme.name, cycleTheme }}>
+    <ThemeContext.Provider value={{ theme, themeName: theme.name, cycleTheme, isSwapped, toggleSwap }}>
       {children}
     </ThemeContext.Provider>
   );
