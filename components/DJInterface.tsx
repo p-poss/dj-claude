@@ -599,7 +599,7 @@ export function DJInterface() {
             onMouseEnter={() => setShowInfo(true)}
             onMouseLeave={() => setShowInfo(false)}
           >
-            <div className="ascii-box" style={{ width: 'fit-content' }}>
+            <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
               <pre className="m-0">╔═══╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
@@ -622,7 +622,7 @@ export function DJInterface() {
                   zIndex: 10,
                 }}
               >
-                <div className="flex flex-col ascii-box" style={{ backgroundColor: theme.background }}>
+                <div className="flex flex-col ascii-box">
                   <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
