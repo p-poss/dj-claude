@@ -181,14 +181,15 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
   const bodyOffset = (frame === 1 || frame === 3) && isPlaying ? -2 : 0;
 
   return (
-    <div
-      className="flex flex-col items-center"
-      style={{
-        marginTop: '8px',
-        transform: `translateY(${bodyOffset}px)`,
-        transition: 'transform 0.15s ease-out',
-      }}
-    >
+    <div className="dancing-claude">
+      <div
+        className="flex flex-col items-center"
+        style={{
+          marginTop: '8px',
+          transform: `translateY(${bodyOffset}px)`,
+          transition: 'transform 0.15s ease-out',
+        }}
+      >
       {/* Body (animated with headphones) */}
       {currentBody.map((row, rowIdx) => (
         <div key={`body-${rowIdx}`} className="flex">
@@ -206,6 +207,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
           ))}
         </div>
       ))}
+      </div>
     </div>
   );
 }
