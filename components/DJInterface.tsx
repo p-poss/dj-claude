@@ -234,31 +234,19 @@ export function DJInterface() {
     const voiceName = selectedVoiceName || resolvedAutoVoice || 'Auto';
     const messages = [
       `DJ ${voiceName} in the house!`,
-      `${voiceName} on the ones and twos!`,
       `DJ ${voiceName} on the ones and twos!`,
       `It's DJ ${voiceName}, dropping the beats!`,
-      `${voiceName} taking over the decks!`,
       `DJ ${voiceName} taking over the decks!`,
       `Give it up for DJ ${voiceName}!`,
-      `${voiceName} ready to rock!`,
       `DJ ${voiceName} ready to rock!`,
-      `Let's go, ${voiceName}!`,
       `Let's go, DJ ${voiceName}!`,
-      `${voiceName} spinning the tracks!`,
       `DJ ${voiceName} spinning the tracks!`,
-      `Make some noise for ${voiceName}!`,
       `Make some noise for DJ ${voiceName}!`,
-      `${voiceName} bringing the vibes!`,
       `DJ ${voiceName} bringing the vibes!`,
-      `It's ${voiceName} time!`,
       `It's DJ ${voiceName} time!`,
-      `${voiceName} on the mic!`,
       `DJ ${voiceName} on the mic!`,
-      `Here comes ${voiceName}!`,
       `Here comes DJ ${voiceName}!`,
-      `${voiceName} is live!`,
       `DJ ${voiceName} is live!`,
-      `The one and only, ${voiceName}!`,
       `The one and only, DJ ${voiceName}!`,
     ];
     return messages[Math.floor(Math.random() * messages.length)];
@@ -274,7 +262,8 @@ export function DJInterface() {
     const randomMessage = getDjAnnouncement();
     setCurrentMcCommentary(randomMessage);
     speak(randomMessage);
-  }, [selectedVoiceName, speak, getDjAnnouncement]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedVoiceName, speak]);
 
   // Announce when MC is turned ON (not on page load)
   useEffect(() => {
@@ -286,7 +275,8 @@ export function DJInterface() {
       setCurrentMcCommentary(randomMessage);
       speak(randomMessage);
     }
-  }, [mcEnabled, speak, getDjAnnouncement]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mcEnabled, speak]);
 
   // Rotate streaming messages while streaming
   useEffect(() => {
