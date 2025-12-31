@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DJProvider } from "@/context/DJContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { VoiceProvider } from "@/context/VoiceContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,9 +18,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased crt-screen">
         <ThemeProvider>
-          <DJProvider>
-            {children}
-          </DJProvider>
+          <VoiceProvider>
+            <DJProvider>
+              {children}
+            </DJProvider>
+          </VoiceProvider>
         </ThemeProvider>
       </body>
     </html>

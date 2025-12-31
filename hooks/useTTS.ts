@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { useVoice, getVoiceMatchString } from '@/context/VoiceContext';
 
 interface UseTTSReturn {
   speak: (text: string) => void;
@@ -11,6 +12,7 @@ interface UseTTSReturn {
 export function useTTS(): UseTTSReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const voicesLoadedRef = useRef(false);
+  const { selectedVoiceName } = useVoice();
 
   // Load voices on mount (some browsers need this)
   useEffect(() => {
@@ -28,10 +30,18 @@ export function useTTS(): UseTTSReturn {
     };
   }, []);
 
-  // Select a good voice (prefer enhanced/premium voices)
+  // Select a voice based on user selection or auto-fallback
   const getVoice = useCallback((): SpeechSynthesisVoice | null => {
     const voices = window.speechSynthesis.getVoices();
-    // Prefer voices in order: Samantha, Alex, Daniel, or first English voice
+
+    // If user has selected a specific voice, try to use it
+    if (selectedVoiceName) {
+      const matchString = getVoiceMatchString(selectedVoiceName);
+      const selectedVoice = voices.find(v => v.name.includes(matchString));
+      if (selectedVoice) return selectedVoice;
+    }
+
+    // Auto mode: prefer voices in order
     const preferredNames = ['Samantha', 'Alex', 'Daniel', 'Google US English', 'Microsoft David'];
     for (const name of preferredNames) {
       const voice = voices.find(v => v.name.includes(name));
@@ -39,7 +49,7 @@ export function useTTS(): UseTTSReturn {
     }
     // Fallback to first English voice
     return voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
-  }, []);
+  }, [selectedVoiceName]);
 
   const speak = useCallback((text: string) => {
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) {

@@ -11,6 +11,7 @@ import { PromptInput } from './PromptInput';
 import { DancingClaude } from './DancingClaude';
 import { SpeechBubble } from './SpeechBubble';
 import { PartyOverlay } from './PartyOverlay';
+import { VoiceSelector } from './VoiceSelector';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
@@ -441,6 +442,9 @@ export function DJInterface() {
                 <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
               </div>
             </button>
+
+            {/* Voice Selector - only show when MC is enabled */}
+            {mcEnabled && <VoiceSelector />}
 
             {/* Play/Pause button - show when there's code */}
             {state.currentCode && (
