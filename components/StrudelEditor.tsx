@@ -40,22 +40,15 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           const editorEl = editorElementRef.current as any;
           const strudelMirror = editorEl?.editor;
 
-          console.log('setCode called with:', code.substring(0, 50) + '...');
-          console.log('Editor element:', editorEl);
-          console.log('StrudelMirror:', strudelMirror);
-
           if (!strudelMirror) {
-            console.error('setCode: No StrudelMirror');
             return;
           }
 
           // Update CodeMirror EditorView - this is what shows the code visually
           const cmView = strudelMirror?.editor;
-          console.log('CodeMirror view:', cmView);
 
           if (cmView?.dispatch && cmView?.state?.doc !== undefined) {
             const docLength = cmView.state.doc.length;
-            console.log('Dispatching change, current doc length:', docLength);
             cmView.dispatch({
               changes: {
                 from: 0,
@@ -63,10 +56,6 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
                 insert: code
               }
             });
-            console.log('After dispatch, doc length:', cmView.state.doc.length);
-            console.log('Doc content:', cmView.state.doc.toString().substring(0, 100));
-          } else {
-            console.log('Could not dispatch - missing cmView or doc');
           }
 
           // Update the repl state (code and activeCode)
@@ -112,9 +101,8 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
                 containerRef.current.scrollTop = 0;
               }
 
-              console.log('Forced CodeMirror update, inView:', cmView?.viewState?.inView);
-            } catch (e) {
-              console.log('Force update error:', e);
+            } catch {
+              // Force update errors are non-critical
             }
           }, 100);
         } catch (err) {
@@ -138,19 +126,10 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           // Validate editor state before evaluating
           const cmView = strudelMirror?.editor;
           if (!cmView?.dom || !document.body.contains(cmView.dom)) {
-            console.warn('CodeMirror view not properly attached, forcing re-measure');
             if (cmView?.requestMeasure) {
               cmView.requestMeasure();
             }
           }
-
-          console.log('Evaluating code:', code.substring(0, 100) + '...');
-          console.log('StrudelMirror methods:', {
-            hasActivateCode: !!strudelMirror?.activateCode,
-            hasRepl: !!strudelMirror?.repl,
-            hasReplEvaluate: !!strudelMirror?.repl?.evaluate,
-            replKeys: strudelMirror?.repl ? Object.keys(strudelMirror.repl) : [],
-          });
 
           // NOTE: We do NOT update the CodeMirror document here.
           // The editor display is already set correctly via setCode() with the ASCII header.
@@ -172,14 +151,13 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
                 await strudelCtx.resume();
               }
             }
-          } catch (e) {
-            console.log('Audio context resume:', e);
+          } catch {
+            // Audio context resume errors are expected on some browsers
           }
 
           // Primary method: Use repl.evaluate directly
           // This evaluates the code and starts audio playback
           if (strudelMirror?.repl?.evaluate) {
-            console.log('Using repl.evaluate method');
             // Update repl state only (NOT setCode - that would overwrite the editor display)
             if (strudelMirror.repl.state) {
               strudelMirror.repl.state.code = code;
@@ -188,21 +166,15 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
 
             try {
               // Evaluate the code - this starts audio
-              // Note: evaluate(code) returns a promise that resolves to the pattern
-              const result = await strudelMirror.repl.evaluate(code);
-              console.log('Evaluate result:', result);
+              await strudelMirror.repl.evaluate(code);
               // Start the scheduler/playback
               if (strudelMirror.repl.start) {
-                console.log('Calling repl.start()');
                 await strudelMirror.repl.start();
               }
-              // Audio should now be playing after evaluate + start
-              console.log('Playback state:', strudelMirror.repl.state?.playing);
               return;
             } catch (evalErr: any) {
               // Handle contentEditable error - Strudel tries to update DOM elements that don't exist
               if (evalErr?.message?.includes('contentEditable') || evalErr?.message?.includes('null')) {
-                console.warn('repl.evaluate DOM error, trying alternative method:', evalErr);
                 // Try using activateCode as fallback
                 if (strudelMirror?.activateCode) {
                   await strudelMirror.activateCode({ code, shouldToggle: false });
@@ -215,21 +187,18 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
 
           // Fallback: Use StrudelMirror's activateCode if available
           if (strudelMirror?.activateCode) {
-            console.log('Using activateCode method');
             await strudelMirror.activateCode({ code, shouldToggle: false });
             return;
           }
 
           // Last resort: Try global evaluate from strudel
           if (typeof (window as any).evaluate === 'function') {
-            console.log('Using global evaluate function');
             await (window as any).evaluate(code);
             return;
           }
 
           // Very last resort: try to use the repl's toggle to start
           if (strudelMirror?.repl?.toggle) {
-            console.log('Using repl.toggle to start');
             strudelMirror.repl.toggle();
             return;
           }
@@ -357,19 +326,9 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             const el = editor as any;
             const strudelMirror = el?.editor;
 
-            // Log available options for debugging
-            console.log('StrudelMirror options:', {
-              hasDrawContext: !!strudelMirror?.drawContext,
-              hasCanvas: !!strudelMirror?.drawContext?.canvas,
-              drawContextKeys: strudelMirror?.drawContext ? Object.keys(strudelMirror.drawContext) : [],
-              replKeys: strudelMirror?.repl ? Object.keys(strudelMirror.repl) : [],
-            });
-
             // Force the CodeMirror editor to be visible
             const cmView = strudelMirror?.editor;
             if (cmView) {
-              console.log('Initial inView state:', cmView.viewState?.inView);
-
               // Try to force visibility
               if (cmView.dom) {
                 // Make sure the editor DOM is visible
@@ -387,8 +346,6 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
 
                 // Force a resize event which often fixes visibility
                 window.dispatchEvent(new Event('resize'));
-
-                console.log('After init, inView state:', cmView.viewState?.inView);
               }, 100);
             }
 
@@ -398,7 +355,6 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
                           containerRef.current?.querySelector('canvas');
 
             if (canvas) {
-              console.log('Found canvas:', canvas.width, 'x', canvas.height);
               canvas.style.display = 'block';
             }
 

@@ -36,20 +36,14 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
   }, [cleanup]);
 
   const speak = useCallback(async (text: string, voiceId: string) => {
-    console.log('[ElevenLabs] speak called:', { text: text?.substring(0, 50), voiceId });
-    // Stop any current playback
     stop();
 
-    if (!text || !voiceId) {
-      console.log('[ElevenLabs] Missing text or voiceId, returning');
-      return;
-    }
+    if (!text || !voiceId) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log('[ElevenLabs] Fetching from /api/tts');
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,7 +53,6 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
       if (!response.ok) {
         throw new Error(`TTS request failed: ${response.status}`);
       }
-      console.log('[ElevenLabs] Response OK, creating audio');
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);

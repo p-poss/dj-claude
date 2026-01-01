@@ -17,7 +17,7 @@ import { VoiceSelector } from './VoiceSelector';
 export function DJInterface() {
   const { state, dispatch } = useDJ();
   const { theme, cycleTheme, toggleSwap, isSwapped } = useTheme();
-  const { selectedVoiceName, resolvedAutoVoice, ttsProvider, selectedElevenLabsVoice } = useVoice();
+  const { selectedElevenLabsVoice } = useVoice();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
@@ -25,8 +25,10 @@ export function DJInterface() {
   const editorRef = useRef<StrudelEditorAPI>(null);
   const promptInputRef = useRef<HTMLInputElement>(null);
   const hasExecutedRef = useRef(false);
-  const voiceChangeCountRef = useRef(0); // Skip first 2 changes (initial + localStorage load)
+  const voiceChangeCountRef = useRef(0); // Skip initial render
   const prevMcEnabledRef = useRef(true); // MC starts ON by default
+  const speakRef = useRef(speak); // Always keep latest speak function
+  speakRef.current = speak; // Update ref on every render
   const [editorReady, setEditorReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -239,10 +241,7 @@ export function DJInterface() {
 
   // DJ announcement messages
   const getDjAnnouncement = useCallback(() => {
-    // Use the appropriate voice name based on provider
-    const voiceName = ttsProvider === 'elevenlabs'
-      ? (selectedElevenLabsVoice?.name || 'AI')
-      : (selectedVoiceName || resolvedAutoVoice || 'Auto');
+    const voiceName = selectedElevenLabsVoice?.name || 'Claude';
     const messages = [
       `DJ ${voiceName} in the house!`,
       `DJ ${voiceName} on the ones and twos!`,
@@ -261,21 +260,21 @@ export function DJInterface() {
       `The one and only, DJ ${voiceName}!`,
     ];
     return messages[Math.floor(Math.random() * messages.length)];
-  }, [selectedVoiceName, resolvedAutoVoice, ttsProvider, selectedElevenLabsVoice]);
+  }, [selectedElevenLabsVoice]);
 
-  // Announce voice change with DJ-themed message (for both Web Speech and ElevenLabs)
-  // Skip first 2 triggers: initial render + localStorage hydration
+  // Announce voice change with DJ-themed message
+  // Skip first render (initial state)
   useEffect(() => {
     voiceChangeCountRef.current++;
-    if (voiceChangeCountRef.current <= 2) {
+    if (voiceChangeCountRef.current <= 1) {
       return;
     }
 
     const randomMessage = getDjAnnouncement();
     setCurrentMcCommentary(randomMessage);
-    speak(randomMessage);
+    speakRef.current(randomMessage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVoiceName, selectedElevenLabsVoice, ttsProvider, speak]);
+  }, [selectedElevenLabsVoice]);
 
   // Announce when MC is turned ON (not on page load)
   useEffect(() => {
@@ -312,15 +311,14 @@ export function DJInterface() {
         const ctx = (window as any).getAudioContext();
         if (ctx?.state === 'suspended') {
           await ctx.resume();
-          console.log('Strudel audio context resumed');
         }
       }
       // Also try to start the editor if available
       if (editorRef.current) {
         editorRef.current.start();
       }
-    } catch (e) {
-      console.log('Audio init:', e);
+    } catch {
+      // Audio init errors are expected on some browsers
     }
   }, []);
 
