@@ -4,7 +4,18 @@ import { useState, useRef, useEffect } from 'react';
 import { useVoice } from '@/context/VoiceContext';
 
 export function VoiceSelector() {
-  const { selectedVoiceName, setSelectedVoiceName, availableVoices, currentVoiceName, resolvedAutoVoice } = useVoice();
+  const {
+    selectedVoiceName,
+    setSelectedVoiceName,
+    availableVoices,
+    currentVoiceName,
+    resolvedAutoVoice,
+    ttsProvider,
+    setTTSProvider,
+    selectedElevenLabsVoice,
+    setSelectedElevenLabsVoice,
+    elevenLabsVoices,
+  } = useVoice();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -25,20 +36,28 @@ export function VoiceSelector() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  // Truncate voice name to fit in box
-  const displayName = currentVoiceName.length > 10
-    ? currentVoiceName.slice(0, 10)
-    : currentVoiceName.padEnd(10);
+  // Determine display name based on provider
+  const displayName = ttsProvider === 'elevenlabs'
+    ? (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10)
+    : (currentVoiceName.length > 10 ? currentVoiceName.slice(0, 10) : currentVoiceName.padEnd(10));
+
 
   const boxWidth = 15;
 
-  const handleSelect = (voiceName: string | null) => {
+  const handleSelectWebSpeech = (voiceName: string | null) => {
     setSelectedVoiceName(voiceName);
     setIsOpen(false);
   };
 
+  const handleSelectElevenLabs = (voiceId: string) => {
+    const voice = elevenLabsVoices.find(v => v.id === voiceId);
+    if (voice) {
+      setSelectedElevenLabsVoice(voice);
+    }
+    setIsOpen(false);
+  };
+
   // Format voice name for dropdown row (text left, indicator right)
-  // Match button format: 10-char name + space + symbol = 12 chars, centered
   const formatRow = (name: string) => {
     const paddedName = name.length > 10 ? name.slice(0, 10) : name.padEnd(10);
     return `${paddedName} `;
@@ -74,38 +93,87 @@ export function VoiceSelector() {
         >
           <pre className="m-0">{'╔' + '═'.repeat(boxWidth) + '╗'}</pre>
 
-          {/* Auto option */}
-          <button
-            onClick={() => handleSelect(null)}
-            className="group block w-full text-left phosphor-glow"
-          >
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0 phosphor-glow">║</pre>
-              <pre className="m-0 flex-1 text-center phosphor-glow">
-                {formatRow('Auto')}
-                <span className={selectedVoiceName === null ? '' : 'opacity-0 group-hover:opacity-100'}>▪</span>
-              </pre>
-              <pre className="m-0 phosphor-glow">║</pre>
-            </div>
-          </button>
+          {/* Provider toggle row */}
+          <div className="flex" style={{ fontFamily: 'inherit' }}>
+            <pre className="m-0 phosphor-glow">║</pre>
+            <pre className="m-0 flex-1 text-center phosphor-glow">
+              <button
+                onClick={() => setTTSProvider('elevenlabs')}
+                className={`phosphor-glow ${ttsProvider === 'elevenlabs' ? 'opacity-100' : 'opacity-30 hover:opacity-100'}`}
+              >
+                AI
+              </button>
+              {' │ '}
+              <button
+                onClick={() => setTTSProvider('web-speech')}
+                className={`phosphor-glow ${ttsProvider === 'web-speech' ? 'opacity-100' : 'opacity-30 hover:opacity-100'}`}
+              >
+                Browser
+              </button>
+            </pre>
+            <pre className="m-0 phosphor-glow">║</pre>
+          </div>
 
-          {/* Available voices (excluding Auto's resolved voice to avoid duplicate) */}
-          {filteredVoices.map((voiceName) => (
-            <button
-              key={voiceName}
-              onClick={() => handleSelect(voiceName)}
-              className="group block w-full text-left phosphor-glow"
-            >
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0 phosphor-glow">║</pre>
-                <pre className="m-0 flex-1 text-center phosphor-glow">
-                  {formatRow(voiceName)}
-                  <span className={selectedVoiceName === voiceName ? '' : 'opacity-0 group-hover:opacity-100'}>▪</span>
-                </pre>
-                <pre className="m-0 phosphor-glow">║</pre>
-              </div>
-            </button>
-          ))}
+          {/* Separator */}
+          <pre className="m-0">{'╠' + '═'.repeat(boxWidth) + '╣'}</pre>
+
+          {/* Voice options based on provider */}
+          {ttsProvider === 'web-speech' ? (
+            <>
+              {/* Auto option */}
+              <button
+                onClick={() => handleSelectWebSpeech(null)}
+                className="group block w-full text-left phosphor-glow"
+              >
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0 phosphor-glow">║</pre>
+                  <pre className="m-0 flex-1 text-center phosphor-glow">
+                    {formatRow('Auto')}
+                    <span className={selectedVoiceName === null ? '' : 'opacity-0 group-hover:opacity-100'}>▪</span>
+                  </pre>
+                  <pre className="m-0 phosphor-glow">║</pre>
+                </div>
+              </button>
+
+              {/* Available browser voices */}
+              {filteredVoices.map((voiceName) => (
+                <button
+                  key={voiceName}
+                  onClick={() => handleSelectWebSpeech(voiceName)}
+                  className="group block w-full text-left phosphor-glow"
+                >
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0 phosphor-glow">║</pre>
+                    <pre className="m-0 flex-1 text-center phosphor-glow">
+                      {formatRow(voiceName)}
+                      <span className={selectedVoiceName === voiceName ? '' : 'opacity-0 group-hover:opacity-100'}>▪</span>
+                    </pre>
+                    <pre className="m-0 phosphor-glow">║</pre>
+                  </div>
+                </button>
+              ))}
+            </>
+          ) : (
+            <>
+              {/* ElevenLabs voices */}
+              {elevenLabsVoices.map((voice) => (
+                <button
+                  key={voice.id}
+                  onClick={() => handleSelectElevenLabs(voice.id)}
+                  className="group block w-full text-left phosphor-glow"
+                >
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0 phosphor-glow">║</pre>
+                    <pre className="m-0 flex-1 text-center phosphor-glow">
+                      {formatRow(voice.name)}
+                      <span className={selectedElevenLabsVoice?.id === voice.id ? '' : 'opacity-0 group-hover:opacity-100'}>▪</span>
+                    </pre>
+                    <pre className="m-0 phosphor-glow">║</pre>
+                  </div>
+                </button>
+              ))}
+            </>
+          )}
 
           <pre className="m-0">{'╚' + '═'.repeat(boxWidth) + '╝'}</pre>
         </div>

@@ -17,7 +17,7 @@ import { VoiceSelector } from './VoiceSelector';
 export function DJInterface() {
   const { state, dispatch } = useDJ();
   const { theme, cycleTheme, toggleSwap, isSwapped } = useTheme();
-  const { selectedVoiceName, resolvedAutoVoice } = useVoice();
+  const { selectedVoiceName, resolvedAutoVoice, ttsProvider, selectedElevenLabsVoice } = useVoice();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
@@ -25,7 +25,7 @@ export function DJInterface() {
   const editorRef = useRef<StrudelEditorAPI>(null);
   const promptInputRef = useRef<HTMLInputElement>(null);
   const hasExecutedRef = useRef(false);
-  const isFirstVoiceRender = useRef(true);
+  const voiceChangeCountRef = useRef(0); // Skip first 2 changes (initial + localStorage load)
   const prevMcEnabledRef = useRef(true); // MC starts ON by default
   const [editorReady, setEditorReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -239,8 +239,10 @@ export function DJInterface() {
 
   // DJ announcement messages
   const getDjAnnouncement = useCallback(() => {
-    // Use resolved auto voice name instead of "Auto" for better announcements
-    const voiceName = selectedVoiceName || resolvedAutoVoice || 'Auto';
+    // Use the appropriate voice name based on provider
+    const voiceName = ttsProvider === 'elevenlabs'
+      ? (selectedElevenLabsVoice?.name || 'AI')
+      : (selectedVoiceName || resolvedAutoVoice || 'Auto');
     const messages = [
       `DJ ${voiceName} in the house!`,
       `DJ ${voiceName} on the ones and twos!`,
@@ -259,12 +261,13 @@ export function DJInterface() {
       `The one and only, DJ ${voiceName}!`,
     ];
     return messages[Math.floor(Math.random() * messages.length)];
-  }, [selectedVoiceName, resolvedAutoVoice]);
+  }, [selectedVoiceName, resolvedAutoVoice, ttsProvider, selectedElevenLabsVoice]);
 
-  // Announce voice change with DJ-themed message
+  // Announce voice change with DJ-themed message (for both Web Speech and ElevenLabs)
+  // Skip first 2 triggers: initial render + localStorage hydration
   useEffect(() => {
-    if (isFirstVoiceRender.current) {
-      isFirstVoiceRender.current = false;
+    voiceChangeCountRef.current++;
+    if (voiceChangeCountRef.current <= 2) {
       return;
     }
 
@@ -272,7 +275,7 @@ export function DJInterface() {
     setCurrentMcCommentary(randomMessage);
     speak(randomMessage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVoiceName, speak]);
+  }, [selectedVoiceName, selectedElevenLabsVoice, ttsProvider, speak]);
 
   // Announce when MC is turned ON (not on page load)
   useEffect(() => {
