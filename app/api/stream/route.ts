@@ -2,12 +2,15 @@ import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '@/lib/prompts';
 import { Message } from '@/lib/types';
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
-
 export async function POST(request: Request) {
   try {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return new Response('ANTHROPIC_API_KEY not configured', { status: 500 });
+    }
+
+    const anthropic = new Anthropic({ apiKey });
+
     const { prompt, currentCode, history } = await request.json() as {
       prompt: string;
       currentCode: string;
