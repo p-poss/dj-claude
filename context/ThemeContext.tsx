@@ -64,7 +64,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeIndex, setThemeIndex] = useState(3); // Default to Terminal (black/white) theme
+  const [themeIndex, setThemeIndex] = useState(4); // Default to Anthropic theme
   const [isSwapped, setIsSwapped] = useState(false);
   const baseTheme = themes[themeIndex];
 
