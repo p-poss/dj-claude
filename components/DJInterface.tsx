@@ -49,12 +49,12 @@ export function DJInterface() {
     // Start fade out after a brief delay
     const fadeTimer = setTimeout(() => {
       setSplashVisible(false);
-    }, 300);
+    }, 800);
 
     // Remove from DOM after fade animation completes
     const removeTimer = setTimeout(() => {
       setSplashMounted(false);
-    }, 800); // 300ms delay + 500ms fade
+    }, 1300); // 800ms delay + 500ms fade
 
     return () => {
       clearTimeout(fadeTimer);
