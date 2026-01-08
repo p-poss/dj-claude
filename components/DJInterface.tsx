@@ -303,16 +303,37 @@ export function DJInterface() {
     return () => clearInterval(interval);
   }, [state.isStreaming, streamingMessages.length]);
 
-  // Initialize audio context - must be called during user gesture
-  const initAudioContext = useCallback(async () => {
+  // Unlock audio for Safari - must be called synchronously during user gesture
+  // This creates a silent buffer and plays it to "unlock" the Web Audio API
+  const unlockAudio = useCallback(() => {
     try {
-      // Try to get/create Strudel's audio context
-      if ((window as any).getAudioContext) {
-        const ctx = (window as any).getAudioContext();
-        if (ctx?.state === 'suspended') {
-          await ctx.resume();
-        }
+      // Get or create an AudioContext
+      const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+
+      // Try to get Strudel's audio context first
+      let ctx = (window as any).getAudioContext?.();
+
+      // If Strudel doesn't have one yet, create one to unlock audio
+      if (!ctx) {
+        ctx = new AudioCtx();
+        // Store it so Strudel can find it later
+        (window as any).__djClaudeAudioContext = ctx;
       }
+
+      // Resume if suspended (this is the key for Safari)
+      if (ctx.state === 'suspended') {
+        // Don't await - start the resume synchronously during the gesture
+        ctx.resume();
+      }
+
+      // Play a silent buffer to fully unlock audio on iOS Safari
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(0);
+
       // Also try to start the editor if available
       if (editorRef.current) {
         editorRef.current.start();
@@ -324,10 +345,11 @@ export function DJInterface() {
 
   // Handle prompt submission
   const handlePromptSubmit = useCallback(async (prompt: string) => {
-    try {
-      // Initialize audio during user click event
-      await initAudioContext();
+    // IMPORTANT: Unlock audio SYNCHRONOUSLY at the start of the user gesture
+    // This must happen before any await to satisfy Safari's autoplay policy
+    unlockAudio();
 
+    try {
       await streamCode({
         prompt,
         currentCode: state.currentCode,
@@ -336,7 +358,7 @@ export function DJInterface() {
     } catch (error) {
       console.error('Stream error:', error);
     }
-  }, [streamCode, state.currentCode, state.messages, initAudioContext]);
+  }, [streamCode, state.currentCode, state.messages, unlockAudio]);
 
   // Handle pause
   const handlePause = useCallback(() => {

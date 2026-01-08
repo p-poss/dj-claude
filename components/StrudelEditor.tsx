@@ -135,21 +135,19 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           // The editor display is already set correctly via setCode() with the ASCII header.
           // We only want to evaluate the code for audio, not touch the display.
 
-          // Try to resume audio context first (needed for browser autoplay policy)
+          // Try to resume audio context (should already be unlocked by DJInterface)
           try {
-            const audioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
-            if (audioCtx) {
-              const ctx = new audioCtx();
-              if (ctx.state === 'suspended') {
-                await ctx.resume();
-              }
-            }
-            // Also try Strudel's getAudioContext
+            // First try Strudel's audio context
             if ((window as any).getAudioContext) {
               const strudelCtx = (window as any).getAudioContext();
               if (strudelCtx?.state === 'suspended') {
                 await strudelCtx.resume();
               }
+            }
+            // Also try our pre-created context from unlockAudio()
+            const djCtx = (window as any).__djClaudeAudioContext;
+            if (djCtx?.state === 'suspended') {
+              await djCtx.resume();
             }
           } catch {
             // Audio context resume errors are expected on some browsers
