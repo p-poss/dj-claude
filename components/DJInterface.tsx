@@ -304,35 +304,43 @@ export function DJInterface() {
   }, [state.isStreaming, streamingMessages.length]);
 
   // Unlock audio for Safari - must be called synchronously during user gesture
-  // This creates a silent buffer and plays it to "unlock" the Web Audio API
+  // This unlocks both Web Audio API (for Strudel) and HTMLAudioElement (for TTS)
   const unlockAudio = useCallback(() => {
     try {
-      // Get or create an AudioContext
+      // === PART 1: Unlock Web Audio API (for Strudel) ===
       const AudioCtx = (window as any).AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
+      if (AudioCtx) {
+        // Try to get Strudel's audio context first
+        let ctx = (window as any).getAudioContext?.();
 
-      // Try to get Strudel's audio context first
-      let ctx = (window as any).getAudioContext?.();
+        // If Strudel doesn't have one yet, create one to unlock audio
+        if (!ctx) {
+          ctx = new AudioCtx();
+          // Store it so Strudel can find it later
+          (window as any).__djClaudeAudioContext = ctx;
+        }
 
-      // If Strudel doesn't have one yet, create one to unlock audio
-      if (!ctx) {
-        ctx = new AudioCtx();
-        // Store it so Strudel can find it later
-        (window as any).__djClaudeAudioContext = ctx;
+        // Resume if suspended (this is the key for Safari)
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+
+        // Play a silent buffer to fully unlock Web Audio on iOS Safari
+        const buffer = ctx.createBuffer(1, 1, 22050);
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
       }
 
-      // Resume if suspended (this is the key for Safari)
-      if (ctx.state === 'suspended') {
-        // Don't await - start the resume synchronously during the gesture
-        ctx.resume();
-      }
-
-      // Play a silent buffer to fully unlock audio on iOS Safari
-      const buffer = ctx.createBuffer(1, 1, 22050);
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.connect(ctx.destination);
-      source.start(0);
+      // === PART 2: Unlock HTMLAudioElement (for TTS) ===
+      // Create and play a silent audio to unlock media playback
+      // This allows subsequent audio.play() calls to work without user gesture
+      const silentAudio = new Audio('data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA');
+      silentAudio.volume = 0;
+      silentAudio.play().catch(() => {
+        // Ignore errors - this is just to unlock audio
+      });
 
       // Also try to start the editor if available
       if (editorRef.current) {
