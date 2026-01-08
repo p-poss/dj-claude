@@ -41,6 +41,26 @@ export function DJInterface() {
   const [crtEnabled, setCrtEnabled] = useState(true);
   const [partyEnabled, setPartyEnabled] = useState(false);
   const [partyHue, setPartyHue] = useState(0);
+  const [splashVisible, setSplashVisible] = useState(true);
+  const [splashMounted, setSplashMounted] = useState(true);
+
+  // Splash screen fade out
+  useEffect(() => {
+    // Start fade out after a brief delay
+    const fadeTimer = setTimeout(() => {
+      setSplashVisible(false);
+    }, 300);
+
+    // Remove from DOM after fade animation completes
+    const removeTimer = setTimeout(() => {
+      setSplashMounted(false);
+    }, 800); // 300ms delay + 500ms fade
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(removeTimer);
+    };
+  }, []);
 
   // Party mode: cycle through rainbow hues
   useEffect(() => {
@@ -789,6 +809,21 @@ export function DJInterface() {
 
     {/* Party mode overlay */}
     <PartyOverlay enabled={partyEnabled} color={theme.text} hue={partyHue} crtEnabled={crtEnabled} />
+
+    {/* Splash screen - fades out on load */}
+    {splashMounted && (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: theme.background,
+          zIndex: 9999,
+          opacity: splashVisible ? 1 : 0,
+          transition: 'opacity 500ms ease-out',
+          pointerEvents: splashVisible ? 'auto' : 'none',
+        }}
+      />
+    )}
     </>
   );
 }
