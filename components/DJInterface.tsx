@@ -606,7 +606,7 @@ export function DJInterface() {
 
       {/* Main content area - Strudel Editor as primary view */}
       {/* This enables inline visualizations (pianoroll, scope) and mini locations (active highlighting) */}
-      <div className="flex-1 relative" style={{ minHeight: '35px' }}>
+      <div className="flex-1 relative" style={{ minHeight: '35px', pointerEvents: state.messages.length === 0 ? 'none' : 'auto' }}>
         <StrudelEditor
           ref={editorRef}
           onReady={handleEditorReady}
