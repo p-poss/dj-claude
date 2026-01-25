@@ -90,7 +90,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           }
           .prompt-input::placeholder {
             color: inherit;
-            opacity: 0.3;
+            opacity: 0.6;
           }
           .prompt-input::selection {
             background-color: ${colors.text};
