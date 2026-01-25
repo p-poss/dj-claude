@@ -547,7 +547,7 @@ export function DJInterface() {
             {/* MC Mode toggle button */}
             <button
               onClick={handleToggleMC}
-              className="group phosphor-glow ascii-box"
+              className="group phosphor-glow ascii-box cursor-pointer"
               style={{ width: 'fit-content' }}
             >
               <div className="group-hover:opacity-30">
@@ -568,7 +568,7 @@ export function DJInterface() {
             {state.currentCode && (
               <button
                 onClick={handleTogglePlayback}
-                className="group phosphor-glow ascii-box"
+                className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
                 <div className="group-hover:opacity-30">
@@ -623,7 +623,7 @@ export function DJInterface() {
               position: 'absolute',
               inset: 0,
               zIndex: 20,
-              cursor: 'default',
+              cursor: 'not-allowed',
             }}
           />
         )}
@@ -709,7 +709,7 @@ export function DJInterface() {
           {/* Swap colors button */}
           <button
             onClick={toggleSwap}
-            className="text-xs select-none group phosphor-glow ascii-box"
+            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <div className="group-hover:opacity-30">
@@ -726,7 +726,7 @@ export function DJInterface() {
           {/* Theme cycle button */}
           <button
             onClick={cycleTheme}
-            className="text-xs select-none group phosphor-glow ascii-box"
+            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <div className="group-hover:opacity-30">
@@ -743,7 +743,7 @@ export function DJInterface() {
           {/* CRT toggle button */}
           <button
             onClick={() => setCrtEnabled((prev) => !prev)}
-            className="text-xs select-none group phosphor-glow ascii-box"
+            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <div className="group-hover:opacity-30">
@@ -760,7 +760,7 @@ export function DJInterface() {
           {/* Party toggle button */}
           <button
             onClick={() => setPartyEnabled((prev) => !prev)}
-            className="text-xs select-none group phosphor-glow ascii-box"
+            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
             style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
           >
             <div className="group-hover:opacity-30">
@@ -785,7 +785,7 @@ export function DJInterface() {
           <button
             onClick={state.currentCode ? handleExport : undefined}
             disabled={!state.currentCode}
-            className={state.currentCode ? 'group phosphor-glow ascii-box' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+            className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
             style={{ width: 'fit-content' }}
           >
             <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
@@ -803,7 +803,7 @@ export function DJInterface() {
           <button
             onClick={state.previousCode ? handleGoBack : undefined}
             disabled={!state.previousCode}
-            className={state.previousCode ? 'group phosphor-glow ascii-box' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+            className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
             style={{ width: 'fit-content' }}
           >
             <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>

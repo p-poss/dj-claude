@@ -48,7 +48,7 @@ export function VoiceSelector() {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group phosphor-glow ascii-box"
+        className="group phosphor-glow ascii-box cursor-pointer"
         style={{ width: 'fit-content' }}
       >
         <div className={`group-hover:opacity-30 ${isOpen ? 'opacity-30' : ''}`}>
@@ -78,7 +78,7 @@ export function VoiceSelector() {
             <button
               key={voice.id}
               onClick={() => handleSelectVoice(voice.id)}
-              className="group block w-full text-left phosphor-glow"
+              className="group block w-full text-left phosphor-glow cursor-pointer"
             >
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0 phosphor-glow">║</pre>

@@ -159,7 +159,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                     onScroll={(e) => setScrollLeft(e.currentTarget.scrollLeft)}
                     disabled={disabled}
                     placeholder={disabled || !isFocused ? (placeholder || 'give claude direction...') : ''}
-                    className="prompt-input text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="prompt-input text-xs disabled:cursor-not-allowed"
                     style={{ fontFamily: 'inherit', color: colors.text }}
                   />
                   {/* Cursor overlay - positioned after the text */}
