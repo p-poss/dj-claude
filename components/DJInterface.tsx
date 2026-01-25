@@ -241,12 +241,21 @@ export function DJInterface() {
   }, [isComplete, extractedCode, mcCommentary, dispatch, speak, mcEnabled, promptCount]);
 
   // Reset execution flag and stop TTS when new stream starts
+  // Refocus input when streaming ends
+  const wasStreamingRef = useRef(false);
   useEffect(() => {
     if (state.isStreaming) {
       hasExecutedRef.current = false;
+      wasStreamingRef.current = true;
       // Stop any ongoing TTS when new stream starts
       stopTTS();
       setCurrentMcCommentary('');
+    } else if (wasStreamingRef.current) {
+      // Streaming just ended - refocus the input
+      wasStreamingRef.current = false;
+      requestAnimationFrame(() => {
+        promptInputRef.current?.focus();
+      });
     }
   }, [state.isStreaming, stopTTS]);
 
