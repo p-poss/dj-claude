@@ -119,11 +119,11 @@ export function DJInterface() {
   }, []);
 
   const streamingMessages = [
-    '\u00A0Mixing...',
-    '\u00A0Vibing...',
-    '\u00A0Cooking...',
-    '\u00A0Dropping beats...',
-    '\u00A0Finding the groove...',
+    '\u00A0\u00A0Mixing...',
+    '\u00A0\u00A0Vibing...',
+    '\u00A0\u00A0Cooking...',
+    '\u00A0\u00A0Dropping beats...',
+    '\u00A0\u00A0Finding the groove...',
   ];
 
   const welcomeMessages = [
