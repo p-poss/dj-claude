@@ -5,7 +5,7 @@ import { VoiceProvider } from "@/context/VoiceContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Koto Demo #3",
+  title: "DJ CLAUDE",
   description: "AI-powered live coding DJ - watch Claude write music in real-time",
 };
 
