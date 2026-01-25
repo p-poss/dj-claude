@@ -138,7 +138,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             <div className="flex items-center gap-2">
               <span style={{ position: 'relative' }}>
                 {'>'}
-                {isStreaming && <span className="streaming-spinner" style={{ position: 'absolute', left: '100%', marginLeft: '0.5ch' }} />}
+                {isStreaming && <span className="streaming-spinner" style={{ position: 'absolute', left: '100%', marginLeft: 'calc(0.5ch + 6px)' }} />}
               </span>
               <div style={{ overflowX: 'hidden', overflowY: 'visible', paddingLeft: '10px', paddingRight: '10px', marginLeft: '-10px', paddingTop: '8px', paddingBottom: '8px', marginTop: '-8px', marginBottom: '-8px', width: '501px' }}>
                 <div className="prompt-input-wrapper">
