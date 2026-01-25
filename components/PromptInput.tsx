@@ -137,7 +137,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             <pre className="m-0 whitespace-nowrap">{'═'.repeat(70)}</pre>
             <div className="flex items-center gap-2">
               <span>{'>'}</span>
-              {isStreaming && <span className="streaming-spinner" />}
+              <span className="streaming-spinner" style={{ visibility: isStreaming ? 'visible' : 'hidden' }} />
               <div style={{ overflowX: 'hidden', overflowY: 'visible', paddingLeft: '10px', paddingRight: '10px', marginLeft: '-10px', paddingTop: '8px', paddingBottom: '8px', marginTop: '-8px', marginBottom: '-8px', width: '501px' }}>
                 <div className="prompt-input-wrapper">
                   <input
