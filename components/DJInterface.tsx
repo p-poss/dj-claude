@@ -43,6 +43,7 @@ export function DJInterface() {
   const [partyHue, setPartyHue] = useState(0);
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashMounted, setSplashMounted] = useState(true);
+  const [promptCount, setPromptCount] = useState(0);
 
   // Splash screen fade out
   useEffect(() => {
@@ -237,7 +238,7 @@ export function DJInterface() {
           });
       }, 100);
     }
-  }, [isComplete, extractedCode, mcCommentary, dispatch, speak, mcEnabled]);
+  }, [isComplete, extractedCode, mcCommentary, dispatch, speak, mcEnabled, promptCount]);
 
   // Reset execution flag and stop TTS when new stream starts
   useEffect(() => {
@@ -376,6 +377,9 @@ export function DJInterface() {
     // IMPORTANT: Unlock audio SYNCHRONOUSLY at the start of the user gesture
     // This must happen before any await to satisfy Safari's autoplay policy
     unlockAudio();
+
+    // Increment prompt count to ensure auto-execute effect runs for each new prompt
+    setPromptCount(c => c + 1);
 
     try {
       await streamCode({
