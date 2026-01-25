@@ -79,8 +79,8 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           // This fixes the "inView: false" issue
           setTimeout(() => {
             try {
-              // Scroll the editor DOM into view
-              if (cmView?.dom) {
+              // Scroll the editor DOM into view (skip if in iframe to prevent parent scroll)
+              if (cmView?.dom && window.self === window.top) {
                 cmView.dom.scrollIntoView({ behavior: 'instant', block: 'nearest' });
               }
 
@@ -334,8 +334,10 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
                 cmView.dom.style.minHeight = '400px';
                 cmView.dom.style.display = 'block';
 
-                // Scroll into view
-                cmView.dom.scrollIntoView({ behavior: 'instant', block: 'start' });
+                // Scroll into view (skip if in iframe to prevent parent scroll)
+                if (window.self === window.top) {
+                  cmView.dom.scrollIntoView({ behavior: 'instant', block: 'start' });
+                }
               }
 
               // Measure (but don't focus - let the prompt input keep focus)
