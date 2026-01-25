@@ -191,13 +191,13 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             style={{ width: 'fit-content' }}
           >
             <div className={disabled || !value.trim() ? '' : 'group-hover:opacity-30'}>
-              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔═══╗</pre>
+              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔{'═'.repeat(10)}╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
-                <pre className="m-0 flex-1 text-center" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>⬆</pre>
+                <pre className="m-0 flex-1 text-center" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>SUBMIT</pre>
                 <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
               </div>
-              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╚═══╝</pre>
+              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╚{'═'.repeat(10)}╝</pre>
             </div>
           </button>
         </div>
