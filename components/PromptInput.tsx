@@ -137,7 +137,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             <pre className="m-0 whitespace-nowrap">{'═'.repeat(70)}</pre>
             <div className="flex items-center gap-2">
               <span>{'>'}</span>
-              <span className="streaming-spinner" style={{ visibility: isStreaming ? 'visible' : 'hidden' }} />
+              {isStreaming && <span className="streaming-spinner" />}
               <div style={{ overflowX: 'hidden', overflowY: 'visible', paddingLeft: '10px', paddingRight: '10px', marginLeft: '-10px', paddingTop: '8px', paddingBottom: '8px', marginTop: '-8px', marginBottom: '-8px', width: '501px' }}>
                 <div className="prompt-input-wrapper">
                   <input
@@ -191,13 +191,13 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             style={{ width: 'fit-content' }}
           >
             <div className={disabled || !value.trim() ? '' : 'group-hover:opacity-30'}>
-              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔{'═'.repeat(10)}╗</pre>
+              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔═══╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
-                <pre className="m-0 flex-1 text-center" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>SUBMIT</pre>
+                <pre className="m-0 flex-1 text-center" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>⬆</pre>
                 <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
               </div>
-              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╚{'═'.repeat(10)}╝</pre>
+              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╚═══╝</pre>
             </div>
           </button>
         </div>
