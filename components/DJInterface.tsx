@@ -38,7 +38,7 @@ export function DJInterface() {
   const [currentMcCommentary, setCurrentMcCommentary] = useState('');
   const [mcEnabled, setMcEnabled] = useState(true);
   const [characterOffset, setCharacterOffset] = useState(0);
-  const [crtEnabled, setCrtEnabled] = useState(true);
+  const [crtEnabled, setCrtEnabled] = useState(false);
   const [partyEnabled, setPartyEnabled] = useState(false);
   const [partyHue, setPartyHue] = useState(0);
   const [splashVisible, setSplashVisible] = useState(true);
