@@ -485,16 +485,6 @@ export function DJInterface() {
     }
   }, [state.currentCode]);
 
-  // Toggle MC mode (TTS on/off)
-  const handleToggleMC = useCallback(() => {
-    setMcEnabled((prev) => {
-      if (prev) {
-        // Turning off - stop any current speech
-        stopTTS();
-      }
-      return !prev;
-    });
-  }, [stopTTS]);
 
   // Handle go back - restore previous code
   const handleGoBack = useCallback(async () => {
@@ -558,25 +548,13 @@ export function DJInterface() {
               <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
             </div>
 
-            {/* MC Mode toggle button */}
-            <button
-              onClick={handleToggleMC}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{mcEnabled ? 'MC: On' : 'MC: Off'}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
-              </div>
-            </button>
-
-            {/* Voice Selector - only show when MC is enabled */}
-            {mcEnabled && <VoiceSelector />}
+            {/* MC Voice Selector */}
+            <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
+              if (!enabled) {
+                stopTTS();
+              }
+              setMcEnabled(enabled);
+            }} />
 
             {/* Play/Pause button - show when there's code */}
             {state.currentCode && (

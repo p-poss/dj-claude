@@ -3,7 +3,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useVoice } from '@/context/VoiceContext';
 
-export function VoiceSelector() {
+interface VoiceSelectorProps {
+  mcEnabled: boolean;
+  onToggleMC: (enabled: boolean) => void;
+}
+
+export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
   const {
     selectedElevenLabsVoice,
     setSelectedElevenLabsVoice,
@@ -26,14 +31,22 @@ export function VoiceSelector() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const displayName = 'VOICE: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10);
+  const displayName = mcEnabled
+    ? 'MC: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10)
+    : 'MC: ' + 'Off'.padEnd(10);
   const boxWidth = 22;
 
   const handleSelectVoice = (voiceId: string) => {
     const voice = elevenLabsVoices.find(v => v.id === voiceId);
     if (voice) {
       setSelectedElevenLabsVoice(voice);
+      onToggleMC(true);
     }
+    setIsOpen(false);
+  };
+
+  const handleSelectOff = () => {
+    onToggleMC(false);
     setIsOpen(false);
   };
 
@@ -73,6 +86,21 @@ export function VoiceSelector() {
         >
           <pre className="m-0">{'╔' + '═'.repeat(boxWidth) + '╗'}</pre>
 
+          {/* Off option */}
+          <button
+            onClick={handleSelectOff}
+            className="group block w-full text-left phosphor-glow cursor-pointer"
+          >
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0 phosphor-glow">║</pre>
+              <pre className="m-0 flex-1 phosphor-glow flex justify-between">
+                <span>{' ' + formatRow('Off')}</span>
+                <span className={!mcEnabled ? '' : 'opacity-0 group-hover:opacity-100'}>▪ </span>
+              </pre>
+              <pre className="m-0 phosphor-glow">║</pre>
+            </div>
+          </button>
+
           {/* Voice options */}
           {elevenLabsVoices.map((voice) => (
             <button
@@ -84,7 +112,7 @@ export function VoiceSelector() {
                 <pre className="m-0 phosphor-glow">║</pre>
                 <pre className="m-0 flex-1 phosphor-glow flex justify-between">
                   <span>{' ' + formatRow(voice.name)}</span>
-                  <span className={selectedElevenLabsVoice?.id === voice.id ? '' : 'opacity-0 group-hover:opacity-100'}>▪ </span>
+                  <span className={mcEnabled && selectedElevenLabsVoice?.id === voice.id ? '' : 'opacity-0 group-hover:opacity-100'}>▪ </span>
                 </pre>
                 <pre className="m-0 phosphor-glow">║</pre>
               </div>
