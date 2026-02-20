@@ -26,7 +26,7 @@ export function VoiceSelector() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const displayName = 'Voice: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10);
+  const displayName = 'VOICE: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10);
   const boxWidth = 22;
 
   const handleSelectVoice = (voiceId: string) => {
