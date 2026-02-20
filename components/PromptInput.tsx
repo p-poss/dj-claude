@@ -68,24 +68,14 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       >
         <style>{`
           /* Neon glow on prompt borders when CRT mode is enabled */
-          body.crt-screen .prompt-box::before,
-          body.crt-screen .prompt-box::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: ${colors.text};
+          body.crt-screen .prompt-box {
             box-shadow:
               0 0 2px ${colors.text},
               0 0 4px ${colors.text},
-              0 0 8px ${colors.text};
-          }
-          body.crt-screen .prompt-box::before {
-            top: 0;
-          }
-          body.crt-screen .prompt-box::after {
-            bottom: 0;
+              0 0 8px ${colors.text},
+              inset 0 0 2px ${colors.text},
+              inset 0 0 4px ${colors.text},
+              inset 0 0 8px ${colors.text} !important;
           }
           @keyframes blink {
             0%, 50% { opacity: 1; }
@@ -155,7 +145,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           {/* Input box with CSS border - top and bottom only */}
           <div className="flex-1" style={{ position: 'relative', height: '32.5px', maxWidth: '504px', marginTop: '6px' }}>
             {/* Border overlay - wobbles independently in party mode */}
-            <div className="prompt-box" style={{ position: 'absolute', inset: 0, borderTop: `1px solid ${colors.text}`, borderBottom: `1px solid ${colors.text}`, pointerEvents: 'none' }} />
+            <div className="prompt-box" style={{ position: 'absolute', inset: 0, border: `1px solid ${colors.text}`, pointerEvents: 'none' }} />
             {/* Content - stays still */}
             <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center', gap: '0.5rem', paddingLeft: '8px', paddingRight: '8px' }}>
               <span style={{ position: 'relative' }}>
