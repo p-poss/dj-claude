@@ -67,6 +67,26 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
         style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: colors.text }}
       >
         <style>{`
+          /* Neon glow on prompt borders when CRT mode is enabled */
+          body.crt-screen .prompt-box::before,
+          body.crt-screen .prompt-box::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: ${colors.text};
+            box-shadow:
+              0 0 2px ${colors.text},
+              0 0 4px ${colors.text},
+              0 0 8px ${colors.text};
+          }
+          body.crt-screen .prompt-box::before {
+            top: 0;
+          }
+          body.crt-screen .prompt-box::after {
+            bottom: 0;
+          }
           @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
