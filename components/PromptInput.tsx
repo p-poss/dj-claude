@@ -133,7 +133,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
         {/* Input row with submit button */}
         <div className="flex items-start gap-2">
           {/* Input box with CSS border - top and bottom only */}
-          <div className="flex-1" style={{ borderTop: `1px solid ${colors.text}`, borderBottom: `1px solid ${colors.text}`, height: '32.5px', maxWidth: '504px', display: 'flex', alignItems: 'center', gap: '0.5rem', paddingLeft: '8px', paddingRight: '8px' }}>
+          <div className="flex-1" style={{ borderTop: `1px solid ${colors.text}`, borderBottom: `1px solid ${colors.text}`, height: '32.5px', maxWidth: '504px', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '0.5rem', paddingLeft: '8px', paddingRight: '8px' }}>
               <span style={{ position: 'relative' }}>
                 {'>'}
                 {isStreaming && <span className="streaming-spinner" style={{ position: 'absolute', left: '100%', marginLeft: 'calc(0.5ch + 6px)' }} />}
