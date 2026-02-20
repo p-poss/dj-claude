@@ -26,8 +26,8 @@ export function VoiceSelector() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const displayName = (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10);
-  const boxWidth = 15;
+  const displayName = 'Voice: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10);
+  const boxWidth = 22;
 
   const handleSelectVoice = (voiceId: string) => {
     const voice = elevenLabsVoices.find(v => v.id === voiceId);
@@ -55,7 +55,7 @@ export function VoiceSelector() {
           <pre className="m-0">{'╔' + '═'.repeat(boxWidth) + '╗'}</pre>
           <div className="flex" style={{ fontFamily: 'inherit' }}>
             <pre className="m-0">║</pre>
-            <pre className="m-0 flex-1 text-center">{displayName} ▾</pre>
+            <pre className="m-0 flex-1 flex justify-between"><span>{' ' + displayName}</span><span>▾ </span></pre>
             <pre className="m-0">║</pre>
           </div>
           <pre className="m-0">{'╚' + '═'.repeat(boxWidth) + '╝'}</pre>
@@ -82,9 +82,9 @@ export function VoiceSelector() {
             >
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0 phosphor-glow">║</pre>
-                <pre className="m-0 flex-1 text-center phosphor-glow">
-                  {formatRow(voice.name)}
-                  <span className={selectedElevenLabsVoice?.id === voice.id ? '' : 'opacity-0 group-hover:opacity-100'}>▪</span>
+                <pre className="m-0 flex-1 phosphor-glow flex justify-between">
+                  <span>{' ' + formatRow(voice.name)}</span>
+                  <span className={selectedElevenLabsVoice?.id === voice.id ? '' : 'opacity-0 group-hover:opacity-100'}>▪ </span>
                 </pre>
                 <pre className="m-0 phosphor-glow">║</pre>
               </div>
