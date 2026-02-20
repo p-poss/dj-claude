@@ -98,6 +98,9 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             text-indent: 4px;
             text-shadow: 0 0 2px currentColor, 0 0 4px currentColor;
           }
+          .prompt-input-overflow::-webkit-scrollbar {
+            display: none;
+          }
           .prompt-input::placeholder {
             color: inherit;
             opacity: 0.6;
@@ -152,7 +155,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
                 {'❯'}
                 {isStreaming && <span className="streaming-spinner" style={{ position: 'absolute', left: '100%', marginLeft: 'calc(0.5ch + 6px)' }} />}
               </span>
-              <div style={{ overflowX: 'hidden', overflowY: 'visible', flex: 1 }}>
+              <div className="prompt-input-overflow" style={{ overflow: 'hidden', flex: 1 }}>
                 <div className="prompt-input-wrapper">
                   <input
                     ref={inputRef}
