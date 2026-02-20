@@ -522,19 +522,18 @@ export function DJInterface() {
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
         {/* Header row with welcome box and status boxes */}
         <div className="flex items-start justify-between gap-4">
-          {/* Welcome box */}
-          <div className="ascii-box" style={{ width: 'fit-content' }}>
-            <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
-              <pre className="m-0">║</pre>
-            </div>
-            <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
-          </div>
-
-          {/* Status boxes */}
+          {/* Welcome box and status */}
           <div className="flex items-start gap-2">
+            <div className="ascii-box" style={{ width: 'fit-content' }}>
+              <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+            </div>
+
             {/* Playing status box */}
             <div className="ascii-box" style={{ width: 'fit-content' }}>
               <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
@@ -547,6 +546,10 @@ export function DJInterface() {
               </div>
               <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
             </div>
+          </div>
+
+          {/* Status boxes */}
+          <div className="flex items-start gap-2">
 
             {/* MC Voice Selector */}
             <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
