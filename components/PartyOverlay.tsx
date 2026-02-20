@@ -106,6 +106,11 @@ export function PartyOverlay({ enabled, color, hue, crtEnabled }: PartyOverlayPr
           animation: party-wobble-react 1s linear infinite !important;
         }
 
+        /* Prompt input box wobbles as a unit */
+        body.party-mode .prompt-box {
+          animation: party-wobble-react 1s linear infinite !important;
+        }
+
         @keyframes party-wobble-react {
           0%, 100% { transform: rotate(0deg); }
           25% { transform: rotate(-1deg); }
