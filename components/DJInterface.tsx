@@ -524,38 +524,39 @@ export function DJInterface() {
       {/* Box drawn with separate elements for perfect alignment */}
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
         {/* Header row with welcome box and status boxes */}
-        <div className="flex flex-wrap items-start" style={{ gap: '8px' }}>
-          {/* Welcome box and status */}
-          <div className="flex items-start gap-2">
-            <div className="ascii-box" style={{ width: 'fit-content' }}>
-              <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+        <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: 0 }}>
+          {/* Welcome box */}
+          <div className="ascii-box" style={{ width: 'fit-content' }}>
+            <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
+              <pre className="m-0">║</pre>
             </div>
+            <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+          </div>
 
-            {/* Playing status box */}
-            <div className="ascii-box" style={{ width: 'fit-content' }}>
-              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">
-                  {!editorReady ? '◌ Booting Up' : isPlaying ? '● Mixing' : '○ On Deck'}
-                </pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            {/* Spacer to push buttons right */}
+            <div style={{ flexGrow: 1 }} />
+
+          {/* Playing status box */}
+          <div className="ascii-box" style={{ width: 'fit-content' }}>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">
+                {!editorReady ? '◌ Booting Up' : isPlaying ? '● Mixing' : '○ On Deck'}
+              </pre>
+              <pre className="m-0">║</pre>
             </div>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
           </div>
 
             {/* Theme cycle button */}
             <button
               onClick={cycleTheme}
               className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content', marginLeft: 'auto' }}
+              style={{ width: 'fit-content' }}
             >
               <div className="group-hover:opacity-30">
                 <pre className="m-0">╔{'═'.repeat(16)}╗</pre>
@@ -568,78 +569,72 @@ export function DJInterface() {
               </div>
             </button>
 
-            {/* CRT toggle button */}
-            <button
-              onClick={() => setCrtEnabled((prev) => !prev)}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{crtEnabled ? 'NEON: On' : 'NEON: Off'}</pre>
-                  <pre className="m-0">║</pre>
+            {/* Neon, Party, Invert - wrap together as a group */}
+            <div className="flex items-start gap-2">
+              {/* CRT toggle button */}
+              <button
+                onClick={() => setCrtEnabled((prev) => !prev)}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'NEON: On' : 'NEON: Off'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
                 </div>
-                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
-              </div>
-            </button>
+              </button>
 
-            {/* Party toggle button */}
-            <button
-              onClick={() => setPartyEnabled((prev) => !prev)}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{partyEnabled ? 'PARTY: On' : 'PARTY: Off'}</pre>
-                  <pre className="m-0">║</pre>
+              {/* Party toggle button */}
+              <button
+                onClick={() => setPartyEnabled((prev) => !prev)}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'PARTY: On' : 'PARTY: Off'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
                 </div>
-                <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
-              </div>
-            </button>
+              </button>
 
-            {/* Invert colors button */}
-            <button
-              onClick={toggleSwap}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{isSwapped ? 'INVERT: On' : 'INVERT: Off'}</pre>
-                  <pre className="m-0">║</pre>
+              {/* Invert colors button */}
+              <button
+                onClick={toggleSwap}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'INVERT: On' : 'INVERT: Off'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
                 </div>
-                <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
-              </div>
-            </button>
+              </button>
+            </div>
 
         </div>
 
         {/* Logo row with MC and Play/Pause buttons */}
         <div className="flex items-start justify-between">
           <div>
-            {/* Full logo - hidden on small screens */}
-            <pre className="m-0 max-[560px]:hidden">{`
+            <pre className="m-0">{`
  ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
  ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
  ██║  ██║     ██║    ██║     ██║     ███████║██║   ██║██║  ██║█████╗
  ██║  ██║██   ██║    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
  ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
  ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
-            {/* DJ-only logo - shown on small screens */}
-            <pre className="m-0 hidden max-[560px]:block">{`
- ██████╗      ██╗
- ██╔══██╗     ██║
- ██║  ██║     ██║
- ██║  ██║██   ██║
- ██████╔╝╚█████╔╝
- ╚═════╝  ╚════╝`}</pre>
           </div>
 
           <div className="flex items-start gap-2">

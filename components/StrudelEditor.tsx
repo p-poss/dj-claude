@@ -597,7 +597,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
         {/* Keyboard shortcut hint */}
         <div
           ref={keyboardHintRef}
-          className="keyboard-hint phosphor-glow"
+          className="keyboard-hint phosphor-glow hidden md:block"
           style={{
             position: 'absolute',
             top: '10px',
