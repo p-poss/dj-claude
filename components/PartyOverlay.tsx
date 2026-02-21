@@ -36,7 +36,7 @@ export function PartyOverlay({ enabled, color, hue, crtEnabled }: PartyOverlayPr
           position: 'fixed',
           inset: 0,
           pointerEvents: 'none',
-          zIndex: 9999,
+          zIndex: 9997,
           overflow: 'hidden',
           filter: crtEnabled ? `hue-rotate(${hue}deg) brightness(1.5)` : `hue-rotate(${hue}deg)`,
           transition: 'filter 0.05s linear',
