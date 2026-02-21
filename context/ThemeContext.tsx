@@ -19,8 +19,8 @@ export const fairlightTheme: ThemeColors = {
 // Modern terminal palette
 export const terminalTheme: ThemeColors = {
   name: 'Terminal',
-  background: '#0a0a0a',
-  text: '#a0a0a0',
+  background: '#000000',
+  text: '#FFFFFF',
 };
 
 // Anthropic brand palette
@@ -37,12 +37,20 @@ export const geminiTheme: ThemeColors = {
   text: '#008BFF',
 };
 
+// OpenAI Codex palette
+export const codexTheme: ThemeColors = {
+  name: 'Codex',
+  background: '#1C1C1C',
+  text: '#8C8C8C',
+};
+
 // All themes in cycle order
 export const themes: ThemeColors[] = [
-  fairlightTheme,
   terminalTheme,
+  fairlightTheme,
   anthropicTheme,
   geminiTheme,
+  codexTheme,
 ];
 
 interface ThemeContextType {
