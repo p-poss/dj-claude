@@ -47,7 +47,7 @@ export const codexTheme: ThemeColors = {
 // OpenClaw palette
 export const openclawTheme: ThemeColors = {
   name: 'OpenClaw',
-  background: '#050A13',
+  background: '#140C13',
   text: '#FF3543',
 };
 
