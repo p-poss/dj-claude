@@ -542,7 +542,7 @@ export function DJInterface() {
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">
-                {!editorReady ? '◌ Booting Up' : isPlaying ? '● Mixing' : '○ On Deck'}
+                {!editorReady ? '◌ Booting Up' : (state.isStreaming || (isComplete && !isPlaying)) ? <><span className="queuing-pulse">◎</span> Queuing</> : isPlaying ? '● Mixing' : '○ On Deck'}
               </pre>
               <pre className="m-0">║</pre>
             </div>
