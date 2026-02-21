@@ -525,7 +525,7 @@ export function DJInterface() {
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
         <div className="flex flex-wrap items-start justify-between" style={{ columnGap: '8px', rowGap: '0px' }}>
 
-          {/* Container A: Logo / Status */}
+          {/* Container A: Logo / Status / Controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
             {/* Row 1: Welcome box + On Deck status */}
             <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
@@ -564,78 +564,81 @@ export function DJInterface() {
  ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
  ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
             </div>
+
+            {/* Row 3: Club, Rave, Dance, Flip */}
+            <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+              {/* Club theme button */}
+              <button
+                onClick={cycleTheme}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+                </div>
+              </button>
+
+              {/* Rave toggle button */}
+              <button
+                onClick={() => setCrtEnabled((prev) => !prev)}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+                </div>
+              </button>
+
+              {/* Dance toggle button */}
+              <button
+                onClick={() => setPartyEnabled((prev) => !prev)}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DANCE: On' : 'DANCE: Off'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+                </div>
+              </button>
+
+              {/* Flip colors button */}
+              <button
+                onClick={toggleSwap}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'FLIP: On' : 'FLIP: Off'}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+                </div>
+              </button>
+            </div>
           </div>
 
-          {/* Container B: Controls */}
+          {/* Container B: Info + MC */}
           <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
-            {/* Club theme button */}
-            <button
-              onClick={cycleTheme}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
-              </div>
-            </button>
-
-            {/* Rave toggle button */}
-            <button
-              onClick={() => setCrtEnabled((prev) => !prev)}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
-              </div>
-            </button>
-
-            {/* Dance toggle button */}
-            <button
-              onClick={() => setPartyEnabled((prev) => !prev)}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DANCE: On' : 'DANCE: Off'}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
-              </div>
-            </button>
-
-            {/* Flip colors button */}
-            <button
-              onClick={toggleSwap}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{isSwapped ? 'FLIP: On' : 'FLIP: Off'}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
-              </div>
-            </button>
-
             {/* Info button with modal */}
             <div
               className="group relative phosphor-glow"
