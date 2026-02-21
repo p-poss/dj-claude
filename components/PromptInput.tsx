@@ -146,7 +146,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
         {/* Input row with submit button */}
         <div className="flex items-start gap-2">
           {/* Input box with CSS border - top and bottom only */}
-          <div className="flex-1" style={{ position: 'relative', height: '32.5px', maxWidth: '504px', marginTop: '6px' }}>
+          <div className="flex-1" style={{ position: 'relative', height: '32.5px', marginTop: '6px' }}>
             {/* Border overlay - wobbles independently in party mode */}
             <div className="prompt-box" style={{ position: 'absolute', inset: 0, border: `1px solid ${colors.text}`, borderRadius: '2px', pointerEvents: 'none' }} />
             {/* Content - stays still */}

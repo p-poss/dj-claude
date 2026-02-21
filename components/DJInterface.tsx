@@ -554,6 +554,121 @@ export function DJInterface() {
           {/* Status boxes */}
           <div className="flex items-start gap-2">
 
+            {/* Info button with modal */}
+            <div
+              className="group relative phosphor-glow"
+              onMouseEnter={() => setShowInfo(true)}
+              onMouseLeave={() => setShowInfo(false)}
+            >
+              <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
+                <pre className="m-0">╔═══╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">i</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚═══╝</pre>
+              </div>
+
+              {/* Info modal - positioned relative to info button */}
+              {showInfo && (
+                <div
+                  className="absolute text-xs select-none"
+                  style={{
+                    right: 0,
+                    top: 0,
+                    lineHeight: '1.2',
+                    fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+                    color: theme.text,
+                    zIndex: 10,
+                  }}
+                >
+                  <div className="flex flex-col ascii-box">
+                    <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
+                    <div className="flex" style={{ fontFamily: 'inherit' }}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1"> AI-powered live coding music in Strudel</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <div className="flex" style={{ fontFamily: 'inherit' }}>
+                      <pre className="m-0">║</pre>
+                      <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Swap colors button */}
+            <button
+              onClick={toggleSwap}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔═══╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">↔</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚═══╝</pre>
+              </div>
+            </button>
+
+            {/* Theme cycle button */}
+            <button
+              onClick={cycleTheme}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">Theme</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
+              </div>
+            </button>
+
+            {/* CRT toggle button */}
+            <button
+              onClick={() => setCrtEnabled((prev) => !prev)}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{crtEnabled ? 'NEON: On' : 'NEON: Off'}</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
+              </div>
+            </button>
+
+            {/* Party toggle button */}
+            <button
+              onClick={() => setPartyEnabled((prev) => !prev)}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{partyEnabled ? 'PARTY: On' : 'PARTY: Off'}</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
+              </div>
+            </button>
+
             {/* MC Voice Selector */}
             <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
               if (!enabled) {
@@ -660,126 +775,6 @@ export function DJInterface() {
               crtEnabled={crtEnabled}
             />
           </div>
-
-          {/* Info button with modal */}
-          <div
-            className="text-xs select-none group relative phosphor-glow"
-            style={{
-              lineHeight: '1.2',
-              fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-              color: theme.text,
-            }}
-            onMouseEnter={() => setShowInfo(true)}
-            onMouseLeave={() => setShowInfo(false)}
-          >
-            <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
-              <pre className="m-0">╔═══╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">i</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚═══╝</pre>
-            </div>
-
-            {/* Info modal - positioned relative to info button */}
-            {showInfo && (
-              <div
-                className="absolute text-xs select-none"
-                style={{
-                  right: 0,
-                  top: 0,
-                  lineHeight: '1.2',
-                  fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-                  color: theme.text,
-                  zIndex: 10,
-                }}
-              >
-                <div className="flex flex-col ascii-box">
-                  <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> AI-powered live coding music in Strudel</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Swap colors button */}
-          <button
-            onClick={toggleSwap}
-            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
-          >
-            <div className="group-hover:opacity-30">
-              <pre className="m-0">╔═══╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">↔</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚═══╝</pre>
-            </div>
-          </button>
-
-          {/* Theme cycle button */}
-          <button
-            onClick={cycleTheme}
-            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
-          >
-            <div className="group-hover:opacity-30">
-              <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">Theme</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
-            </div>
-          </button>
-
-          {/* CRT toggle button */}
-          <button
-            onClick={() => setCrtEnabled((prev) => !prev)}
-            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
-          >
-            <div className="group-hover:opacity-30">
-              <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">{crtEnabled ? 'NEON: On' : 'NEON: Off'}</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
-            </div>
-          </button>
-
-          {/* Party toggle button */}
-          <button
-            onClick={() => setPartyEnabled((prev) => !prev)}
-            className="text-xs select-none group phosphor-glow ascii-box cursor-pointer"
-            style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, width: 'fit-content' }}
-          >
-            <div className="group-hover:opacity-30">
-              <pre className="m-0">╔{'═'.repeat(11)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">{partyEnabled ? 'PARTY: On' : 'PARTY: Off'}</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(11)}╝</pre>
-            </div>
-          </button>
 
         </div>
 
