@@ -695,24 +695,6 @@ export function DJInterface() {
               setMcEnabled(enabled);
             }} />
 
-            {/* Play/Pause button - show when there's code */}
-            {state.currentCode && (
-              <button
-                onClick={handleTogglePlayback}
-                className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
-              >
-                <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ pause' : '▶ play'}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
-                </div>
-              </button>
-            )}
           </div>
         </div>
 
@@ -814,6 +796,24 @@ export function DJInterface() {
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">Go Back</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            </div>
+          </button>
+
+          {/* Play/Pause button - right-aligned */}
+          <button
+            onClick={state.currentCode ? handleTogglePlayback : undefined}
+            disabled={!state.currentCode}
+            className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+            style={{ width: 'fit-content', marginLeft: 'auto' }}
+          >
+            <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ Pause' : '▶ Play'}</pre>
                 <pre className="m-0">║</pre>
               </div>
               <pre className="m-0">╚{'═'.repeat(15)}╝</pre>

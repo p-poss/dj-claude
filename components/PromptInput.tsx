@@ -52,15 +52,6 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
       }
     };
 
-    const handleSubmitClick = () => {
-      if (!disabled && value.trim()) {
-        onSubmit(value.trim());
-        setValue('');
-        setScrollLeft(0);
-        setCursorPosition(0);
-      }
-    };
-
     return (
       <div
         className="text-xs select-none phosphor-glow"
@@ -144,7 +135,7 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
           }
         `}</style>
         {/* Input row with submit button */}
-        <div className="flex items-start gap-2">
+        <div className="flex items-start">
           {/* Input box with CSS border - top and bottom only */}
           <div className="flex-1" style={{ position: 'relative', height: '32.5px', marginTop: '6px' }}>
             {/* Border overlay - wobbles independently in party mode */}
@@ -199,23 +190,6 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
             </div>
           </div>
 
-          {/* Submit button */}
-          <button
-            onClick={handleSubmitClick}
-            disabled={disabled || !value.trim()}
-            className={`group ascii-box ${disabled || !value.trim() ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
-            style={{ width: 'fit-content' }}
-          >
-            <div className={disabled || !value.trim() ? '' : 'group-hover:opacity-30'}>
-              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╔{'═'.repeat(10)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
-                <pre className="m-0 flex-1 text-center" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}> SUBMIT </pre>
-                <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>║</pre>
-              </div>
-              <pre className="m-0" style={crtEnabled ? { textShadow: '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' } : undefined}>╚{'═'.repeat(10)}╝</pre>
-            </div>
-          </button>
         </div>
       </div>
     );
