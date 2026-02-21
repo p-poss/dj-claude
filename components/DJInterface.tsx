@@ -760,6 +760,42 @@ export function DJInterface() {
         className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
         style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
       >
+        {/* Play/Pause button - left-aligned */}
+        <button
+          onClick={state.currentCode ? handleTogglePlayback : undefined}
+          disabled={!state.currentCode}
+          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          style={{ width: 'fit-content' }}
+        >
+          <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ PAUSE' : '▶ PLAY'}</pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+          </div>
+        </button>
+
+        {/* Revert button - right-aligned */}
+        <button
+          onClick={state.previousCode ? handleGoBack : undefined}
+          disabled={!state.previousCode}
+          className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          style={{ width: 'fit-content', marginLeft: 'auto' }}
+        >
+          <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">↩ REVERT</pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+          </div>
+        </button>
+
         {/* Export button */}
         <button
           onClick={state.currentCode ? handleExport : undefined}
@@ -775,42 +811,6 @@ export function DJInterface() {
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
-          </div>
-        </button>
-
-        {/* Revert button */}
-        <button
-          onClick={state.previousCode ? handleGoBack : undefined}
-          disabled={!state.previousCode}
-          className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-          style={{ width: 'fit-content' }}
-        >
-          <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">↩ REVERT</pre>
-              <pre className="m-0">║</pre>
-            </div>
-            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
-          </div>
-        </button>
-
-        {/* Play/Pause button - right-aligned */}
-        <button
-          onClick={state.currentCode ? handleTogglePlayback : undefined}
-          disabled={!state.currentCode}
-          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-          style={{ width: 'fit-content', marginLeft: 'auto' }}
-        >
-          <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ PAUSE' : '▶ PLAY'}</pre>
-              <pre className="m-0">║</pre>
-            </div>
-            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
           </div>
         </button>
       </div>
