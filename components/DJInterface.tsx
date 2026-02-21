@@ -587,7 +587,7 @@ export function DJInterface() {
                     <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                     <div className="flex" style={{ fontFamily: 'inherit' }}>
                       <pre className="m-0">║</pre>
-                      <pre className="m-0 flex-1"> AI-powered live coding music in Strudel</pre>
+                      <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
                       <pre className="m-0">║</pre>
                     </div>
                     <div className="flex" style={{ fontFamily: 'inherit' }}>
