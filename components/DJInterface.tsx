@@ -771,7 +771,7 @@ export function DJInterface() {
             <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">{copied ? '✓ Copied!' : '⎘ Export'}</pre>
+              <pre className="m-0 flex-1 text-center">{copied ? '✓ COPIED!' : '⎘ EXPORT'}</pre>
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
@@ -789,7 +789,7 @@ export function DJInterface() {
             <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">↩ Revert</pre>
+              <pre className="m-0 flex-1 text-center">↩ REVERT</pre>
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
@@ -807,7 +807,7 @@ export function DJInterface() {
             <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ Pause' : '▶ Play'}</pre>
+              <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ PAUSE' : '▶ PLAY'}</pre>
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
