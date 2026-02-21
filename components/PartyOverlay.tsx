@@ -4,10 +4,9 @@ interface PartyOverlayProps {
   enabled: boolean;
   color: string;
   hue: number;
-  crtEnabled: boolean;
 }
 
-export function PartyOverlay({ enabled, color, hue, crtEnabled }: PartyOverlayProps) {
+export function PartyOverlay({ enabled, color, hue }: PartyOverlayProps) {
   if (!enabled) return null;
 
   // Generate confetti particles with ASCII/pixel art
@@ -38,13 +37,14 @@ export function PartyOverlay({ enabled, color, hue, crtEnabled }: PartyOverlayPr
           pointerEvents: 'none',
           zIndex: 9997,
           overflow: 'hidden',
-          filter: crtEnabled ? `hue-rotate(${hue}deg) brightness(1.5)` : `hue-rotate(${hue}deg)`,
+          filter: `hue-rotate(${hue}deg)`,
           transition: 'filter 0.05s linear',
         }}
       >
         {confettiParticles.map((particle) => (
           <div
             key={particle.id}
+            className="phosphor-glow"
             style={{
               position: 'absolute',
               left: particle.left,
@@ -52,7 +52,6 @@ export function PartyOverlay({ enabled, color, hue, crtEnabled }: PartyOverlayPr
               fontSize: particle.fontSize,
               fontFamily: 'monospace',
               color: color,
-              textShadow: crtEnabled ? '0 0 2px currentColor, 0 0 4px currentColor, 0 0 8px currentColor' : 'none',
               animation: `confetti-fall-react ${particle.animationDuration} linear infinite`,
               animationDelay: particle.animationDelay,
             }}
