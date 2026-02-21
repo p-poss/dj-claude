@@ -766,24 +766,6 @@ export function DJInterface() {
           className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
           style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
         >
-          {/* Export button */}
-          <button
-            onClick={state.currentCode ? handleExport : undefined}
-            disabled={!state.currentCode}
-            className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-            style={{ width: 'fit-content' }}
-          >
-            <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">{copied ? 'Copied!' : 'Export'}</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
-            </div>
-          </button>
-
           {/* Go Back button */}
           <button
             onClick={state.previousCode ? handleGoBack : undefined}
@@ -796,6 +778,24 @@ export function DJInterface() {
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">Go Back</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            </div>
+          </button>
+
+          {/* Export button */}
+          <button
+            onClick={state.currentCode ? handleExport : undefined}
+            disabled={!state.currentCode}
+            className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+            style={{ width: 'fit-content' }}
+          >
+            <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{copied ? 'Copied!' : 'Export'}</pre>
                 <pre className="m-0">║</pre>
               </div>
               <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
