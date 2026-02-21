@@ -5,8 +5,11 @@ import { VoiceProvider } from "@/context/VoiceContext";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DJ CLAUDE",
+  title: "DJ Claude | v 2.0.0",
   description: "AI-powered live coding DJ - watch Claude write music in real-time",
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪩</text></svg>",
+  },
 };
 
 export default function RootLayout({
