@@ -86,21 +86,6 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
         >
           <pre className="m-0">{'╔' + '═'.repeat(boxWidth) + '╗'}</pre>
 
-          {/* Off option */}
-          <button
-            onClick={handleSelectOff}
-            className="group block w-full text-left phosphor-glow cursor-pointer"
-          >
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0 phosphor-glow">║</pre>
-              <pre className="m-0 flex-1 phosphor-glow flex justify-between">
-                <span>{' ' + formatRow('Off')}</span>
-                <span className={!mcEnabled ? '' : 'opacity-0 group-hover:opacity-100'}>▪ </span>
-              </pre>
-              <pre className="m-0 phosphor-glow">║</pre>
-            </div>
-          </button>
-
           {/* Voice options */}
           {elevenLabsVoices.map((voice) => (
             <button
@@ -118,6 +103,21 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
               </div>
             </button>
           ))}
+
+          {/* Off option */}
+          <button
+            onClick={handleSelectOff}
+            className="group block w-full text-left phosphor-glow cursor-pointer"
+          >
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0 phosphor-glow">║</pre>
+              <pre className="m-0 flex-1 phosphor-glow flex justify-between">
+                <span>{' ' + formatRow('Off')}</span>
+                <span className={!mcEnabled ? '' : 'opacity-0 group-hover:opacity-100'}>▪ </span>
+              </pre>
+              <pre className="m-0 phosphor-glow">║</pre>
+            </div>
+          </button>
 
           <pre className="m-0">{'╚' + '═'.repeat(boxWidth) + '╝'}</pre>
         </div>
