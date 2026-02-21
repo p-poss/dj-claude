@@ -44,6 +44,13 @@ export const codexTheme: ThemeColors = {
   text: '#8C8C8C',
 };
 
+// OpenClaw palette
+export const openclawTheme: ThemeColors = {
+  name: 'OpenClaw',
+  background: '#050A13',
+  text: '#FF3543',
+};
+
 // All themes in cycle order
 export const themes: ThemeColors[] = [
   anthropicTheme,
@@ -51,6 +58,7 @@ export const themes: ThemeColors[] = [
   codexTheme,
   terminalTheme,
   fairlightTheme,
+  openclawTheme,
 ];
 
 interface ThemeContextType {
