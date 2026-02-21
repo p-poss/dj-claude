@@ -46,11 +46,11 @@ export const codexTheme: ThemeColors = {
 
 // All themes in cycle order
 export const themes: ThemeColors[] = [
-  terminalTheme,
-  fairlightTheme,
   anthropicTheme,
   geminiTheme,
   codexTheme,
+  terminalTheme,
+  fairlightTheme,
 ];
 
 interface ThemeContextType {
@@ -66,7 +66,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeIndex, setThemeIndex] = useState(2); // Default to Anthropic theme
+  const [themeIndex, setThemeIndex] = useState(0); // Default to Anthropic theme
   const [isSwapped, setIsSwapped] = useState(false);
   const baseTheme = themes[themeIndex];
 
