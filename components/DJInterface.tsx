@@ -552,8 +552,8 @@ export function DJInterface() {
             {/* Theme cycle button */}
             <button
               onClick={cycleTheme}
-              className="group phosphor-glow ascii-box cursor-pointer lg:ml-auto"
-              style={{ width: 'fit-content' }}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content', marginLeft: 'auto' }}
             >
               <div className="group-hover:opacity-30">
                 <pre className="m-0">╔{'═'.repeat(16)}╗</pre>
