@@ -768,13 +768,13 @@ export function DJInterface() {
           style={{ width: 'fit-content' }}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
             <div className="flex" style={{ fontFamily: 'inherit' }}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">{isPlaying ? '▪ PAUSE' : '▶ PLAY'}</pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
           </div>
         </button>
 
