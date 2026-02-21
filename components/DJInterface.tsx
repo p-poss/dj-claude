@@ -565,25 +565,8 @@ export function DJInterface() {
  ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
             </div>
 
-            {/* Row 3: Club, Rave, Dance, Flip */}
+            {/* Row 3: Rave, Dance, Flip */}
             <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
-              {/* Club theme button */}
-              <button
-                onClick={cycleTheme}
-                className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
-              >
-                <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
-                </div>
-              </button>
-
               {/* Rave toggle button */}
               <button
                 onClick={() => setCrtEnabled((prev) => !prev)}
@@ -691,6 +674,23 @@ export function DJInterface() {
               )}
             </div>
 
+            {/* Club theme button */}
+            <button
+              onClick={cycleTheme}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+              </div>
+            </button>
+
             {/* MC Voice Selector */}
             <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
               if (!enabled) {
@@ -702,40 +702,20 @@ export function DJInterface() {
 
         </div>
 
-        {/* Dancing Claude character with speech bubble */}
-        <div className="flex justify-center">
-          <div
-            style={{
-              position: 'relative',
-              transform: `translateX(${characterOffset}px)`,
-              transition: 'transform 0.15s ease-out',
-            }}
-          >
-            <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} />
-            <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.text} />
-          </div>
-        </div>
       </div>
 
-      {/* Main content area - Strudel Editor as primary view */}
-      {/* This enables inline visualizations (pianoroll, scope) and mini locations (active highlighting) */}
-      <div className="flex-1 relative" style={{ minHeight: '35px' }}>
-        <StrudelEditor
-          ref={editorRef}
-          onReady={handleEditorReady}
-          onError={handleEditorError}
-        />
-        {/* Overlay to block editor interaction until first prompt */}
-        {state.messages.length === 0 && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 20,
-              cursor: 'not-allowed',
-            }}
-          />
-        )}
+      {/* Dancing Claude character with speech bubble */}
+      <div className="flex justify-center">
+        <div
+          style={{
+            position: 'relative',
+            transform: `translateX(${characterOffset}px)`,
+            transition: 'transform 0.15s ease-out',
+          }}
+        >
+          <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} />
+          <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.text} />
+        </div>
       </div>
 
       {/* Bottom section with info button and modal */}
@@ -765,66 +745,87 @@ export function DJInterface() {
 
         </div>
 
-        {/* Action buttons - always visible, greyed out when disabled */}
-        <div
-          className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
-          style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
+      </div>
+
+      {/* Main content area - Strudel Editor as primary view */}
+      {/* This enables inline visualizations (pianoroll, scope) and mini locations (active highlighting) */}
+      <div className="flex-1 relative" style={{ minHeight: '35px' }}>
+        <StrudelEditor
+          ref={editorRef}
+          onReady={handleEditorReady}
+          onError={handleEditorError}
+        />
+        {/* Overlay to block editor interaction until first prompt */}
+        {state.messages.length === 0 && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 20,
+              cursor: 'not-allowed',
+            }}
+          />
+        )}
+      </div>
+
+      {/* Action buttons - always visible, greyed out when disabled */}
+      <div
+        className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
+        style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}
+      >
+        {/* Export button */}
+        <button
+          onClick={state.currentCode ? handleExport : undefined}
+          disabled={!state.currentCode}
+          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          style={{ width: 'fit-content' }}
         >
-          {/* Export button */}
-          <button
-            onClick={state.currentCode ? handleExport : undefined}
-            disabled={!state.currentCode}
-            className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-            style={{ width: 'fit-content' }}
-          >
-            <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">{copied ? '✓ Copied!' : '⎘ Export'}</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+          <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">{copied ? '✓ Copied!' : '⎘ Export'}</pre>
+              <pre className="m-0">║</pre>
             </div>
-          </button>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+          </div>
+        </button>
 
-          {/* Revert button */}
-          <button
-            onClick={state.previousCode ? handleGoBack : undefined}
-            disabled={!state.previousCode}
-            className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-            style={{ width: 'fit-content' }}
-          >
-            <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
-              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">↩ Revert</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+        {/* Revert button */}
+        <button
+          onClick={state.previousCode ? handleGoBack : undefined}
+          disabled={!state.previousCode}
+          className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          style={{ width: 'fit-content' }}
+        >
+          <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">↩ Revert</pre>
+              <pre className="m-0">║</pre>
             </div>
-          </button>
+            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+          </div>
+        </button>
 
-          {/* Play/Pause button - right-aligned */}
-          <button
-            onClick={state.currentCode ? handleTogglePlayback : undefined}
-            disabled={!state.currentCode}
-            className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-            style={{ width: 'fit-content', marginLeft: 'auto' }}
-          >
-            <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-              <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
-                <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ Pause' : '▶ Play'}</pre>
-                <pre className="m-0">║</pre>
-              </div>
-              <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+        {/* Play/Pause button - right-aligned */}
+        <button
+          onClick={state.currentCode ? handleTogglePlayback : undefined}
+          disabled={!state.currentCode}
+          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          style={{ width: 'fit-content', marginLeft: 'auto' }}
+        >
+          <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">{isPlaying ? '⏸ Pause' : '▶ Play'}</pre>
+              <pre className="m-0">║</pre>
             </div>
-          </button>
-        </div>
-
+            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+          </div>
+        </button>
       </div>
 
     </div>
