@@ -559,7 +559,7 @@ export function DJInterface() {
                 <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
                 <div className="flex" style={{ fontFamily: 'inherit' }}>
                   <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{`THEME: ${themeName}`}</pre>
+                  <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
                   <pre className="m-0">║</pre>
                 </div>
                 <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
@@ -578,7 +578,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'NEON: On' : 'NEON: Off'}</pre>
+                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
@@ -595,7 +595,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'PARTY: On' : 'PARTY: Off'}</pre>
+                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DANCE: On' : 'DANCE: Off'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
@@ -612,7 +612,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'INVERT: On' : 'INVERT: Off'}</pre>
+                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'FLIP: On' : 'FLIP: Off'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>

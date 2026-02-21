@@ -12,22 +12,8 @@ export interface ThemeColors {
 // Fairlight CMI green phosphor CRT palette
 export const fairlightTheme: ThemeColors = {
   name: 'Fairlight',
-  background: '#0a0f0a',
-  text: '#22aa22',
-};
-
-// Amber phosphor CRT palette
-export const amberTheme: ThemeColors = {
-  name: 'Amber',
-  background: '#0f0a05',
-  text: '#aa7722',
-};
-
-// Blue phosphor CRT palette
-export const blueTheme: ThemeColors = {
-  name: 'Blue',
-  background: '#050a0f',
-  text: '#2277aa',
+  background: '#161B14',
+  text: '#00FF99',
 };
 
 // Modern terminal palette
@@ -40,17 +26,23 @@ export const terminalTheme: ThemeColors = {
 // Anthropic brand palette
 export const anthropicTheme: ThemeColors = {
   name: 'Anthropic',
-  background: '#0a0808',
-  text: '#a85a42',
+  background: '#262624',
+  text: '#E8704E',
+};
+
+// Gemini blue palette
+export const geminiTheme: ThemeColors = {
+  name: 'Gemini',
+  background: '#131314',
+  text: '#008BFF',
 };
 
 // All themes in cycle order
 export const themes: ThemeColors[] = [
   fairlightTheme,
-  amberTheme,
-  blueTheme,
   terminalTheme,
   anthropicTheme,
+  geminiTheme,
 ];
 
 interface ThemeContextType {
@@ -64,7 +56,7 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeIndex, setThemeIndex] = useState(1); // Default to Amber theme
+  const [themeIndex, setThemeIndex] = useState(2); // Default to Anthropic theme
   const [isSwapped, setIsSwapped] = useState(false);
   const baseTheme = themes[themeIndex];
 
