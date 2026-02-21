@@ -34,7 +34,7 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
   const displayName = mcEnabled
     ? 'MC: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10)
     : 'MC: ' + 'Off'.padEnd(10);
-  const boxWidth = 22;
+  const boxWidth = 20;
 
   const handleSelectVoice = (voiceId: string) => {
     const voice = elevenLabsVoices.find(v => v.id === voiceId);
