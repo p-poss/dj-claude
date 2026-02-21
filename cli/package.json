@@ -4,15 +4,18 @@
   "description": "AI-generated music in your terminal — DJ Claude CLI",
   "type": "module",
   "bin": {
-    "dj-claude": "./bin.mjs"
+    "dj-claude": "./bin.mjs",
+    "dj-claude-mcp": "./mcp.mjs"
   },
   "scripts": {
     "build": "tsc",
     "start": "node bin.mjs",
-    "dev": "tsc && node bin.mjs"
+    "dev": "tsc && node bin.mjs",
+    "mcp": "node mcp.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "@strudel/core": "1.1.0",
     "@strudel/mini": "1.1.0",
     "@strudel/webaudio": "1.1.0",
@@ -21,7 +24,8 @@
     "ink-text-input": "^6.0.0",
     "node-web-audio-api": "^1.0.8",
     "react": "^18.3.1",
-    "superdough": "1.1.0"
+    "superdough": "1.1.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20",

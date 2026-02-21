@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "dj-claude": {
+      "command": "node",
+      "args": ["cli/mcp.mjs"]
+    }
+  }
+}
