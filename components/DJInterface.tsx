@@ -523,52 +523,71 @@ export function DJInterface() {
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
-        {/* Header row with welcome box and status boxes */}
         <div className="flex flex-wrap items-start" style={{ gap: '8px' }}>
-          {/* Welcome box */}
-          <div className="ascii-box" style={{ width: 'fit-content' }}>
-            <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
-              <pre className="m-0">║</pre>
-            </div>
-            <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
-          </div>
 
-          {/* Playing status box */}
-          <div className="ascii-box" style={{ width: 'fit-content' }}>
-            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">
-                {!editorReady ? '◌ Booting Up' : (state.isStreaming || (isComplete && !isPlaying)) ? <><span className="queuing-pulse">◎</span> Queuing</> : isPlaying ? '● Mixing' : '○ On Deck'}
-              </pre>
-              <pre className="m-0">║</pre>
-            </div>
-            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
-          </div>
+          {/* Container A: Logo / Status */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+            {/* Row 1: Welcome box + On Deck status */}
+            <div className="flex flex-wrap items-start" style={{ gap: '8px' }}>
+              {/* Welcome box */}
+              <div className="ascii-box" style={{ width: 'fit-content' }}>
+                <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
+                  <pre className="m-0">║</pre>
+                </div>
+                <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+              </div>
 
-            {/* Theme cycle button */}
-            <button
-              onClick={cycleTheme}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content', marginLeft: 'auto' }}
-            >
-              <div className="group-hover:opacity-30">
+              {/* Playing status box */}
+              <div className="ascii-box" style={{ width: 'fit-content' }}>
                 <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
                 <div className="flex" style={{ fontFamily: 'inherit' }}>
                   <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
+                  <pre className="m-0 flex-1 text-center">
+                    {!editorReady ? '◌ Booting Up' : (state.isStreaming || (isComplete && !isPlaying)) ? <><span className="queuing-pulse">◎</span> Queuing</> : isPlaying ? '● Mixing' : '○ On Deck'}
+                  </pre>
                   <pre className="m-0">║</pre>
                 </div>
                 <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
               </div>
-            </button>
+            </div>
 
-            {/* Neon, Party, Invert - wrap together as a group */}
-            <div className="flex items-start gap-2">
-              {/* CRT toggle button */}
+            {/* Row 2: DJ Claude ASCII Logo */}
+            <div>
+              <pre className="m-0">{`
+ ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
+ ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
+ ██║  ██║     ██║    ██║     ██║     ███████║██║   ██║██║  ██║█████╗
+ ██║  ██║██   ██║    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
+ ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
+ ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
+            </div>
+          </div>
+
+          {/* Container B: Controls */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', marginLeft: 'auto' }}>
+            {/* Row 1: Club, Rave, Dance, Flip */}
+            <div className="flex flex-wrap items-start" style={{ gap: '8px' }}>
+              {/* Club theme button */}
+              <button
+                onClick={cycleTheme}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className="group-hover:opacity-30">
+                  <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+                </div>
+              </button>
+
+              {/* Rave toggle button */}
               <button
                 onClick={() => setCrtEnabled((prev) => !prev)}
                 className="group phosphor-glow ascii-box cursor-pointer"
@@ -585,7 +604,7 @@ export function DJInterface() {
                 </div>
               </button>
 
-              {/* Party toggle button */}
+              {/* Dance toggle button */}
               <button
                 onClick={() => setPartyEnabled((prev) => !prev)}
                 className="group phosphor-glow ascii-box cursor-pointer"
@@ -602,7 +621,7 @@ export function DJInterface() {
                 </div>
               </button>
 
-              {/* Invert colors button */}
+              {/* Flip colors button */}
               <button
                 onClick={toggleSwap}
                 className="group phosphor-glow ascii-box cursor-pointer"
@@ -620,82 +639,70 @@ export function DJInterface() {
               </button>
             </div>
 
-        </div>
-
-        {/* Logo row with MC and Play/Pause buttons */}
-        <div className="flex items-start justify-between">
-          <div>
-            <pre className="m-0">{`
- ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
- ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
- ██║  ██║     ██║    ██║     ██║     ███████║██║   ██║██║  ██║█████╗
- ██║  ██║██   ██║    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
- ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
- ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
-          </div>
-
-          <div className="flex items-start gap-2">
-            {/* Info button with modal */}
-            <div
-              className="group relative phosphor-glow"
-              onMouseEnter={() => setShowInfo(true)}
-              onMouseLeave={() => setShowInfo(false)}
-            >
-              <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
-                <pre className="m-0">╔═══╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">i</pre>
-                  <pre className="m-0">║</pre>
+            {/* Row 2: Info + MC dropdown */}
+            <div className="flex items-start" style={{ gap: '8px', marginLeft: 'auto' }}>
+              {/* Info button with modal */}
+              <div
+                className="group relative phosphor-glow"
+                onMouseEnter={() => setShowInfo(true)}
+                onMouseLeave={() => setShowInfo(false)}
+              >
+                <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
+                  <pre className="m-0">╔═══╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">i</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚═══╝</pre>
                 </div>
-                <pre className="m-0">╚═══╝</pre>
+
+                {/* Info modal - positioned relative to info button */}
+                {showInfo && (
+                  <div
+                    className="absolute text-xs select-none"
+                    style={{
+                      right: 0,
+                      top: 0,
+                      lineHeight: '1.2',
+                      fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+                      color: theme.text,
+                      zIndex: 10,
+                    }}
+                  >
+                    <div className="flex flex-col ascii-box">
+                      <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
+                      <div className="flex" style={{ fontFamily: 'inherit' }}>
+                        <pre className="m-0">║</pre>
+                        <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
+                        <pre className="m-0">║</pre>
+                      </div>
+                      <div className="flex" style={{ fontFamily: 'inherit' }}>
+                        <pre className="m-0">║</pre>
+                        <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
+                        <pre className="m-0">║</pre>
+                      </div>
+                      <div className="flex" style={{ fontFamily: 'inherit' }}>
+                        <pre className="m-0">║</pre>
+                        <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
+                        <pre className="m-0">║</pre>
+                      </div>
+                      <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Info modal - positioned relative to info button */}
-              {showInfo && (
-                <div
-                  className="absolute text-xs select-none"
-                  style={{
-                    right: 0,
-                    top: 0,
-                    lineHeight: '1.2',
-                    fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-                    color: theme.text,
-                    zIndex: 10,
-                  }}
-                >
-                  <div className="flex flex-col ascii-box">
-                    <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-                    <div className="flex" style={{ fontFamily: 'inherit' }}>
-                      <pre className="m-0">║</pre>
-                      <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
-                      <pre className="m-0">║</pre>
-                    </div>
-                    <div className="flex" style={{ fontFamily: 'inherit' }}>
-                      <pre className="m-0">║</pre>
-                      <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
-                      <pre className="m-0">║</pre>
-                    </div>
-                    <div className="flex" style={{ fontFamily: 'inherit' }}>
-                      <pre className="m-0">║</pre>
-                      <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
-                      <pre className="m-0">║</pre>
-                    </div>
-                    <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
-                  </div>
-                </div>
-              )}
+              {/* MC Voice Selector */}
+              <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
+                if (!enabled) {
+                  stopTTS();
+                }
+                setMcEnabled(enabled);
+              }} />
             </div>
-
-            {/* MC Voice Selector */}
-            <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
-              if (!enabled) {
-                stopTTS();
-              }
-              setMcEnabled(enabled);
-            }} />
-
           </div>
+
         </div>
 
         {/* Dancing Claude character with speech bubble */}
