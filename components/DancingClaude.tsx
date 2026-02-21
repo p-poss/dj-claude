@@ -181,7 +181,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
   const bodyOffset = (frame === 1 || frame === 3) && isPlaying ? -2 : 0;
 
   return (
-    <div className="dancing-claude">
+    <div className="dancing-claude phosphor-glow">
       <div
         className="flex flex-col items-center"
         style={{
