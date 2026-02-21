@@ -729,32 +729,6 @@ export function DJInterface() {
             <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.text} />
           </div>
         </div>
-
-      {/* Prompt input */}
-      <div className="relative phosphor-glow">
-        <div className="flex items-start gap-2">
-          <div className="flex-1">
-            <PromptInput
-              ref={promptInputRef}
-              onSubmit={handlePromptSubmit}
-              disabled={state.isStreaming || !editorReady}
-              isStreaming={state.isStreaming}
-              placeholder={
-                state.isStreaming
-                  ? streamingMessages[streamingMessageIndex]
-                  : editorReady
-                    ? "Make it darker, Add percussion, Speed it up..."
-                    : "Initializing..."
-              }
-              themeColors={{
-                text: theme.text,
-                background: theme.background,
-              }}
-              crtEnabled={crtEnabled}
-            />
-          </div>
-        </div>
-      </div>
       </div>
 
       {/* Main content area - Strudel Editor as primary view */}
@@ -778,8 +752,33 @@ export function DJInterface() {
         )}
       </div>
 
-      {/* Bottom section */}
+      {/* Bottom section with info button and modal */}
       <div className="relative phosphor-glow">
+        {/* Prompt input row with info button */}
+        <div className="flex items-start gap-2">
+          <div className="flex-1">
+            <PromptInput
+              ref={promptInputRef}
+              onSubmit={handlePromptSubmit}
+              disabled={state.isStreaming || !editorReady}
+              isStreaming={state.isStreaming}
+              placeholder={
+                state.isStreaming
+                  ? streamingMessages[streamingMessageIndex]
+                  : editorReady
+                    ? "Make it darker, Add percussion, Speed it up..."
+                    : "Initializing..."
+              }
+              themeColors={{
+                text: theme.text,
+                background: theme.background,
+              }}
+              crtEnabled={crtEnabled}
+            />
+          </div>
+
+        </div>
+
         {/* Action buttons - always visible, greyed out when disabled */}
         <div
           className="pb-4 text-xs select-none flex gap-2 phosphor-glow"
