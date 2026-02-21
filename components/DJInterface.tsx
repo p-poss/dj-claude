@@ -292,7 +292,10 @@ export function DJInterface() {
       `And just like that, DJ ${voiceName} is live.`,
       `DJ ${voiceName} has entered the booth.`,
       `Ladies and gentlemen, DJ ${voiceName}.`,
-      `DJ ${voiceName}, locked and loaded.`,
+      `DJ ${voiceName} on the decks.`,
+      `DJ ${voiceName} in the mix.`,
+      `The booth belongs to ${voiceName} tonight.`,
+      `You're now rocking with ${voiceName}.`,
     ];
     return messages[Math.floor(Math.random() * messages.length)];
   }, [selectedElevenLabsVoice]);
