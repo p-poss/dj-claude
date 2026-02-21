@@ -1,11 +1,16 @@
 import { config } from 'dotenv';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
-// Load .env/.env.local from the cli/ directory and the project root
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkgRoot = resolve(__dirname, '..', '..'); // dist/lib/ → package root
+
+// Load .env/.env.local from the user's cwd and the package root
 config({ path: resolve(process.cwd(), '.env') });
 config({ path: resolve(process.cwd(), '.env.local') });
-config({ path: resolve(process.cwd(), '..', '.env') });
-config({ path: resolve(process.cwd(), '..', '.env.local') });
+config({ path: resolve(pkgRoot, '.env') });
+config({ path: resolve(pkgRoot, '.env.local') });
 
 export function getApiKey(): string {
   const key = process.env.ANTHROPIC_API_KEY;
@@ -20,4 +25,8 @@ export function getApiKey(): string {
     process.exit(1);
   }
   return key;
+}
+
+export function findApiKey(): string | undefined {
+  return process.env.ANTHROPIC_API_KEY;
 }

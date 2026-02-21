@@ -5,7 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 
 import { initEngine, safeEvaluate, hush as engineHush } from '../audio/engine.js';
-import { getApiKey } from '../lib/config.js';
+import { findApiKey } from '../lib/config.js';
 import { streamChat } from '../lib/claude.js';
 import { parseStreamingCode } from '../lib/parseCode.js';
 import {
@@ -46,7 +46,10 @@ async function ensureEngine(): Promise<void> {
 // ---------------------------------------------------------------------------
 
 async function generateAndPlay(prompt: string): Promise<{ commentary: string; code: string }> {
-  const apiKey = getApiKey();
+  const apiKey = findApiKey();
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY not set. Use play_strudel to play Strudel code directly, or set your API key for AI-generated music.');
+  }
   const { currentCode, messages } = getState();
 
   addMessage({ role: 'user', content: prompt });

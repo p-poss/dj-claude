@@ -7,11 +7,18 @@
     "dj-claude": "./bin.mjs",
     "dj-claude-mcp": "./mcp.mjs"
   },
+  "files": ["dist", "bin.mjs", "mcp.mjs"],
+  "homepage": "https://claude.dj",
+  "repository": { "type": "git", "url": "https://github.com/p-poss/dj-claude" },
+  "author": "p-poss",
+  "keywords": ["claude", "music", "mcp", "ai", "dj", "strudel", "live-coding", "claude-code"],
+  "license": "MIT",
   "scripts": {
     "build": "tsc",
     "start": "node bin.mjs",
     "dev": "tsc && node bin.mjs",
-    "mcp": "node mcp.mjs"
+    "mcp": "node mcp.mjs",
+    "prepublishOnly": "tsc"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
