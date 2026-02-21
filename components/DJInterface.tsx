@@ -786,13 +786,26 @@ export function DJInterface() {
           style={{ width: 'fit-content', marginLeft: 'auto' }}
         >
           <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">↩ REVERT</pre>
-              <pre className="m-0">║</pre>
+            {/* Mobile: icon only */}
+            <div className="md:hidden">
+              <pre className="m-0">╔═══╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">↩</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚═══╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            {/* Desktop: full label */}
+            <div className="hidden md:block">
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">↩ REVERT</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            </div>
           </div>
         </button>
 
@@ -804,13 +817,26 @@ export function DJInterface() {
           style={{ width: 'fit-content' }}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">{copied ? '✓ COPIED!' : '⎘ EXPORT'}</pre>
-              <pre className="m-0">║</pre>
+            {/* Mobile: icon only */}
+            <div className="md:hidden">
+              <pre className="m-0">╔═══╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{copied ? '✓' : '⎘'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚═══╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            {/* Desktop: full label */}
+            <div className="hidden md:block">
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{copied ? '✓ COPIED!' : '⎘ EXPORT'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            </div>
           </div>
         </button>
       </div>
