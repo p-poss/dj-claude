@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         },
         body: JSON.stringify({
           text,
-          model_id: 'eleven_v3',
+          model_id: 'eleven_turbo_v2',
         }),
       }
     );
