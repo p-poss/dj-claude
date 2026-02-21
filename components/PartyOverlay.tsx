@@ -68,7 +68,7 @@ export function PartyOverlay({ enabled, color, hue }: PartyOverlayProps) {
             transform: translateY(-50px) rotate(0deg);
           }
           100% {
-            transform: translateY(calc(100vh + 50px)) rotate(720deg);
+            transform: translateY(calc(100dvh + 50px)) rotate(720deg);
           }
         }
 

@@ -513,8 +513,9 @@ export function DJInterface() {
   return (
     <>
     <div
-      className="h-screen flex flex-col gap-3"
+      className="flex flex-col gap-3"
       style={{
+        height: '100dvh',
         padding: '4px 8px',
         backgroundColor: theme.background,
         filter: partyEnabled ? `hue-rotate(${partyHue}deg)` : 'none',
