@@ -592,6 +592,11 @@ export function DJInterface() {
                     </div>
                     <div className="flex" style={{ fontFamily: 'inherit' }}>
                       <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <div className="flex" style={{ fontFamily: 'inherit' }}>
+                      <pre className="m-0">║</pre>
                       <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
                       <pre className="m-0">║</pre>
                     </div>
@@ -601,9 +606,9 @@ export function DJInterface() {
               )}
             </div>
 
-            {/* Swap colors button */}
+            {/* Theme cycle button */}
             <button
-              onClick={toggleSwap}
+              onClick={cycleTheme}
               className="group phosphor-glow ascii-box cursor-pointer"
               style={{ width: 'fit-content' }}
             >
@@ -618,20 +623,20 @@ export function DJInterface() {
               </div>
             </button>
 
-            {/* Theme cycle button */}
+            {/* Invert colors button */}
             <button
-              onClick={cycleTheme}
+              onClick={toggleSwap}
               className="group phosphor-glow ascii-box cursor-pointer"
               style={{ width: 'fit-content' }}
             >
               <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(10)}╗</pre>
+                <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
                 <div className="flex" style={{ fontFamily: 'inherit' }}>
                   <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">Theme</pre>
+                  <pre className="m-0 flex-1 text-center">{isSwapped ? 'INVERT: On' : 'INVERT: Off'}</pre>
                   <pre className="m-0">║</pre>
                 </div>
-                <pre className="m-0">╚{'═'.repeat(10)}╝</pre>
+                <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
               </div>
             </button>
 
@@ -669,6 +674,31 @@ export function DJInterface() {
               </div>
             </button>
 
+          </div>
+        </div>
+
+        {/* Logo row with MC and Play/Pause buttons */}
+        <div className="flex items-start justify-between">
+          <div>
+            {/* Full logo - hidden on small screens */}
+            <pre className="m-0 max-[560px]:hidden">{`
+ ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
+ ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
+ ██║  ██║     ██║    ██║     ██║     ███████║██║   ██║██║  ██║█████╗
+ ██║  ██║██   ██║    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
+ ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
+ ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
+            {/* DJ-only logo - shown on small screens */}
+            <pre className="m-0 hidden max-[560px]:block">{`
+ ██████╗      ██╗
+ ██╔══██╗     ██║
+ ██║  ██║     ██║
+ ██║  ██║██   ██║
+ ██████╔╝╚█████╔╝
+ ╚═════╝  ╚════╝`}</pre>
+          </div>
+
+          <div className="flex items-start gap-2">
             {/* MC Voice Selector */}
             <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
               if (!enabled) {
@@ -697,23 +727,6 @@ export function DJInterface() {
             )}
           </div>
         </div>
-
-        {/* Full logo - hidden on small screens */}
-        <pre className="m-0 max-[560px]:hidden">{`
- ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
- ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
- ██║  ██║     ██║    ██║     ██║     ███████║██║   ██║██║  ██║█████╗
- ██║  ██║██   ██║    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
- ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
- ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝`}</pre>
-        {/* DJ-only logo - shown on small screens */}
-        <pre className="m-0 hidden max-[560px]:block">{`
- ██████╗      ██╗
- ██╔══██╗     ██║
- ██║  ██║     ██║
- ██║  ██║██   ██║
- ██████╔╝╚█████╔╝
- ╚═════╝  ╚════╝`}</pre>
 
         {/* Dancing Claude character with speech bubble */}
         <div className="flex justify-center">
