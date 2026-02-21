@@ -567,140 +567,134 @@ export function DJInterface() {
           </div>
 
           {/* Container B: Controls */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
-            {/* Row 1: Club, Rave, Dance, Flip */}
-            <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
-              {/* Club theme button */}
-              <button
-                onClick={cycleTheme}
-                className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
-              >
-                <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+          <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+            {/* Club theme button */}
+            <button
+              onClick={cycleTheme}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
+                  <pre className="m-0">║</pre>
                 </div>
-              </button>
+                <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+              </div>
+            </button>
 
-              {/* Rave toggle button */}
-              <button
-                onClick={() => setCrtEnabled((prev) => !prev)}
-                className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
-              >
-                <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            {/* Rave toggle button */}
+            <button
+              onClick={() => setCrtEnabled((prev) => !prev)}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
+                  <pre className="m-0">║</pre>
                 </div>
-              </button>
+                <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+              </div>
+            </button>
 
-              {/* Dance toggle button */}
-              <button
-                onClick={() => setPartyEnabled((prev) => !prev)}
-                className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
-              >
-                <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DANCE: On' : 'DANCE: Off'}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            {/* Dance toggle button */}
+            <button
+              onClick={() => setPartyEnabled((prev) => !prev)}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DANCE: On' : 'DANCE: Off'}</pre>
+                  <pre className="m-0">║</pre>
                 </div>
-              </button>
+                <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+              </div>
+            </button>
 
-              {/* Flip colors button */}
-              <button
-                onClick={toggleSwap}
-                className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
-              >
-                <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'FLIP: On' : 'FLIP: Off'}</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            {/* Flip colors button */}
+            <button
+              onClick={toggleSwap}
+              className="group phosphor-glow ascii-box cursor-pointer"
+              style={{ width: 'fit-content' }}
+            >
+              <div className="group-hover:opacity-30">
+                <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">{isSwapped ? 'FLIP: On' : 'FLIP: Off'}</pre>
+                  <pre className="m-0">║</pre>
                 </div>
-              </button>
-            </div>
+                <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+              </div>
+            </button>
 
-            {/* Row 2: Info + MC dropdown */}
-            <div className="flex items-start" style={{ gap: '8px', marginLeft: 'auto' }}>
-              {/* Info button with modal */}
-              <div
-                className="group relative phosphor-glow"
-                onMouseEnter={() => setShowInfo(true)}
-                onMouseLeave={() => setShowInfo(false)}
-              >
-                <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
-                  <pre className="m-0">╔═══╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">i</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <pre className="m-0">╚═══╝</pre>
+            {/* Info button with modal */}
+            <div
+              className="group relative phosphor-glow"
+              onMouseEnter={() => setShowInfo(true)}
+              onMouseLeave={() => setShowInfo(false)}
+            >
+              <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
+                <pre className="m-0">╔═══╗</pre>
+                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <pre className="m-0">║</pre>
+                  <pre className="m-0 flex-1 text-center">i</pre>
+                  <pre className="m-0">║</pre>
                 </div>
-
-                {/* Info modal - positioned relative to info button */}
-                {showInfo && (
-                  <div
-                    className="absolute text-xs select-none"
-                    style={{
-                      right: 0,
-                      top: 0,
-                      lineHeight: '1.2',
-                      fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-                      color: theme.text,
-                      zIndex: 10,
-                    }}
-                  >
-                    <div className="flex flex-col ascii-box">
-                      <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-                      <div className="flex" style={{ fontFamily: 'inherit' }}>
-                        <pre className="m-0">║</pre>
-                        <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
-                        <pre className="m-0">║</pre>
-                      </div>
-                      <div className="flex" style={{ fontFamily: 'inherit' }}>
-                        <pre className="m-0">║</pre>
-                        <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
-                        <pre className="m-0">║</pre>
-                      </div>
-                      <div className="flex" style={{ fontFamily: 'inherit' }}>
-                        <pre className="m-0">║</pre>
-                        <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
-                        <pre className="m-0">║</pre>
-                      </div>
-                      <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
-                    </div>
-                  </div>
-                )}
+                <pre className="m-0">╚═══╝</pre>
               </div>
 
-              {/* MC Voice Selector */}
-              <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
-                if (!enabled) {
-                  stopTTS();
-                }
-                setMcEnabled(enabled);
-              }} />
+              {/* Info modal - positioned relative to info button */}
+              {showInfo && (
+                <div
+                  className="absolute text-xs select-none"
+                  style={{
+                    right: 0,
+                    top: 0,
+                    lineHeight: '1.2',
+                    fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+                    color: theme.text,
+                    zIndex: 10,
+                  }}
+                >
+                  <div className="flex flex-col ascii-box">
+                    <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
+                    <div className="flex" style={{ fontFamily: 'inherit' }}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <div className="flex" style={{ fontFamily: 'inherit' }}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <div className="flex" style={{ fontFamily: 'inherit' }}>
+                      <pre className="m-0">║</pre>
+                      <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* MC Voice Selector */}
+            <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
+              if (!enabled) {
+                stopTTS();
+              }
+              setMcEnabled(enabled);
+            }} />
           </div>
 
         </div>
