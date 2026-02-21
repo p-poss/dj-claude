@@ -528,8 +528,8 @@ export function DJInterface() {
 
           {/* Container A: Logo / Status / Controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
-            {/* Row 1: Welcome box + On Deck status */}
-            <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+            {/* Row 1: Welcome box + On Deck status (hidden on mobile) */}
+            <div className="hidden md:flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
               {/* Welcome box */}
               <div className="ascii-box" style={{ width: 'fit-content' }}>
                 <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
@@ -547,7 +547,7 @@ export function DJInterface() {
                 <div className="flex" style={{ fontFamily: 'inherit' }}>
                   <pre className="m-0">║</pre>
                   <pre className="m-0 flex-1 text-center">
-                    {!editorReady ? '◌ Booting Up' : (state.isStreaming || (isComplete && !isPlaying)) ? <><span className="queuing-pulse">◎</span> Queuing</> : isPlaying ? '● Mixing' : '○ On Deck'}
+                    {!editorReady ? '◌ Booting Up' : state.isStreaming ? <><span className="queuing-pulse">◎</span> Queuing</> : isPlaying ? '● Mixing' : state.currentCode ? '○ On Break' : '○ On Deck'}
                   </pre>
                   <pre className="m-0">║</pre>
                 </div>
