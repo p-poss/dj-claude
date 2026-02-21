@@ -524,7 +524,7 @@ export function DJInterface() {
       {/* Box drawn with separate elements for perfect alignment */}
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
         {/* Header row with welcome box and status boxes */}
-        <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: 0 }}>
+        <div className="flex flex-wrap items-start" style={{ gap: '8px' }}>
           {/* Welcome box */}
           <div className="ascii-box" style={{ width: 'fit-content' }}>
             <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
@@ -535,9 +535,6 @@ export function DJInterface() {
             </div>
             <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
           </div>
-
-            {/* Spacer to push buttons right */}
-            <div style={{ flexGrow: 1 }} />
 
           {/* Playing status box */}
           <div className="ascii-box" style={{ width: 'fit-content' }}>
@@ -555,7 +552,7 @@ export function DJInterface() {
             {/* Theme cycle button */}
             <button
               onClick={cycleTheme}
-              className="group phosphor-glow ascii-box cursor-pointer"
+              className="group phosphor-glow ascii-box cursor-pointer lg:ml-auto"
               style={{ width: 'fit-content' }}
             >
               <div className="group-hover:opacity-30">
