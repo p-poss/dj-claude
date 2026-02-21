@@ -56,7 +56,9 @@ export const themes: ThemeColors[] = [
 interface ThemeContextType {
   theme: ThemeColors;
   themeName: string;
+  themeIndex: number;
   cycleTheme: () => void;
+  selectTheme: (index: number) => void;
   isSwapped: boolean;
   toggleSwap: () => void;
 }
@@ -74,12 +76,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setThemeIndex((prev) => (prev + 1) % themes.length);
   }, []);
 
+  const selectTheme = useCallback((index: number) => {
+    setThemeIndex(index);
+  }, []);
+
   const toggleSwap = useCallback(() => {
     setIsSwapped((prev) => !prev);
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, themeName: theme.name, cycleTheme, isSwapped, toggleSwap }}>
+    <ThemeContext.Provider value={{ theme, themeName: theme.name, themeIndex, cycleTheme, selectTheme, isSwapped, toggleSwap }}>
       {children}
     </ThemeContext.Provider>
   );

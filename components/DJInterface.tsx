@@ -13,10 +13,11 @@ import { DancingClaude } from './DancingClaude';
 import { SpeechBubble } from './SpeechBubble';
 import { PartyOverlay } from './PartyOverlay';
 import { VoiceSelector } from './VoiceSelector';
+import { ClubSelector } from './ClubSelector';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
-  const { theme, themeName, cycleTheme, toggleSwap, isSwapped } = useTheme();
+  const { theme, toggleSwap, isSwapped } = useTheme();
   const { selectedElevenLabsVoice } = useVoice();
   const { streamCode } = useClaudeStream();
   const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
@@ -674,22 +675,8 @@ export function DJInterface() {
               )}
             </div>
 
-            {/* Club theme button */}
-            <button
-              onClick={cycleTheme}
-              className="group phosphor-glow ascii-box cursor-pointer"
-              style={{ width: 'fit-content' }}
-            >
-              <div className="group-hover:opacity-30">
-                <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">{`CLUB: ${themeName}`}</pre>
-                  <pre className="m-0">║</pre>
-                </div>
-                <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
-              </div>
-            </button>
+            {/* Club theme selector */}
+            <ClubSelector />
 
             {/* MC Voice Selector */}
             <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
