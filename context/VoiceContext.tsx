@@ -11,8 +11,8 @@ export interface ElevenLabsVoice {
 
 export const ELEVENLABS_VOICES: ElevenLabsVoice[] = [
   { id: 'm3t8QbmO10uDQqDoz2PX', name: 'Claude', description: 'Warm, articulate' },
-  { id: 'xZOJqW4KGiIUDbmeUtiQ', name: 'Robot', description: 'Robotic, vintage' },
-  { id: 'nbk2esDn4RRk4cVDdoiE', name: 'ASMR', description: 'Soft, whispery' },
+  { id: 'sunPTyPmirmWVW6r0O2J', name: 'Robot', description: 'Robotic, vintage' },
+  { id: 'uOM60Hf1t0LqSQ0skBSO', name: 'ASMR', description: 'Soft, whispery' },
 ];
 
 interface VoiceContextType {

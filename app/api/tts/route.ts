@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('[TTS API] ElevenLabs error:', response.status, errorText);
+      console.error('[TTS API] ElevenLabs error:', response.status, errorText, 'voiceId:', voiceId);
       return NextResponse.json(
-        { error: 'ElevenLabs API error' },
+        { error: `ElevenLabs API error: ${response.status} - ${errorText}` },
         { status: response.status }
       );
     }
