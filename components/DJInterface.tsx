@@ -523,7 +523,7 @@ export function DJInterface() {
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
-        <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+        <div className="flex flex-wrap items-start justify-between" style={{ columnGap: '8px', rowGap: '0px' }}>
 
           {/* Container A: Logo / Status */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
@@ -567,7 +567,7 @@ export function DJInterface() {
           </div>
 
           {/* Container B: Controls */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px', marginLeft: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
             {/* Row 1: Club, Rave, Dance, Flip */}
             <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
               {/* Club theme button */}
