@@ -527,11 +527,13 @@ export function DJInterface() {
     }
   }, [state.previousCode, dispatch]);
 
-  const handleBingBong = useCallback(() => {
-    setCurrentMcCommentary('Bing Bong!');
+  const handleBingBong = useCallback((headphonesGoingDown: boolean) => {
+    const message = headphonesGoingDown ? 'Yee-haw!' : 'Bing Bong!';
+    setCurrentMcCommentary(message);
+    speak(message);
     if (bingBongTimerRef.current) clearTimeout(bingBongTimerRef.current);
     bingBongTimerRef.current = setTimeout(() => setCurrentMcCommentary(''), 3000);
-  }, []);
+  }, [speak]);
 
   return (
     <>

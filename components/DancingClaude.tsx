@@ -6,7 +6,7 @@ interface DancingClaudeProps {
   isPlaying: boolean;
   isSpeaking?: boolean;
   color?: string;
-  onClickCharacter?: () => void;
+  onClickCharacter?: (headphonesGoingDown: boolean) => void;
 }
 
 export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373', onClickCharacter }: DancingClaudeProps) {
@@ -76,7 +76,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
       }, 600);
     }
 
-    onClickCharacter?.();
+    onClickCharacter?.(!headphonesDown);
   }, [headphonesDown, onClickCharacter]);
 
   // Cell types: 0 = empty, 1 = body, 2 = eye, 3 = mouth, 4 = shadow (30% opacity)
