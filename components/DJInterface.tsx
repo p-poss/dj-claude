@@ -127,7 +127,7 @@ export function DJInterface() {
       const windowWidth = window.innerWidth;
       const centerX = windowWidth / 2;
       const normalizedX = (e.clientX - centerX) / centerX;
-      const offset = normalizedX * 50; // Max 50px in either direction
+      const offset = normalizedX * 119; // Max 119px in either direction
       setCharacterOffset(offset);
     };
 
