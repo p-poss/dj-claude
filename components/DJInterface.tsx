@@ -123,18 +123,32 @@ export function DJInterface() {
     }
   }, [isSwapped]);
 
-  // Track cursor position to slide character left/right
+  // Track cursor/touch position to slide character left/right
+  // Inverted at mobile breakpoint (<768px) for a playful mirror effect
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
+    const getOffset = (clientX: number) => {
       const windowWidth = window.innerWidth;
       const centerX = windowWidth / 2;
-      const normalizedX = (e.clientX - centerX) / centerX;
-      const offset = normalizedX * 119; // Max 119px in either direction
-      setCharacterOffset(offset);
+      const normalizedX = (clientX - centerX) / centerX;
+      return normalizedX * -119;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setCharacterOffset(getOffset(e.clientX));
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      setCharacterOffset(getOffset(touch.clientX));
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
   }, []);
 
   const streamingMessages = [
