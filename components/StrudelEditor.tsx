@@ -304,7 +304,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
 
           // Set initial code (placeholder text)
           // Note: Do NOT use innerHTML - it creates a text layer that overlaps CodeMirror
-          editor.setAttribute('code', '// Give DJ Claude a prompt above to start coding music!');
+          editor.setAttribute('code', window.innerWidth < 768 ? '// Give DJ Claude a prompt above!' : '// Give DJ Claude a prompt above to start coding music!');
 
           // Style the editor
           editor.style.display = 'block';
