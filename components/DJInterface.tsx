@@ -8,7 +8,7 @@ import { useClaudeStream } from '@/hooks/useClaudeStream';
 import { useCodeParser } from '@/hooks/useCodeParser';
 import { useTTS } from '@/hooks/useTTS';
 import { StrudelEditor, StrudelEditorAPI } from './StrudelEditor';
-import { PromptInput } from './PromptInput';
+import { PromptInput, PromptInputAPI } from './PromptInput';
 import { DancingClaude } from './DancingClaude';
 import { SpeechBubble } from './SpeechBubble';
 import { PartyOverlay } from './PartyOverlay';
@@ -24,7 +24,7 @@ export function DJInterface() {
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
 
   const editorRef = useRef<StrudelEditorAPI>(null);
-  const promptInputRef = useRef<HTMLInputElement>(null);
+  const promptInputRef = useRef<PromptInputAPI>(null);
   const infoRef = useRef<HTMLDivElement>(null);
   const hasExecutedRef = useRef(false);
   const voiceChangeCountRef = useRef(0); // Skip initial render
@@ -799,6 +799,21 @@ export function DJInterface() {
             />
           </div>
 
+          {/* Submit button - mobile only */}
+          <button
+            onClick={() => promptInputRef.current?.submit()}
+            className="md:hidden phosphor-glow ascii-box cursor-pointer"
+            style={{ width: 'fit-content' }}
+            aria-label="Submit"
+          >
+            <pre className="m-0">╔═══╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">▶</pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚═══╝</pre>
+          </button>
         </div>
 
       </div>

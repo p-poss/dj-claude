@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, KeyboardEvent, forwardRef, useRef, useEffect } from 'react';
+import { useState, KeyboardEvent, forwardRef, useRef, useEffect, useImperativeHandle } from 'react';
 
 interface ThemeColors {
   text: string;
   background: string;
+}
+
+export interface PromptInputAPI {
+  focus: () => void;
+  submit: () => void;
 }
 
 interface PromptInputProps {
@@ -16,7 +21,7 @@ interface PromptInputProps {
   crtEnabled?: boolean;
 }
 
-export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
+export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
   function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors, crtEnabled = false }, ref) {
     const colors = themeColors || { text: '#737373', background: '#0a0a0a' };
     const [value, setValue] = useState('');
@@ -25,12 +30,17 @@ export const PromptInput = forwardRef<HTMLInputElement, PromptInputProps>(
     const [cursorPosition, setCursorPosition] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Combine refs - sync on every render to ensure ref is always current
-    useEffect(() => {
-      if (ref && typeof ref === 'object') {
-        (ref as React.MutableRefObject<HTMLInputElement | null>).current = inputRef.current;
-      }
-    });
+    useImperativeHandle(ref, () => ({
+      focus: () => inputRef.current?.focus(),
+      submit: () => {
+        if (!disabled && value.trim()) {
+          onSubmit(value.trim());
+          setValue('');
+          setScrollLeft(0);
+          setCursorPosition(0);
+        }
+      },
+    }), [disabled, value, onSubmit]);
 
     // Sync scrollLeft when value changes (for cursor positioning during overflow)
     useEffect(() => {
