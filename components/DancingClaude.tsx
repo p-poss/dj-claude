@@ -170,8 +170,11 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
   // Step 0: normal (3x4 at rows 3-6, stems at rows 1-2)
   // Step 1: shift down 1 (3x4 at rows 4-7) + bottom stem disappears (row 2)
   // Step 2: remove top row (3x3 at rows 5-7) + top stem disappears (row 1)
-  // Step 3: remove another top row (3x2 at rows 6-7)
-  // Step 4: remove outer col (2x2 at rows 6-7)
+  // Step 3: remove another top row (3x2 at rows 6-7) + band grows up 1 row
+  // Step 4: remove outer col (2x2 at rows 6-7) + band grows up 2 rows
+  // Extra band rows are 2px narrower on each side (cols 3-14)
+  const bandExtensionRow = [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0];
+
   const applyCupAnimation = (baseFrame: number[][]): number[][] => {
     if (cupStep === 0) return baseFrame;
 
@@ -186,7 +189,11 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
     // Stems disappear bottom-first: step 1 removes row 2, step 2+ removes row 1
     const stemHideFrom = cupStep >= 2 ? 1 : 2; // row at which stems start hiding
 
-    return baseFrame.map((row, rowIdx) => {
+    // Band extension rows prepended at top
+    const extraRows = cupStep >= 4 ? 2 : cupStep >= 3 ? 1 : 0;
+    const prefix = Array.from({ length: extraRows }, () => [...bandExtensionRow]);
+
+    const modifiedFrame = baseFrame.map((row, rowIdx) => {
       return row.map((cell, colIdx) => {
         // Handle stem removal (col 1 left, col 16 right, rows 1-2)
         const isStemCol = colIdx === 1 || colIdx === 16;
@@ -219,6 +226,8 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
         return cell;
       });
     });
+
+    return [...prefix, ...modifiedFrame];
   };
 
   // Get body frame with mouth animation applied
