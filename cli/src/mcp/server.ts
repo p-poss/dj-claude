@@ -17,10 +17,11 @@ import {
 } from './state.js';
 
 // ---------------------------------------------------------------------------
-// Engine initialization — kicked off eagerly, tools await the promise.
+// Engine initialization — kicked off eagerly (node) or lazily (browser).
 // ---------------------------------------------------------------------------
 
 let enginePromise: Promise<void> | null = null;
+let browserMode = false;
 
 function startEngine(): void {
   enginePromise = initEngine()
@@ -212,9 +213,15 @@ server.tool(
 // Start.
 // ---------------------------------------------------------------------------
 
-export async function startServer(): Promise<void> {
-  // Kick off engine init eagerly — don't await, tools will wait as needed.
-  startEngine();
+export async function startServer(isBrowserMode = false): Promise<void> {
+  browserMode = isBrowserMode;
+
+  // In node mode, kick off engine init eagerly.
+  // In browser mode, defer until first tool call (opening a browser on
+  // MCP startup before any music is requested would be surprising).
+  if (!browserMode) {
+    startEngine();
+  }
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

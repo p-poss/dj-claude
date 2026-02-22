@@ -596,7 +596,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DANCE: On' : 'DANCE: Off'}</pre>
+                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DISCO: On' : 'DISCO: Off'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>

@@ -16,13 +16,6 @@ export const fairlightTheme: ThemeColors = {
   text: '#00FF99',
 };
 
-// Modern terminal palette
-export const terminalTheme: ThemeColors = {
-  name: 'Terminal',
-  background: '#000000',
-  text: '#FFFFFF',
-};
-
 // Anthropic brand palette
 export const anthropicTheme: ThemeColors = {
   name: 'Anthropic',
@@ -41,7 +34,7 @@ export const geminiTheme: ThemeColors = {
 export const codexTheme: ThemeColors = {
   name: 'Codex',
   background: '#1C1C1C',
-  text: '#8C8C8C',
+  text: '#FFFFFF',
 };
 
 // OpenClaw palette
@@ -56,7 +49,6 @@ export const themes: ThemeColors[] = [
   anthropicTheme,
   geminiTheme,
   codexTheme,
-  terminalTheme,
   fairlightTheme,
   openclawTheme,
 ];

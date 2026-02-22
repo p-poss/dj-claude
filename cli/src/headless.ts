@@ -4,12 +4,18 @@
 import { getApiKey } from './lib/config.js';
 import { streamChat } from './lib/claude.js';
 import { parseStreamingCode } from './lib/parseCode.js';
-import { initEngine, safeEvaluate, hush } from './audio/engine.js';
+import { initEngine, safeEvaluate, hush, setBackendMode } from './audio/engine.js';
+import type { BackendMode } from './audio/backend.js';
 
-export async function runHeadless(prompt: string, durationSec: number): Promise<void> {
+export async function runHeadless(prompt: string, durationSec: number, mode: BackendMode = 'node'): Promise<void> {
   const apiKey = getApiKey();
 
+  setBackendMode(mode);
+
   console.log('[dj-claude] Initializing audio engine...');
+  if (mode === 'browser') {
+    console.log('[dj-claude] Browser mode — click "Start Audio" in the browser tab.');
+  }
   await initEngine();
   console.log('[dj-claude] Audio ready. Streaming from Claude...');
 

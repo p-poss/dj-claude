@@ -32,11 +32,13 @@
     "node-web-audio-api": "^1.0.8",
     "react": "^18.3.1",
     "superdough": "1.1.0",
+    "ws": "^8.18.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
+    "@types/ws": "^8",
     "typescript": "^5"
   },
   "engines": {

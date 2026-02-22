@@ -31,6 +31,7 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
 
   return (
     <div
+      className="phosphor-glow"
       style={{
         position: 'absolute',
         left: '130px',
