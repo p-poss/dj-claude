@@ -48,6 +48,7 @@ export function DJInterface() {
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashMounted, setSplashMounted] = useState(true);
   const [promptCount, setPromptCount] = useState(0);
+  const [promptHasValue, setPromptHasValue] = useState(false);
 
   // Splash screen fade out
   useEffect(() => {
@@ -796,23 +797,27 @@ export function DJInterface() {
                 background: theme.background,
               }}
               crtEnabled={crtEnabled}
+              onHasValueChange={setPromptHasValue}
             />
           </div>
 
           {/* Submit button - mobile only */}
           <button
             onClick={() => promptInputRef.current?.submit()}
-            className="md:hidden phosphor-glow ascii-box cursor-pointer"
-            style={{ width: 'fit-content' }}
+            disabled={!promptHasValue || state.isStreaming || !editorReady}
+            className={`md:hidden group phosphor-glow ascii-box text-xs select-none ${promptHasValue && !state.isStreaming && editorReady ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, opacity: promptHasValue && !state.isStreaming && editorReady ? 1 : 0.3 }}
             aria-label="Submit"
           >
-            <pre className="m-0">╔═══╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">▶</pre>
-              <pre className="m-0">║</pre>
+            <div className={promptHasValue && !state.isStreaming && editorReady ? 'group-hover:opacity-30' : ''}>
+              <pre className="m-0">╔═══╗</pre>
+              <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">⬆</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚═══╝</pre>
             </div>
-            <pre className="m-0">╚═══╝</pre>
           </button>
         </div>
 

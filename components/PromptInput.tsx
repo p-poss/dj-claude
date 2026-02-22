@@ -19,10 +19,11 @@ interface PromptInputProps {
   isStreaming?: boolean;
   themeColors?: ThemeColors;
   crtEnabled?: boolean;
+  onHasValueChange?: (hasValue: boolean) => void;
 }
 
 export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
-  function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors, crtEnabled = false }, ref) {
+  function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors, crtEnabled = false, onHasValueChange }, ref) {
     const colors = themeColors || { text: '#737373', background: '#0a0a0a' };
     const [value, setValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
@@ -51,7 +52,8 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
           }
         });
       }
-    }, [value]);
+      onHasValueChange?.(value.trim().length > 0);
+    }, [value, onHasValueChange]);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
       if (e.key === 'Enter' && !disabled && value.trim()) {
