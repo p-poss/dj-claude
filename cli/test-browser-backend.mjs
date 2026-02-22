@@ -100,7 +100,7 @@ async function testBrowserPage() {
   assert(html.includes('<title>'), 'HTML has title tag');
   assert(html.includes('12345'), 'HTML contains the WebSocket port');
   assert(html.includes('unpkg.com/@strudel/web@1.2.6'), 'HTML loads pinned Strudel CDN');
-  assert(html.includes('Start Audio') || html.includes('start-box'), 'HTML has start button');
+  assert(html.includes('Unmute Audio') || html.includes('start-box'), 'HTML has unmute button');
   assert(html.includes('WebSocket'), 'HTML contains WebSocket client code');
   assert(html.includes("'ready'"), 'HTML sends ready message');
   assert(html.includes("'evaluate'"), 'HTML handles evaluate messages');

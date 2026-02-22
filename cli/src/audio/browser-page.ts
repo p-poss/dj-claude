@@ -144,9 +144,9 @@ export function getPageHtml(wsPort: number): string {
 
 <!-- Start Audio button -->
 <div id="start-box">
-  <pre>╔══════════════════════╗</pre>
-  <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">▶ Start Audio</pre><pre>║</pre></div>
-  <pre>╚══════════════════════╝</pre>
+  <pre>╔════════════════════╗</pre>
+  <div style="display:flex"><pre>║</pre><pre id="start-label" style="flex:1;text-align:center">▶ Unmute Audio</pre><pre>║</pre></div>
+  <pre>╚════════════════════╝</pre>
 </div>
 
 <!-- Dancing Claude pixel art -->
@@ -157,6 +157,7 @@ import { initStrudel } from 'https://unpkg.com/@strudel/web@1.2.6/dist/index.mjs
 
 const statusEl = document.getElementById('status');
 const startBox = document.getElementById('start-box');
+const startLabel = document.getElementById('start-label');
 const claudeEl = document.getElementById('claude');
 
 const FRAMES = ${framesJson};
@@ -233,7 +234,10 @@ async function start() {
     strudelEval = evaluate;
     strudelHush = hush;
     started = true;
-    startBox.style.display = 'none';
+    startLabel.textContent = '● Audio On';
+    startBox.style.cursor = 'default';
+    startBox.style.pointerEvents = 'none';
+    startBox.classList.remove('disabled');
     connectWs();
   } catch (err) {
     setStatus('○ Error');
