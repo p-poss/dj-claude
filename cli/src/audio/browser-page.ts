@@ -7,7 +7,7 @@ export function getPageHtml(wsPort: number): string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DJ Claude</title>
+<title>DJ Claude | v0.1.0</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,30 +35,7 @@ export function getPageHtml(wsPort: number): string {
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Scanline overlay */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.15) 0px,
-      rgba(0, 0, 0, 0.15) 1px,
-      transparent 1px,
-      transparent 2px
-    );
-    z-index: 9999;
-  }
-
-  .phosphor-glow {
-    text-shadow:
-      0 0 2px currentColor,
-      0 0 4px currentColor,
-      0 0 8px currentColor;
-  }
-
-  ::selection {
+::selection {
     background: var(--fg);
     color: var(--bg);
   }
@@ -100,7 +77,6 @@ export function getPageHtml(wsPort: number): string {
   }
   .status-dot.mixing {
     background: var(--fg);
-    box-shadow: 0 0 4px var(--fg), 0 0 8px var(--fg);
     animation: pulse 1.5s ease-in-out infinite;
   }
   .status-dot.on-deck {
@@ -108,7 +84,6 @@ export function getPageHtml(wsPort: number): string {
   }
   .status-dot.error {
     background: #f87171;
-    box-shadow: 0 0 4px #f87171;
   }
 
   @keyframes pulse {
@@ -150,13 +125,13 @@ export function getPageHtml(wsPort: number): string {
 </head>
 <body>
 
-<div id="header" class="phosphor-glow">
+<div id="header">
 <pre>╔══════════════════════════════╗
 ║  DJ Claude · Browser Audio   ║
 ╚══════════════════════════════╝</pre>
 </div>
 
-<div id="start-box" class="phosphor-glow">
+<div id="start-box">
 <pre>╔══════════════════════╗
 ║  ▶ Start Audio       ║
 ╚══════════════════════╝</pre>
@@ -169,7 +144,7 @@ export function getPageHtml(wsPort: number): string {
 
 <div id="code-box">
   <pre class="box-frame phosphor-glow">╔══ Now Playing ═══════════════╗</pre>
-  <div id="code-content" class="phosphor-glow"></div>
+  <div id="code-content"></div>
   <pre class="box-frame phosphor-glow">╚══════════════════════════════╝</pre>
 </div>
 
