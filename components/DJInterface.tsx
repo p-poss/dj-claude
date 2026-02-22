@@ -123,31 +123,21 @@ export function DJInterface() {
     }
   }, [isSwapped]);
 
-  // Track cursor/touch position to slide character left/right
-  // Inverted at mobile breakpoint (<768px) for a playful mirror effect
+  // Track cursor/touch position to slide character (inverted direction)
   useEffect(() => {
-    const getOffset = (clientX: number) => {
-      const windowWidth = window.innerWidth;
-      const centerX = windowWidth / 2;
-      const normalizedX = (clientX - centerX) / centerX;
-      return normalizedX * -119;
+    const updateOffset = (clientX: number) => {
+      const centerX = window.innerWidth / 2;
+      setCharacterOffset(((clientX - centerX) / centerX) * -119);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setCharacterOffset(getOffset(e.clientX));
-    };
+    const onMouse = (e: MouseEvent) => updateOffset(e.clientX);
+    const onTouch = (e: TouchEvent) => e.touches[0] && updateOffset(e.touches[0].clientX);
 
-    const handleTouchMove = (e: TouchEvent) => {
-      const touch = e.touches[0];
-      if (!touch) return;
-      setCharacterOffset(getOffset(touch.clientX));
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('mousemove', onMouse);
+    window.addEventListener('touchmove', onTouch);
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('mousemove', onMouse);
+      window.removeEventListener('touchmove', onTouch);
     };
   }, []);
 
