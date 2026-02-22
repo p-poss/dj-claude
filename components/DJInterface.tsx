@@ -731,17 +731,27 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
+                    <pre className="m-0 flex-1"> • Sonnet 4.6 live coding music in Strudel</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
+                    <pre className="m-0 flex-1"> • To use in Terminal, run NPX DJ-CLAUDE</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
+                    <pre className="m-0 flex-1"> • Let agents DJ while they work</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1"> DISCLAIMER: Non-official Anthropic product</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> CREATOR: Patrick Poss (hey@patrickposs.com)</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
