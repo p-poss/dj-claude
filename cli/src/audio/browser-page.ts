@@ -1,13 +1,33 @@
 // Inline HTML page served to the browser for audio playback.
-// Visual design matches claude.dj (retro terminal / phosphor glow aesthetic).
+// Visual design matches claude.dj (welcome box, status box, ASCII logo, dancing Claude).
 
 export function getPageHtml(wsPort: number): string {
+  // Body frames: 4 frames, each 10 rows x 19 cols
+  // 0=empty, 1=body, 2=eye, 3=mouth
+  const bodyFrames = [
+    [[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,1,1,1,1,1,3,3,3,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0]],
+    [[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,1,1,1,1,1,3,3,3,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0]],
+    [[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,1,1,1,1,1,3,3,3,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0]],
+    [[0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],[0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],[0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,1,1,1,1,1,3,3,3,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],[0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0]],
+  ];
+
+  // Leg frames: 4 frames, each 2 rows x 19 cols
+  const legFrames = [
+    [[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0]],
+    [[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0]],
+    [[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0]],
+    [[0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0],[0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0]],
+  ];
+
+  const framesJson = JSON.stringify({ body: bodyFrames, legs: legFrames });
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DJ Claude | v0.1.0</title>
+<title>DJ Claude | v 0.1.0</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔈</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,12 +50,12 @@ export function getPageHtml(wsPort: number): string {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-::selection {
+  ::selection {
     background: var(--fg);
     color: var(--bg);
   }
@@ -44,134 +64,169 @@ export function getPageHtml(wsPort: number): string {
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--fg-dim); border-radius: 3px; }
 
-  /* ── ASCII box button ── */
+  pre { margin: 0; font-family: inherit; font-size: 12px; line-height: 1.2; }
+
+  /* ── Top row: welcome + status ── */
+  #top-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: start;
+    column-gap: 8px;
+    row-gap: 0;
+  }
+
+  .ascii-box { width: fit-content; user-select: none; }
+  .dim { opacity: 0.3; }
+
+  @keyframes queuing-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .queuing { animation: queuing-pulse 1.2s ease-in-out infinite; }
+
+  /* ── ASCII logo ── */
+  #logo { user-select: none; }
+
+  /* ── Start button ── */
   #start-box {
     cursor: pointer;
     user-select: none;
     width: fit-content;
     transition: opacity 0.15s;
+    margin-top: 8px;
   }
   #start-box:hover { opacity: 0.6; }
   #start-box.disabled { opacity: 0.3; pointer-events: none; }
-  #start-box pre {
-    font-family: inherit;
-    font-size: 12px;
-    line-height: 1.2;
-  }
 
-  /* ── Status ── */
-  #status-line {
-    font-size: 12px;
-    color: var(--fg-dim);
+  /* ── Dancing Claude ── */
+  #claude {
+    margin-top: 12px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 6px;
+    transition: transform 0.15s ease-out;
   }
-
-  .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--fg-dim);
-  }
-  .status-dot.mixing {
-    background: var(--fg);
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  .status-dot.on-deck {
-    background: var(--fg);
-  }
-  .status-dot.error {
-    background: #f87171;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  /* ── Header ── */
-  #header {
-    text-align: center;
-  }
-  #header pre {
-    font-family: inherit;
-    font-size: 12px;
-    line-height: 1.2;
-  }
-
-  /* ── Code display ── */
-  #code-box {
-    width: 100%;
-    max-width: 640px;
-    display: none;
-  }
-  #code-box pre.box-frame {
-    font-family: inherit;
-    font-size: 12px;
-    line-height: 1.2;
-    color: var(--fg-dim);
-  }
-  #code-content {
-    padding: 0 4px;
-    max-height: 50vh;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-break: break-word;
-    color: var(--fg);
+  .pixel-row { display: flex; }
+  .pixel {
+    width: 6px;
+    height: 6px;
   }
 </style>
 </head>
 <body>
 
-<div id="header">
-<pre>╔══════════════════════════════╗
-║  DJ Claude · Browser Audio   ║
-╚══════════════════════════════╝</pre>
+<div id="top-row">
+  <!-- Welcome box -->
+  <div class="ascii-box">
+    <pre>╔═════════════════════════════════════════════╗</pre>
+    <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">Welcome to DJ Claude <span class="dim">v 0.1.0</span></pre><pre>║</pre></div>
+    <pre>╚═════════════════════════════════════════════╝</pre>
+  </div>
+
+  <!-- Status box -->
+  <div class="ascii-box">
+    <pre>╔════════════════════╗</pre>
+    <div style="display:flex"><pre>║</pre><pre id="status" style="flex:1;text-align:center">◌ Booting Up</pre><pre>║</pre></div>
+    <pre>╚════════════════════╝</pre>
+  </div>
 </div>
 
+<!-- ASCII Logo -->
+<div id="logo">
+<pre>
+ ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
+ ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝
+ ██║  ██║     ██║    ██║     ██║     ███████║██║   ██║██║  ██║█████╗
+ ██║  ██║██   ██║    ██║     ██║     ██╔══██║██║   ██║██║  ██║██╔══╝
+ ██████╔╝╚█████╔╝    ╚██████╗███████╗██║  ██║╚██████╔╝██████╔╝███████╗
+ ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
+</div>
+
+<!-- Start Audio button -->
 <div id="start-box">
-<pre>╔══════════════════════╗
-║  ▶ Start Audio       ║
-╚══════════════════════╝</pre>
+  <pre>╔══════════════════════╗</pre>
+  <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">▶ Start Audio</pre><pre>║</pre></div>
+  <pre>╚══════════════════════╝</pre>
 </div>
 
-<div id="status-line">
-  <span class="status-dot" id="dot"></span>
-  <span id="status-text">◌ Waiting</span>
-</div>
-
-<div id="code-box">
-  <pre class="box-frame phosphor-glow">╔══ Now Playing ═══════════════╗</pre>
-  <div id="code-content"></div>
-  <pre class="box-frame phosphor-glow">╚══════════════════════════════╝</pre>
-</div>
+<!-- Dancing Claude pixel art -->
+<div id="claude"></div>
 
 <script type="module">
 import { initStrudel } from 'https://unpkg.com/@strudel/web@1.2.6/dist/index.mjs';
 
-const statusText = document.getElementById('status-text');
-const dot = document.getElementById('dot');
-const codeBox = document.getElementById('code-box');
-const codeContent = document.getElementById('code-content');
+const statusEl = document.getElementById('status');
 const startBox = document.getElementById('start-box');
+const claudeEl = document.getElementById('claude');
+
+const FRAMES = ${framesJson};
+const FG = getComputedStyle(document.documentElement).getPropertyValue('--fg').trim();
+const BG = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
 
 let strudelEval = null;
 let strudelHush = null;
 let ws = null;
 let started = false;
+let isMixing = false;
+let animFrame = 0;
+let animInterval = null;
 
-function setStatus(symbol, text, dotClass) {
-  statusText.textContent = symbol + ' ' + text;
-  dot.className = 'status-dot' + (dotClass ? ' ' + dotClass : '');
+// ── Pixel art renderer ──
+function renderClaude(frame) {
+  const body = FRAMES.body[frame];
+  const legs = FRAMES.legs[frame];
+  const bob = (frame === 1 || frame === 3) && isMixing ? -2 : 0;
+
+  claudeEl.style.transform = 'translateY(' + bob + 'px)';
+
+  let html = '';
+  const allRows = [...body, ...legs];
+  for (const row of allRows) {
+    html += '<div class="pixel-row">';
+    for (const cell of row) {
+      const bg = cell === 1 ? FG : 'transparent';
+      // 2=eye, 3=mouth → transparent
+      html += '<div class="pixel" style="background:' + bg + '"></div>';
+    }
+    html += '</div>';
+  }
+  claudeEl.innerHTML = html;
 }
 
+function startDancing() {
+  if (animInterval) return;
+  isMixing = true;
+  animInterval = setInterval(() => {
+    animFrame = (animFrame + 1) % 4;
+    renderClaude(animFrame);
+  }, 200);
+}
+
+function stopDancing() {
+  isMixing = false;
+  if (animInterval) {
+    clearInterval(animInterval);
+    animInterval = null;
+  }
+  animFrame = 0;
+  renderClaude(0);
+}
+
+// Initial static render
+renderClaude(0);
+
+// ── Status ──
+function setStatus(text) {
+  statusEl.textContent = text;
+  if (text.startsWith('◎')) {
+    statusEl.innerHTML = '<span class="queuing">◎</span>' + text.slice(1);
+  }
+}
+
+// ── Audio init ──
 async function start() {
   startBox.classList.add('disabled');
-  startBox.querySelector('pre').textContent =
-    '\\u2554\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2557\\n\\u2551  \\u25B6 Initializing...   \\u2551\\n\\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D';
-  setStatus('\\u25CC', 'Booting Up');
+  setStatus('◌ Booting Up');
 
   try {
     const { evaluate, hush } = await initStrudel();
@@ -181,21 +236,20 @@ async function start() {
     startBox.style.display = 'none';
     connectWs();
   } catch (err) {
-    setStatus('\\u25CB', 'Error: ' + err.message, 'error');
+    setStatus('○ Error');
     startBox.classList.remove('disabled');
-    startBox.querySelector('pre').textContent =
-      '\\u2554\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2557\\n\\u2551  \\u25B6 Retry             \\u2551\\n\\u255A\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u2550\\u255D';
   }
 }
 
+// ── WebSocket ──
 function connectWs() {
   if (!started) return;
-  setStatus('\\u25CE', 'On Deck', 'on-deck');
+  setStatus('○ On Deck');
 
   ws = new WebSocket('ws://localhost:${wsPort}');
 
   ws.onopen = () => {
-    setStatus('\\u25CE', 'On Deck', 'on-deck');
+    setStatus('○ On Deck');
     ws.send(JSON.stringify({ type: 'ready' }));
   };
 
@@ -205,25 +259,26 @@ function connectWs() {
 
     if (msg.type === 'evaluate') {
       try {
-        setStatus('\\u25CE', 'Queuing', 'on-deck');
+        setStatus('◎ Queuing');
         await strudelEval(msg.code);
-        setStatus('\\u25CF', 'Mixing', 'mixing');
-        codeContent.textContent = msg.code;
-        codeBox.style.display = 'block';
+        setStatus('● Mixing');
+        startDancing();
         ws.send(JSON.stringify({ type: 'ack', id: msg.id }));
       } catch (err) {
-        setStatus('\\u25CB', 'Error', 'error');
+        setStatus('○ Error');
+        stopDancing();
         ws.send(JSON.stringify({ type: 'error', id: msg.id, error: err.message }));
       }
     } else if (msg.type === 'hush') {
       strudelHush();
-      setStatus('\\u25CB', 'On Break');
-      codeContent.textContent = '-- hushed --';
+      setStatus('○ On Break');
+      stopDancing();
     }
   };
 
   ws.onclose = () => {
-    setStatus('\\u25CB', 'Disconnected', 'error');
+    setStatus('○ Disconnected');
+    stopDancing();
     setTimeout(connectWs, 2000);
   };
 
