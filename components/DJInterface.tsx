@@ -25,6 +25,7 @@ export function DJInterface() {
 
   const editorRef = useRef<StrudelEditorAPI>(null);
   const promptInputRef = useRef<HTMLInputElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
   const hasExecutedRef = useRef(false);
   const voiceChangeCountRef = useRef(0); // Skip initial render
   const prevMcEnabledRef = useRef(true); // MC starts ON by default
@@ -35,6 +36,7 @@ export function DJInterface() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [infoPinned, setInfoPinned] = useState(false);
   const [streamingMessageIndex, setStreamingMessageIndex] = useState(0);
   const [currentMcCommentary, setCurrentMcCommentary] = useState('');
   const [mcEnabled, setMcEnabled] = useState(true);
@@ -77,6 +79,20 @@ export function DJInterface() {
 
     return () => clearInterval(interval);
   }, [partyEnabled]);
+
+  // Close info modal when clicking outside (only when pinned)
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
+        setShowInfo(false);
+        setInfoPinned(false);
+      }
+    };
+    if (infoPinned) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [infoPinned]);
 
   // Toggle CRT effects on body element
   useEffect(() => {
@@ -536,7 +552,7 @@ export function DJInterface() {
                 <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                 <div className="flex" style={{ fontFamily: 'inherit' }}>
                   <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 2.0.0</span></pre>
+                  <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 0.1.0</span></pre>
                   <pre className="m-0">║</pre>
                 </div>
                 <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
@@ -625,53 +641,57 @@ export function DJInterface() {
           {/* Container B: Info + MC */}
           <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
             {/* Info button with modal */}
-            <div
-              className="group relative phosphor-glow"
-              onMouseEnter={() => setShowInfo(true)}
-              onMouseLeave={() => setShowInfo(false)}
+            <div ref={infoRef} className="relative"
+              onMouseEnter={() => { if (!infoPinned) setShowInfo(true); }}
+              onMouseLeave={() => { if (!infoPinned) setShowInfo(false); }}
             >
-              <div className="ascii-box" style={{ width: 'fit-content', opacity: showInfo ? 0 : 1 }}>
-                <pre className="m-0">╔═══╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
-                  <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">i</pre>
-                  <pre className="m-0">║</pre>
+              <button
+                onClick={() => {
+                  if (infoPinned) {
+                    setInfoPinned(false);
+                    setShowInfo(false);
+                  } else {
+                    setInfoPinned(true);
+                    setShowInfo(true);
+                  }
+                }}
+                className="group phosphor-glow ascii-box cursor-pointer"
+                style={{ width: 'fit-content' }}
+              >
+                <div className={`group-hover:opacity-30 ${showInfo ? 'opacity-30' : ''}`}>
+                  <pre className="m-0">╔═══╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1 text-center">i</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚═══╝</pre>
                 </div>
-                <pre className="m-0">╚═══╝</pre>
-              </div>
+              </button>
 
-              {/* Info modal - positioned relative to info button */}
+              {/* Info modal - positioned below info button */}
               {showInfo && (
                 <div
-                  className="absolute text-xs select-none"
-                  style={{
-                    right: 0,
-                    top: 0,
-                    lineHeight: '1.2',
-                    fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-                    color: theme.text,
-                    zIndex: 10,
-                  }}
+                  className="absolute left-0 z-50 phosphor-glow ascii-box"
+                  style={{ top: '100%' }}
                 >
-                  <div className="flex flex-col ascii-box">
-                    <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-                    <div className="flex" style={{ fontFamily: 'inherit' }}>
-                      <pre className="m-0">║</pre>
-                      <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
-                      <pre className="m-0">║</pre>
-                    </div>
-                    <div className="flex" style={{ fontFamily: 'inherit' }}>
-                      <pre className="m-0">║</pre>
-                      <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
-                      <pre className="m-0">║</pre>
-                    </div>
-                    <div className="flex" style={{ fontFamily: 'inherit' }}>
-                      <pre className="m-0">║</pre>
-                      <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
-                      <pre className="m-0">║</pre>
-                    </div>
-                    <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
+                  <pre className="m-0">╔{'═'.repeat(49)}╗</pre>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
+                    <pre className="m-0">║</pre>
                   </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <pre className="m-0 flex-1"> Note: Not an official Anthropic product</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <pre className="m-0">╚{'═'.repeat(49)}╝</pre>
                 </div>
               )}
             </div>
