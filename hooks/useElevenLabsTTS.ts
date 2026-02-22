@@ -10,22 +10,39 @@ interface UseElevenLabsTTSReturn {
   error: string | null;
 }
 
+/**
+ * Get the shared AudioContext — either Strudel's (already unlocked when music plays)
+ * or the one created by unlockAudio() in DJInterface during user gesture.
+ */
+function getSharedAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null;
+  const ctx =
+    (window as any).getAudioContext?.() ??
+    (window as any).__djClaudeAudioContext ??
+    null;
+  return ctx as AudioContext | null;
+}
+
 export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const blobUrlRef = useRef<string | null>(null);
+  const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
   const cleanup = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      audioRef.current = null;
-    }
-    if (blobUrlRef.current) {
-      URL.revokeObjectURL(blobUrlRef.current);
-      blobUrlRef.current = null;
+    if (sourceNodeRef.current) {
+      try {
+        sourceNodeRef.current.stop();
+      } catch {
+        // stop() throws if already stopped — safe to ignore
+      }
+      try {
+        sourceNodeRef.current.disconnect();
+      } catch {
+        // already disconnected
+      }
+      sourceNodeRef.current = null;
     }
   }, []);
 
@@ -40,10 +57,21 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
 
     if (!text || !voiceId) return;
 
+    const audioContext = getSharedAudioContext();
+    if (!audioContext) {
+      console.warn('[TTS] No AudioContext available yet — skipping speak()');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
+      // Resume context if suspended (belt-and-suspenders)
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+
       const response = await fetch('/api/tts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -54,31 +82,28 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
         throw new Error(`TTS request failed: ${response.status}`);
       }
 
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      blobUrlRef.current = audioUrl;
+      const arrayBuffer = await response.arrayBuffer();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-      const audio = new Audio(audioUrl);
-      audioRef.current = audio;
+      // Create or reuse a GainNode for TTS volume control
+      if (!gainNodeRef.current || gainNodeRef.current.context !== audioContext) {
+        gainNodeRef.current = audioContext.createGain();
+        gainNodeRef.current.connect(audioContext.destination);
+      }
 
-      audio.onplay = () => {
-        setIsLoading(false);
-        setIsSpeaking(true);
-      };
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(gainNodeRef.current);
+      sourceNodeRef.current = source;
 
-      audio.onended = () => {
+      source.onended = () => {
         setIsSpeaking(false);
-        cleanup();
+        sourceNodeRef.current = null;
       };
 
-      audio.onerror = () => {
-        setError('Audio playback failed');
-        setIsSpeaking(false);
-        setIsLoading(false);
-        cleanup();
-      };
-
-      await audio.play();
+      source.start(0);
+      setIsLoading(false);
+      setIsSpeaking(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'TTS failed');
       setIsLoading(false);
