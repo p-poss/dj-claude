@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { useVoice } from '@/context/VoiceContext';
 import { useElevenLabsTTS } from './useElevenLabsTTS';
 
@@ -14,10 +15,10 @@ export function useTTS(): UseTTSReturn {
   const { selectedElevenLabsVoice } = useVoice();
   const { speak: elevenLabsSpeak, stop, isSpeaking, isLoading } = useElevenLabsTTS();
 
-  const speak = (text: string) => {
+  const speak = useCallback((text: string) => {
     if (!text || !selectedElevenLabsVoice) return;
     elevenLabsSpeak(text, selectedElevenLabsVoice.id);
-  };
+  }, [elevenLabsSpeak, selectedElevenLabsVoice]);
 
   return {
     speak,
