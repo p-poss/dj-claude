@@ -867,12 +867,31 @@ export function DJInterface() {
           </div>
         </button>
 
-        {/* Revert button - right-aligned */}
+        {/* Re-run button - mobile only */}
+        <button
+          onClick={state.currentCode ? handlePlay : undefined}
+          disabled={!state.currentCode}
+          className={`md:hidden ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
+          style={{ width: 'fit-content', marginLeft: 'auto' }}
+          aria-label="Re-run"
+        >
+          <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔═══╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">⟳</pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚═══╝</pre>
+          </div>
+        </button>
+
+        {/* Revert button - right-aligned on desktop (re-run takes ml-auto on mobile) */}
         <button
           onClick={state.previousCode ? handleGoBack : undefined}
           disabled={!state.previousCode}
-          className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-          style={{ width: 'fit-content', marginLeft: 'auto' }}
+          className={`md:!ml-auto ${state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
+          style={{ width: 'fit-content' }}
         >
           <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
             {/* Mobile: icon only */}
