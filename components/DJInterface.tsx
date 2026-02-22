@@ -741,7 +741,7 @@ export function DJInterface() {
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> • Let agents DJ while they work</pre>
+                    <pre className="m-0 flex-1"> • Let your AI agents DJ while they work</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
