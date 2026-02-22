@@ -167,9 +167,9 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
 
   // Apply cup animation to body frame
   // Cups are rows 3-6, cols 0-2 (left) and 15-17 (right) — 3 wide x 4 tall
-  // Step 0: normal (3x4 at rows 3-6)
-  // Step 1: shift down 1 (3x4 at rows 4-7)
-  // Step 2: remove top row (3x3 at rows 5-7)
+  // Step 0: normal (3x4 at rows 3-6, stems at rows 1-2)
+  // Step 1: shift down 1 (3x4 at rows 4-7) + bottom stem disappears (row 2)
+  // Step 2: remove top row (3x3 at rows 5-7) + top stem disappears (row 1)
   // Step 3: remove another top row (3x2 at rows 6-7)
   // Step 4: remove outer col (2x2 at rows 6-7)
   const applyCupAnimation = (baseFrame: number[][]): number[][] => {
@@ -183,8 +183,17 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
       4: { rowStart: 6, rowEnd: 7, colShrink: true },
     }[cupStep]!;
 
+    // Stems disappear bottom-first: step 1 removes row 2, step 2+ removes row 1
+    const stemHideFrom = cupStep >= 2 ? 1 : 2; // row at which stems start hiding
+
     return baseFrame.map((row, rowIdx) => {
       return row.map((cell, colIdx) => {
+        // Handle stem removal (col 1 left, col 16 right, rows 1-2)
+        const isStemCol = colIdx === 1 || colIdx === 16;
+        if (isStemCol && rowIdx >= stemHideFrom && rowIdx <= 2) {
+          return 0;
+        }
+
         const isLeftCup = colIdx <= 2;
         const isRightCup = colIdx >= 15;
         if (!isLeftCup && !isRightCup) return cell;
