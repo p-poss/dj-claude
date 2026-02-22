@@ -675,7 +675,7 @@ export function DJInterface() {
                   className="absolute left-0 z-50 phosphor-glow ascii-box"
                   style={{ top: '100%' }}
                 >
-                  <pre className="m-0">╔{'═'.repeat(49)}╗</pre>
+                  <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> Sonnet 4.6 live coding music in Strudel</pre>
@@ -691,7 +691,7 @@ export function DJInterface() {
                     <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> Creator: Patrick Poss (hey@patrickposs.com)</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
-                  <pre className="m-0">╚{'═'.repeat(49)}╝</pre>
+                  <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
                 </div>
               )}
             </div>
