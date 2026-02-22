@@ -600,7 +600,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           className="keyboard-hint phosphor-glow hidden md:block"
           style={{
             position: 'absolute',
-            top: '10px',
+            top: '9px',
             right: '10px',
             fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
             fontSize: '12px',
