@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 interface DancingClaudeProps {
   isPlaying: boolean;
   isSpeaking?: boolean;
   color?: string;
+  onClickCharacter?: () => void;
 }
 
-export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373' }: DancingClaudeProps) {
+export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373', onClickCharacter }: DancingClaudeProps) {
   const [frame, setFrame] = useState(0);
   const [mouthOpen, setMouthOpen] = useState(false);
+  const [headphonesDown, setHeadphonesDown] = useState(false);
+  const [cupStep, setCupStep] = useState(0); // 0=normal, 1=down1, 2=shrink row, 3=shrink row, 4=shrink col
+  const animatingRef = useRef(false);
 
   // Use the theme color - the parent's hue-rotate filter handles rainbow effect in party mode
   const blockColor = color;
@@ -44,6 +48,36 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
 
     return () => clearInterval(interval);
   }, [isSpeaking]);
+
+  // Handle click — toggle headphones with animated steps
+  const handleClick = useCallback(() => {
+    if (animatingRef.current) return;
+    animatingRef.current = true;
+
+    if (!headphonesDown) {
+      // Down sequence: 0 → 1 → 2 → 3 → 4
+      setCupStep(1);
+      setTimeout(() => setCupStep(2), 200);
+      setTimeout(() => setCupStep(3), 400);
+      setTimeout(() => {
+        setCupStep(4);
+        setHeadphonesDown(true);
+        animatingRef.current = false;
+      }, 600);
+    } else {
+      // Up sequence: 4 → 3 → 2 → 1 → 0
+      setCupStep(3);
+      setTimeout(() => setCupStep(2), 200);
+      setTimeout(() => setCupStep(1), 400);
+      setTimeout(() => {
+        setCupStep(0);
+        setHeadphonesDown(false);
+        animatingRef.current = false;
+      }, 600);
+    }
+
+    onClickCharacter?.();
+  }, [headphonesDown, onClickCharacter]);
 
   // Cell types: 0 = empty, 1 = body, 2 = eye, 3 = mouth, 4 = shadow (30% opacity)
   const renderBlock = (cellType: number) => {
@@ -131,6 +165,53 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
     ],
   ];
 
+  // Apply cup animation to body frame
+  // Cups are rows 3-6, cols 0-2 (left) and 15-17 (right) — 3 wide x 4 tall
+  // Step 0: normal (3x4 at rows 3-6)
+  // Step 1: shift down 1 (3x4 at rows 4-7)
+  // Step 2: remove top row (3x3 at rows 5-7)
+  // Step 3: remove another top row (3x2 at rows 6-7)
+  // Step 4: remove outer col (2x2 at rows 6-7)
+  const applyCupAnimation = (baseFrame: number[][]): number[][] => {
+    if (cupStep === 0) return baseFrame;
+
+    // Define cup bounds per step
+    const cupBounds = {
+      1: { rowStart: 4, rowEnd: 7, colShrink: false },
+      2: { rowStart: 5, rowEnd: 7, colShrink: false },
+      3: { rowStart: 6, rowEnd: 7, colShrink: false },
+      4: { rowStart: 6, rowEnd: 7, colShrink: true },
+    }[cupStep]!;
+
+    return baseFrame.map((row, rowIdx) => {
+      return row.map((cell, colIdx) => {
+        const isLeftCup = colIdx <= 2;
+        const isRightCup = colIdx >= 15;
+        if (!isLeftCup && !isRightCup) return cell;
+
+        // Check if this column is removed by shrink
+        if (cupBounds.colShrink) {
+          if (colIdx === 0 || colIdx === 17) {
+            // Outer column removed — show empty if in cup zone, else base
+            if (rowIdx >= cupBounds.rowStart && rowIdx <= cupBounds.rowEnd) return 0;
+            if (rowIdx >= 3 && rowIdx <= 6) return 0; // vacated original area
+            return cell;
+          }
+        }
+
+        // Place cup at shifted position
+        if (rowIdx >= cupBounds.rowStart && rowIdx <= cupBounds.rowEnd) {
+          return 1;
+        }
+        // Clear original cup area (rows 3-6) that's now vacated
+        if (rowIdx >= 3 && rowIdx <= 6) {
+          return 0;
+        }
+        return cell;
+      });
+    });
+  };
+
   // Get body frame with mouth animation applied
   const getBodyWithMouth = (baseFrame: number[][]): number[][] => {
     if (!mouthOpen) return baseFrame;
@@ -147,7 +228,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
     });
   };
 
-  const currentBody = getBodyWithMouth(bodyFrames[frame]);
+  const currentBody = applyCupAnimation(getBodyWithMouth(bodyFrames[frame]));
 
   // Leg patterns for different frames - 18 wide grid
   // 4 legs at positions 4, 6, 11, 13
@@ -181,7 +262,11 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
   const bodyOffset = (frame === 1 || frame === 3) && isPlaying ? -2 : 0;
 
   return (
-    <div className="dancing-claude phosphor-glow">
+    <div
+      className="dancing-claude phosphor-glow"
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
+    >
       <div
         className="flex flex-col items-center"
         style={{

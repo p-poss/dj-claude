@@ -31,6 +31,7 @@ export function DJInterface() {
   const prevMcEnabledRef = useRef(true); // MC starts ON by default
   const speakRef = useRef(speak); // Always keep latest speak function
   speakRef.current = speak; // Update ref on every render
+  const bingBongTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [editorReady, setEditorReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -526,6 +527,12 @@ export function DJInterface() {
     }
   }, [state.previousCode, dispatch]);
 
+  const handleBingBong = useCallback(() => {
+    setCurrentMcCommentary('Bing Bong!');
+    if (bingBongTimerRef.current) clearTimeout(bingBongTimerRef.current);
+    bingBongTimerRef.current = setTimeout(() => setCurrentMcCommentary(''), 3000);
+  }, []);
+
   return (
     <>
     <div
@@ -760,7 +767,7 @@ export function DJInterface() {
             transition: 'transform 0.15s ease-out',
           }}
         >
-          <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} />
+          <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} onClickCharacter={handleBingBong} />
           <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.text} />
         </div>
       </div>
