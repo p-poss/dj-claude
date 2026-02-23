@@ -49,7 +49,8 @@ export function getApiKey(): string {
       '    \x1b[34mecho "ANTHROPIC_API_KEY=sk-ant-..." > .env\x1b[0m\n' +
       '\n' +
       '  • \x1b[1mNo API key?\x1b[0m\n' +
-      '    Try it out at \x1b[34mhttps://claude.dj\x1b[0m\n'
+      '    Try it out at \x1b[34mhttps://claude.dj\x1b[0m\n' +
+      '\n'
     );
     process.exit(1);
   }
