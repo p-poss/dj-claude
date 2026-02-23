@@ -27,6 +27,9 @@
     "react-dom": "19.2.3",
     "react-syntax-highlighter": "^16.1.0"
   },
+  "overrides": {
+    "minimatch": "^10.2.1"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

@@ -45,5 +45,11 @@ next-env.d.ts
 *.png
 Screenshot*
 
-# MCP registry tokens
+# secrets and credentials
 .mcpregistry_*
+.npmrc
+*.key
+*.p12
+*.pfx
+*.keystore
+credentials.json
