@@ -14,9 +14,7 @@ export function StatusBar({ error }: StatusBarProps) {
         </Box>
       )}
       <Box>
-        <Text color="#E8704E" dimColor>
-          [Enter] submit  [Esc] pause  [q] quit  [r] revert
-        </Text>
+        <Text color="#E8704E">[Enter] <Text dimColor>submit</Text>  [Esc] <Text dimColor>pause/play</Text>  [r] <Text dimColor>revert</Text></Text>
       </Box>
     </Box>
   );

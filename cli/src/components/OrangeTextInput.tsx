@@ -7,6 +7,7 @@ import chalk from 'chalk';
 
 const ORANGE = chalk.hex('#E8704E');
 const DIM_ORANGE = chalk.hex('#E8704E').dim;
+const CURSOR = chalk.bgHex('#E8704E').hex('#FFFFFF');
 
 interface Props {
   value: string;
@@ -51,22 +52,22 @@ export function OrangeTextInput({
   if (showCursor && focus) {
     renderedPlaceholder =
       placeholder.length > 0
-        ? chalk.inverse(placeholder[0]) + DIM_ORANGE(placeholder.slice(1))
-        : chalk.inverse(' ');
+        ? CURSOR(placeholder[0]) + DIM_ORANGE(placeholder.slice(1))
+        : CURSOR(' ');
 
-    renderedValue = value.length > 0 ? '' : chalk.inverse(' ');
+    renderedValue = value.length > 0 ? '' : CURSOR(' ');
 
     let i = 0;
     for (const char of value) {
       renderedValue +=
         i >= cursorOffset - cursorActualWidth && i <= cursorOffset
-          ? chalk.inverse(char)
+          ? CURSOR(char)
           : ORANGE(char);
       i++;
     }
 
     if (value.length > 0 && cursorOffset === value.length) {
-      renderedValue += chalk.inverse(' ');
+      renderedValue += CURSOR(' ');
     }
   }
 
@@ -112,8 +113,8 @@ export function OrangeTextInput({
       }
 
       if (nextCursorOffset < 0) nextCursorOffset = 0;
-      if (nextCursorOffset > originalValue.length)
-        nextCursorOffset = originalValue.length;
+      if (nextCursorOffset > nextValue.length)
+        nextCursorOffset = nextValue.length;
 
       setState({ cursorOffset: nextCursorOffset, cursorWidth: nextCursorWidth });
 
