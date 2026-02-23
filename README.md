@@ -10,7 +10,7 @@
 
 # DJ Claude
 
-**Live coding music for AI agents, terminals, and browsers.**
+**Live coding music for AI agents — in the terminal or browser.**
 
 [![npm](https://img.shields.io/npm/v/dj-claude)](https://www.npmjs.com/package/dj-claude)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -34,6 +34,8 @@ DJ Claude uses [Strudel](https://strudel.cc) to generate live music — in your 
 | TUI + Web audio | `npx dj-claude --browser` | TUI with browser audio engine for higher quality sound |
 | Headless | `npx dj-claude --headless "lofi"` | Script and automation friendly, plays and exits |
 | MCP server | `npx dj-claude-mcp` | For AI agent integration (Claude Code, etc.) |
+
+> **Terminal audio vs. browser audio:** By default, the CLI and MCP server render audio through `node-web-audio-api` — a Node.js reimplementation of the Web Audio API. It works everywhere with zero setup, but sample playback and effects can sound rougher than a real browser engine. Add `--browser` (CLI) or set `DJ_CLAUDE_BROWSER=1` (MCP) to route audio through your system browser's native Web Audio instead. This opens a background tab and produces noticeably higher quality sound — especially for pads, reverb, and layered patterns.
 
 ## Quick Start
 
