@@ -24,16 +24,16 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
   }, []);
 
   const speak = useCallback((text: string) => {
+    console.log('[BrowserTTS] speak called:', { text, hasWindow: typeof window !== 'undefined', hasSynth: typeof window !== 'undefined' && !!window.speechSynthesis });
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
 
-    // Cancel directly instead of calling stop() to avoid React state churn
     window.speechSynthesis.cancel();
-    utteranceRef.current = null;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utteranceRef.current = utterance;
 
     utterance.onstart = () => {
+      console.log('[BrowserTTS] onstart');
       if (utteranceRef.current === utterance) {
         setIsLoading(false);
         setIsSpeaking(true);
@@ -41,13 +41,15 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
     };
 
     utterance.onend = () => {
+      console.log('[BrowserTTS] onend');
       if (utteranceRef.current === utterance) {
         setIsSpeaking(false);
         utteranceRef.current = null;
       }
     };
 
-    utterance.onerror = () => {
+    utterance.onerror = (e) => {
+      console.log('[BrowserTTS] onerror:', e.error);
       if (utteranceRef.current === utterance) {
         setIsLoading(false);
         setIsSpeaking(false);
@@ -56,6 +58,7 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
     };
 
     setIsLoading(true);
+    console.log('[BrowserTTS] calling speechSynthesis.speak()');
     window.speechSynthesis.speak(utterance);
   }, []);
 
