@@ -637,14 +637,14 @@ export function DJInterface() {
  ╚═════╝  ╚════╝      ╚═════╝╚══════╝╚═╝  ╚═╝`}</pre>
             </div>
 
-            {/* Row 3: Rave, Dance, Flip */}
+            {/* Row 3: Night, Disco, Rave */}
             <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
-              {/* Rave toggle button */}
+              {/* Night toggle button */}
               <button
-                onClick={() => setCrtEnabled((prev) => !prev)}
-                data-testid="rave-toggle"
-                aria-label="Toggle rave mode"
-                aria-pressed={crtEnabled}
+                onClick={toggleSwap}
+                data-testid="flip-toggle"
+                aria-label="Toggle color flip"
+                aria-pressed={isSwapped}
                 className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
@@ -652,14 +652,14 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
+                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
                 </div>
               </button>
 
-              {/* Dance toggle button */}
+              {/* Disco toggle button */}
               <button
                 onClick={() => setPartyEnabled((prev) => !prev)}
                 data-testid="disco-toggle"
@@ -679,12 +679,12 @@ export function DJInterface() {
                 </div>
               </button>
 
-              {/* Flip colors button */}
+              {/* Rave toggle button */}
               <button
-                onClick={toggleSwap}
-                data-testid="flip-toggle"
-                aria-label="Toggle color flip"
-                aria-pressed={isSwapped}
+                onClick={() => setCrtEnabled((prev) => !prev)}
+                data-testid="rave-toggle"
+                aria-label="Toggle rave mode"
+                aria-pressed={crtEnabled}
                 className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
@@ -692,7 +692,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
+                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
