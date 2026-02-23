@@ -1,5 +1,5 @@
 // Inline HTML page served to the browser for audio playback.
-// Visual design matches claude.dj (welcome box, status box, ASCII logo, dancing Claude).
+// Visual design matches claude.dj (welcome box, ASCII logo, dancing Claude).
 
 export function getPageHtml(wsPort: number): string {
   // Body frames: 4 frames, each 10 rows x 18 cols
@@ -66,23 +66,8 @@ export function getPageHtml(wsPort: number): string {
 
   pre { margin: 0; font-family: inherit; font-size: 12px; line-height: 1.2; }
 
-  /* ── Top row: welcome + status ── */
-  #top-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: start;
-    column-gap: 8px;
-    row-gap: 0;
-  }
-
   .ascii-box { width: fit-content; user-select: none; }
   .dim { opacity: 0.3; }
-
-  @keyframes queuing-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-  .queuing { animation: queuing-pulse 1.2s ease-in-out infinite; }
 
   /* ── ASCII logo ── */
   #logo { user-select: none; }
@@ -115,20 +100,11 @@ export function getPageHtml(wsPort: number): string {
 </head>
 <body>
 
-<div id="top-row">
-  <!-- Welcome box -->
-  <div class="ascii-box">
-    <pre>╔═════════════════════════════════════════════╗</pre>
-    <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">Welcome to DJ Claude <span class="dim">v 0.1.0</span></pre><pre>║</pre></div>
-    <pre>╚═════════════════════════════════════════════╝</pre>
-  </div>
-
-  <!-- Status box -->
-  <div class="ascii-box">
-    <pre>╔════════════════════╗</pre>
-    <div style="display:flex"><pre>║</pre><pre id="status" style="flex:1;text-align:center">◌ Booting Up</pre><pre>║</pre></div>
-    <pre>╚════════════════════╝</pre>
-  </div>
+<!-- Welcome box -->
+<div class="ascii-box">
+  <pre>╔═════════════════════════════════════════════╗</pre>
+  <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">Welcome to DJ Claude <span class="dim">v 0.1.0</span></pre><pre>║</pre></div>
+  <pre>╚═════════════════════════════════════════════╝</pre>
 </div>
 
 <!-- ASCII Logo -->
@@ -155,7 +131,6 @@ export function getPageHtml(wsPort: number): string {
 <script type="module">
 import { initStrudel } from 'https://unpkg.com/@strudel/web@1.2.6/dist/index.mjs';
 
-const statusEl = document.getElementById('status');
 const startBox = document.getElementById('start-box');
 const startLabel = document.getElementById('start-label');
 const claudeEl = document.getElementById('claude');
@@ -216,18 +191,9 @@ function stopDancing() {
 // Initial static render
 renderClaude(0);
 
-// ── Status ──
-function setStatus(text) {
-  statusEl.textContent = text;
-  if (text.startsWith('◎')) {
-    statusEl.innerHTML = '<span class="queuing">◎</span>' + text.slice(1);
-  }
-}
-
 // ── Audio init ──
 async function start() {
   startBox.classList.add('disabled');
-  setStatus('◌ Booting Up');
 
   try {
     const { evaluate, hush } = await initStrudel();
@@ -240,7 +206,6 @@ async function start() {
     startBox.classList.remove('disabled');
     connectWs();
   } catch (err) {
-    setStatus('○ Error');
     startBox.classList.remove('disabled');
   }
 }
@@ -248,12 +213,10 @@ async function start() {
 // ── WebSocket ──
 function connectWs() {
   if (!started) return;
-  setStatus('○ On Deck');
 
   ws = new WebSocket('ws://localhost:${wsPort}');
 
   ws.onopen = () => {
-    setStatus('○ On Deck');
     ws.send(JSON.stringify({ type: 'ready' }));
   };
 
@@ -263,25 +226,20 @@ function connectWs() {
 
     if (msg.type === 'evaluate') {
       try {
-        setStatus('◎ Queuing');
         await strudelEval(msg.code);
-        setStatus('● Mixing');
         startDancing();
         ws.send(JSON.stringify({ type: 'ack', id: msg.id }));
       } catch (err) {
-        setStatus('○ Error');
         stopDancing();
         ws.send(JSON.stringify({ type: 'error', id: msg.id, error: err.message }));
       }
     } else if (msg.type === 'hush') {
       strudelHush();
-      setStatus('○ On Break');
       stopDancing();
     }
   };
 
   ws.onclose = () => {
-    setStatus('○ Disconnected');
     stopDancing();
     setTimeout(connectWs, 2000);
   };
