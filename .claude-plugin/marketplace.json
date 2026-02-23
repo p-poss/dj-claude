@@ -4,7 +4,7 @@
       "name": "dj-claude",
       "source": "./plugin",
       "description": "Live-code music while you work. AI-powered music generation through Strudel patterns.",
-      "version": "0.1.6"
+      "version": "0.1.7"
     }
   ]
 }
