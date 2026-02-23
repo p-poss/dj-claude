@@ -304,7 +304,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
 
           // Set initial code (placeholder text)
           // Note: Do NOT use innerHTML - it creates a text layer that overlaps CodeMirror
-          editor.setAttribute('code', window.innerWidth < 768 ? '// Give DJ Claude a prompt above!' : '// Give DJ Claude a prompt above to start coding music!');
+          editor.setAttribute('code', window.innerWidth < 768 ? '// Use the prompt area above!' : '// Give DJ Claude a prompt above to start coding music!');
 
           // Style the editor
           editor.style.display = 'block';
@@ -383,6 +383,14 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
               if (keyboardHintRef.current) {
                 keyboardHintRef.current.style.opacity = '1';
               }
+            }
+            // Re-set initial code after CodeMirror is ready (iOS may miss the attribute)
+            const placeholderCode = window.innerWidth < 768 ? '// Use the prompt area above!' : '// Give DJ Claude a prompt above to start coding music!';
+            const cmView2 = (editor as any)?.editor?.editor;
+            if (cmView2?.dispatch) {
+              cmView2.dispatch({
+                changes: { from: 0, to: cmView2.state.doc.length, insert: placeholderCode }
+              });
             }
             onReady?.();
           }, 500);
