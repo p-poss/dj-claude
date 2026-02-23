@@ -21,7 +21,7 @@ export function getApiKey(): string {
       '  ║  DJ Claude \x1b[0mv 0.1.0\x1b[1m — Live coding music for Agents  ║\n' +
       '  ╚════════════════════════════════════════════════════╝\x1b[0m\n' +
       '\n' +
-      '  \x1b[1m─── About ──────────────────────────────────────────\x1b[0m\n' +
+      '  \x1b[1m─── About ─────────────────────────────────────────────\x1b[0m\n' +
       '\n' +
       '  DJ Claude generates live Strudel code from natural\n' +
       '  language — playable in your terminal, browser, or\n' +
@@ -30,15 +30,15 @@ export function getApiKey(): string {
       '\n' +
       '  • \x1b[1mGitHub\x1b[0m  \x1b[34mhttps://github.com/p-poss/dj-claude\x1b[0m\n' +
       '\n' +
-      '  \x1b[1m─── Ways to play ───────────────────────────────────\x1b[0m\n' +
+      '  \x1b[1m─── Ways to play ──────────────────────────────────────\x1b[0m\n' +
       '\n' +
       '  • \x1b[1mWeb app\x1b[0m           \x1b[34mhttps://claude.dj\x1b[0m\n' +
       '  • \x1b[1mTerminal TUI\x1b[0m      \x1b[34mnpx dj-claude\x1b[0m\n' +
       '  • \x1b[1mTUI + Web audio\x1b[0m   \x1b[34mnpx dj-claude --browser\x1b[0m\n' +
-      '  • \x1b[1mHeadless\x1b[0m          \x1b[34mnpx dj-claude --headless "jazz piano"\x1b[0m\n' +
+      '  • \x1b[1mHeadless\x1b[0m          \x1b[34mnpx dj-claude --headless "lofi"\x1b[0m\n' +
       '  • \x1b[1mMCP server\x1b[0m        \x1b[34mnpx dj-claude-mcp\x1b[0m\n' +
       '\n' +
-      '  \x1b[1m─── Anthropic API Setup ────────────────────────────\x1b[0m\n' +
+      '  \x1b[1m─── Anthropic API Setup ───────────────────────────────\x1b[0m\n' +
       '\n' +
       '  \x1b[1;4;31mNo Anthropic API key found!\x1b[0m\n' +
       '\n' +
