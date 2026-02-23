@@ -7,7 +7,7 @@ const ALLOWED_ORIGINS = [
   'https://dj-claude.vercel.app',
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Only guard API routes — let the public site through
   if (!request.nextUrl.pathname.startsWith('/api/')) {
     return NextResponse.next();
