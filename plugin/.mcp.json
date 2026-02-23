@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "dj-claude": {
+      "command": "npx",
+      "args": ["-y", "dj-claude@latest"]
+    }
+  }
+}
