@@ -2,6 +2,8 @@
 
 import type { Message } from '../lib/types.js';
 
+import type { BackendMode } from '../audio/backend.js';
+
 interface MCPState {
   engineReady: boolean;
   isPlaying: boolean;
@@ -9,6 +11,7 @@ interface MCPState {
   previousCode: string;
   mcCommentary: string;
   messages: Message[];
+  audioMode: BackendMode;
 }
 
 const state: MCPState = {
@@ -18,6 +21,7 @@ const state: MCPState = {
   previousCode: '',
   mcCommentary: '',
   messages: [],
+  audioMode: 'node',
 };
 
 export function getState(): Readonly<MCPState> {
@@ -37,6 +41,10 @@ export function updateAfterPlay(code: string, commentary: string): void {
 
 export function updateAfterHush(): void {
   state.isPlaying = false;
+}
+
+export function setAudioMode(mode: BackendMode): void {
+  state.audioMode = mode;
 }
 
 export function addMessage(msg: Message): void {

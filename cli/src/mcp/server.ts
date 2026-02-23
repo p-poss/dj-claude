@@ -4,7 +4,8 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
-import { initEngine, safeEvaluate, hush as engineHush } from '../audio/engine.js';
+import { initEngine, safeEvaluate, hush as engineHush, switchBackend, getBackendMode } from '../audio/engine.js';
+import type { BackendMode } from '../audio/backend.js';
 import { findApiKey } from '../lib/config.js';
 import { streamChat } from '../lib/claude.js';
 import { parseStreamingCode } from '../lib/parseCode.js';
@@ -14,6 +15,7 @@ import {
   updateAfterPlay,
   updateAfterHush,
   addMessage,
+  setAudioMode,
 } from './state.js';
 
 // ---------------------------------------------------------------------------
@@ -186,23 +188,54 @@ server.tool(
   },
 );
 
+// -- switch_audio ---------------------------------------------------------
+server.tool(
+  'switch_audio',
+  'Switch the audio backend at runtime between Node (terminal) and Browser (higher quality, opens a browser tab).',
+  {
+    mode: z.enum(['node', 'browser']).describe('The audio backend to switch to: "node" for terminal audio, "browser" for browser tab audio'),
+  },
+  async ({ mode }) => {
+    const current = getBackendMode();
+    if (mode === current) {
+      return {
+        content: [{ type: 'text' as const, text: `Already using ${mode} audio backend.` }],
+      };
+    }
+
+    // Stop any current playback
+    engineHush();
+    updateAfterHush();
+
+    // Switch backend and reset engine state
+    await switchBackend(mode as BackendMode);
+    enginePromise = Promise.resolve();
+    setEngineReady();
+    setAudioMode(mode as BackendMode);
+
+    return {
+      content: [{ type: 'text' as const, text: `Switched to ${mode} audio backend.` }],
+    };
+  },
+);
+
 // -- now_playing ----------------------------------------------------------
 server.tool(
   'now_playing',
   'Check what music is currently playing, including the Strudel code and DJ commentary.',
   {},
   async () => {
-    const { isPlaying, currentCode, mcCommentary } = getState();
+    const { isPlaying, currentCode, mcCommentary, audioMode } = getState();
     if (!isPlaying || !currentCode) {
       return {
-        content: [{ type: 'text' as const, text: 'Nothing is currently playing.' }],
+        content: [{ type: 'text' as const, text: `Nothing is currently playing. Audio backend: ${audioMode}` }],
       };
     }
     return {
       content: [
         {
           type: 'text' as const,
-          text: JSON.stringify({ isPlaying, currentCode, mcCommentary }, null, 2),
+          text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode }, null, 2),
         },
       ],
     };
@@ -215,6 +248,7 @@ server.tool(
 
 export async function startServer(isBrowserMode = false): Promise<void> {
   browserMode = isBrowserMode;
+  setAudioMode(browserMode ? 'browser' : 'node');
 
   // In node mode, kick off engine init eagerly.
   // In browser mode, defer until first tool call (opening a browser on

@@ -127,6 +127,9 @@ export class NodeAudioBackend implements AudioBackend {
 
   dispose(): void {
     this.hush();
+    if (this.audioContext) {
+      this.audioContext.close();
+    }
     this.audioContext = null;
     this.repl = null;
   }

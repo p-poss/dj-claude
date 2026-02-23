@@ -35,6 +35,19 @@ export async function safeEvaluate(
   return backend.safeEvaluate(newCode, previousCode);
 }
 
+export function getBackendMode(): BackendMode {
+  return currentMode;
+}
+
+export async function switchBackend(mode: BackendMode): Promise<void> {
+  if (backend) {
+    backend.dispose();
+    backend = null;
+  }
+  setBackendMode(mode);
+  await initEngine();
+}
+
 export function hush(): void {
   if (!backend) return;
   backend.hush();
