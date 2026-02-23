@@ -24,16 +24,16 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
   }, []);
 
   const speak = useCallback((text: string) => {
-    console.log('[BrowserTTS] speak called:', { text, hasWindow: typeof window !== 'undefined', hasSynth: typeof window !== 'undefined' && !!window.speechSynthesis });
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
 
-    window.speechSynthesis.cancel();
+    // Do NOT call speechSynthesis.cancel() here — Chrome silently drops
+    // a speak() that immediately follows cancel() in the same call stack.
+    // Explicit stopping is handled by the stop() function instead.
 
     const utterance = new SpeechSynthesisUtterance(text);
     utteranceRef.current = utterance;
 
     utterance.onstart = () => {
-      console.log('[BrowserTTS] onstart');
       if (utteranceRef.current === utterance) {
         setIsLoading(false);
         setIsSpeaking(true);
@@ -41,15 +41,13 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
     };
 
     utterance.onend = () => {
-      console.log('[BrowserTTS] onend');
       if (utteranceRef.current === utterance) {
         setIsSpeaking(false);
         utteranceRef.current = null;
       }
     };
 
-    utterance.onerror = (e) => {
-      console.log('[BrowserTTS] onerror:', e.error);
+    utterance.onerror = () => {
       if (utteranceRef.current === utterance) {
         setIsLoading(false);
         setIsSpeaking(false);
@@ -58,7 +56,6 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
     };
 
     setIsLoading(true);
-    console.log('[BrowserTTS] calling speechSynthesis.speak()');
     window.speechSynthesis.speak(utterance);
   }, []);
 

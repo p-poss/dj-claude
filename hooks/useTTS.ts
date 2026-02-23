@@ -26,7 +26,6 @@ export function useTTS(): UseTTSReturn {
   const isBrowser = selectedElevenLabsVoice?.id === 'browser-tts';
 
   const speak = useCallback((text: string) => {
-    console.log('[TTS] speak called:', { text: text?.slice(0, 50), voiceId: selectedElevenLabsVoice?.id });
     if (!text || !selectedElevenLabsVoice) return;
 
     if (selectedElevenLabsVoice.id === 'browser-tts') {
