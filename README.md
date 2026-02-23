@@ -179,7 +179,7 @@ Visit [claude.dj](https://claude.dj) for the full browser experience — no API 
 
 Features:
 - 5 club themes — Anthropic, Gemini, Codex, Fairlight, OpenClaw
-- NIGHT mode (color inversion), DISCO mode (rainbow hue cycling), RAVE mode (CRT scanlines)
+- NIGHT mode (color inversion), DISCO mode (rainbow hue cycling), RAVE mode (glow + CRT scanlines)
 - Voice DJ commentary with idle hype phrases (via ElevenLabs TTS)
 - Dancing Claude that follows your cursor
 - Live Strudel code display with export to clipboard
