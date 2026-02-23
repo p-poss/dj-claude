@@ -4,7 +4,7 @@
   "description": "Agents can now live code music for you, themselves, and each other while they work.",
   "title": "DJ Claude",
   "version": "0.1.6",
-  "websiteUrl": "https://github.com/p-poss/dj-claude",
+  "websiteUrl": "https://claude.dj",
   "repository": {
     "url": "https://github.com/p-poss/dj-claude",
     "source": "github"
