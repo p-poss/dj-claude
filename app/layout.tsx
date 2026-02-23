@@ -23,7 +23,7 @@ export default function RootLayout({
         <ThemeProvider>
           <VoiceProvider>
             <DJProvider>
-              {children}
+              <main>{children}</main>
             </DJProvider>
           </VoiceProvider>
         </ThemeProvider>

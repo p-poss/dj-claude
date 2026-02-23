@@ -26,8 +26,10 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
     const { theme } = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
     const keyboardHintRef = useRef<HTMLDivElement>(null);
+    const codeContentRef = useRef<HTMLDivElement>(null);
     const editorElementRef = useRef<HTMLElement | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [currentCode, setCurrentCode] = useState(initialCode);
     const [scriptLoaded, setScriptLoaded] = useState(
       typeof window !== 'undefined' &&
       !!((window as any).StrudelEditor || document.querySelector('script[src*="strudel/repl"]'))
@@ -36,6 +38,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
     // Expose API to parent via ref
     useImperativeHandle(ref, () => ({
       setCode: (code: string) => {
+        setCurrentCode(code);
         try {
           const editorEl = editorElementRef.current as any;
           const strudelMirror = editorEl?.editor;
@@ -590,6 +593,8 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
         `}</style>
         <div
           ref={containerRef}
+          data-testid="strudel-editor"
+          data-code={currentCode}
           className="strudel-editor-wrapper phosphor-glow"
           style={{
             width: '100%',
@@ -602,6 +607,12 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           }}
           suppressHydrationWarning
         />
+        <div
+          ref={codeContentRef}
+          data-testid="editor-code-content"
+          aria-hidden="true"
+          style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}
+        >{currentCode}</div>
         {/* Keyboard shortcut hint */}
         <div
           ref={keyboardHintRef}

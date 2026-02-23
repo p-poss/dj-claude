@@ -42,6 +42,9 @@ export function ClubSelector() {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        data-testid="club-selector"
+        aria-expanded={isOpen}
+        aria-label="Select club theme"
         className="group phosphor-glow ascii-box cursor-pointer"
         style={{ width: 'fit-content' }}
       >
@@ -72,6 +75,9 @@ export function ClubSelector() {
             <button
               key={theme.name}
               onClick={() => handleSelectTheme(index)}
+              data-testid="club-option"
+              data-value={theme.name}
+              aria-selected={themeIndex === index}
               className="group block w-full text-left phosphor-glow cursor-pointer"
             >
               <div className="flex" style={{ fontFamily: 'inherit' }}>

@@ -543,6 +543,7 @@ export function DJInterface() {
   return (
     <>
     <div
+      data-testid="dj-interface"
       className="flex flex-col gap-3"
       style={{
         height: '100dvh',
@@ -641,6 +642,9 @@ export function DJInterface() {
               {/* Rave toggle button */}
               <button
                 onClick={() => setCrtEnabled((prev) => !prev)}
+                data-testid="rave-toggle"
+                aria-label="Toggle rave mode"
+                aria-pressed={crtEnabled}
                 className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
@@ -658,6 +662,9 @@ export function DJInterface() {
               {/* Dance toggle button */}
               <button
                 onClick={() => setPartyEnabled((prev) => !prev)}
+                data-testid="disco-toggle"
+                aria-label="Toggle disco mode"
+                aria-pressed={partyEnabled}
                 className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
@@ -675,6 +682,9 @@ export function DJInterface() {
               {/* Flip colors button */}
               <button
                 onClick={toggleSwap}
+                data-testid="flip-toggle"
+                aria-label="Toggle color flip"
+                aria-pressed={isSwapped}
                 className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
@@ -708,6 +718,8 @@ export function DJInterface() {
                     setShowInfo(true);
                   }
                 }}
+                data-testid="info-button"
+                aria-label="Show info"
                 className="group phosphor-glow ascii-box cursor-pointer"
                 style={{ width: 'fit-content' }}
               >
@@ -819,9 +831,11 @@ export function DJInterface() {
           <button
             onClick={() => promptInputRef.current?.submit()}
             disabled={!promptHasValue || state.isStreaming || !editorReady}
+            data-testid="submit-button"
+            aria-label="Submit"
+            aria-disabled={!promptHasValue || state.isStreaming || !editorReady}
             className={`md:hidden group phosphor-glow ascii-box text-xs select-none ${promptHasValue && !state.isStreaming && editorReady ? 'cursor-pointer' : 'cursor-not-allowed'}`}
             style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, opacity: promptHasValue && !state.isStreaming && editorReady ? 1 : 0.3 }}
-            aria-label="Submit"
           >
             <div className={promptHasValue && !state.isStreaming && editorReady ? 'group-hover:opacity-30' : ''}>
               <pre className="m-0">╔═══╗</pre>
@@ -867,6 +881,9 @@ export function DJInterface() {
         <button
           onClick={state.currentCode ? handleTogglePlayback : undefined}
           disabled={!state.currentCode}
+          data-testid="play-pause-button"
+          aria-label={isPlaying ? 'Pause music' : 'Play music'}
+          aria-disabled={!state.currentCode}
           className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
           style={{ width: 'fit-content' }}
         >
@@ -885,9 +902,11 @@ export function DJInterface() {
         <button
           onClick={state.currentCode ? handlePlay : undefined}
           disabled={!state.currentCode}
+          data-testid="rerun-button"
+          aria-label="Re-run"
+          aria-disabled={!state.currentCode}
           className={`md:hidden ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
           style={{ width: 'fit-content', marginLeft: 'auto' }}
-          aria-label="Re-run"
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
             <pre className="m-0">╔═══╗</pre>
@@ -904,6 +923,9 @@ export function DJInterface() {
         <button
           onClick={state.previousCode ? handleGoBack : undefined}
           disabled={!state.previousCode}
+          data-testid="revert-button"
+          aria-label="Revert to previous code"
+          aria-disabled={!state.previousCode}
           className={`md:!ml-auto ${state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
           style={{ width: 'fit-content' }}
         >
@@ -935,6 +957,9 @@ export function DJInterface() {
         <button
           onClick={state.currentCode ? handleExport : undefined}
           disabled={!state.currentCode}
+          data-testid="export-button"
+          aria-label="Copy code to clipboard"
+          aria-disabled={!state.currentCode}
           className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
           style={{ width: 'fit-content' }}
         >

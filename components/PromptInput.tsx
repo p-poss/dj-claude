@@ -189,6 +189,10 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
                   <input
                     ref={inputRef}
                     type="text"
+                    id="prompt-input"
+                    name="prompt"
+                    data-testid="prompt-input"
+                    aria-label="Music prompt input"
                     value={value}
                     onChange={(e) => {
                       setValue(e.target.value);

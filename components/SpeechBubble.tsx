@@ -32,6 +32,8 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
   return (
     <div
       className="phosphor-glow"
+      aria-live="polite"
+      role="status"
       style={{
         position: 'absolute',
         left: '130px',

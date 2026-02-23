@@ -61,6 +61,9 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
       {/* Trigger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
+        data-testid="voice-selector"
+        aria-expanded={isOpen}
+        aria-label="Select MC voice"
         className="group phosphor-glow ascii-box cursor-pointer"
         style={{ width: 'fit-content' }}
       >
@@ -91,6 +94,9 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
             <button
               key={voice.id}
               onClick={() => handleSelectVoice(voice.id)}
+              data-testid="voice-option"
+              data-value={voice.id}
+              aria-selected={mcEnabled && selectedElevenLabsVoice?.id === voice.id}
               className="group block w-full text-left phosphor-glow cursor-pointer"
             >
               <div className="flex" style={{ fontFamily: 'inherit' }}>
@@ -107,6 +113,8 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
           {/* Off option */}
           <button
             onClick={handleSelectOff}
+            data-testid="mc-toggle"
+            aria-selected={!mcEnabled}
             className="group block w-full text-left phosphor-glow cursor-pointer"
           >
             <div className="flex" style={{ fontFamily: 'inherit' }}>
