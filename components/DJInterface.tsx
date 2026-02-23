@@ -743,7 +743,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> • Sonnet 4.6 live coding music in Strudel</pre>
+                    <pre className="m-0 flex-1"> • Agentic live coding music in Strudel</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
@@ -753,17 +753,17 @@ export function DJInterface() {
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> • Let your AI agents DJ while they work</pre>
+                    <pre className="m-0 flex-1"> • AI agents can now DJ while they work</pre>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                    <pre className="m-0">║</pre>
+                    <a href="https://github.com/p-poss/dj-claude" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> GITHUB: github.com/p-poss/dj-claude</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> DISCLAIMER: Non-official Anthropic product</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
-                    <pre className="m-0">║</pre>
-                    <a href="https://www.patrickposs.com/" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> CREATOR: Patrick Poss (hey@patrickposs.com)</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(45)}╝</pre>
