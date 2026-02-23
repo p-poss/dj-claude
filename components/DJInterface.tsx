@@ -692,7 +692,7 @@ export function DJInterface() {
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'FLIP: On' : 'FLIP: Off'}</pre>
+                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
@@ -834,7 +834,7 @@ export function DJInterface() {
             data-testid="submit-button"
             aria-label="Submit"
             aria-disabled={!promptHasValue || state.isStreaming || !editorReady}
-            className={`md:hidden group phosphor-glow ascii-box text-xs select-none ${promptHasValue && !state.isStreaming && editorReady ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            className={`group phosphor-glow ascii-box text-xs select-none ${promptHasValue && !state.isStreaming && editorReady ? 'cursor-pointer' : 'cursor-not-allowed'}`}
             style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, opacity: promptHasValue && !state.isStreaming && editorReady ? 1 : 0.3 }}
           >
             <div className={promptHasValue && !state.isStreaming && editorReady ? 'group-hover:opacity-30' : ''}>
