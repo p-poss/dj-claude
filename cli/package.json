@@ -1,6 +1,6 @@
 {
   "name": "dj-claude",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "description": "AI-generated music in your terminal — DJ Claude CLI",
   "type": "module",
   "bin": {
