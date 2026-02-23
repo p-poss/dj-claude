@@ -100,7 +100,7 @@ const MOOD_PROMPTS: Record<string, string> = {
 
 const server = new McpServer({
   name: 'dj-claude',
-  version: '0.1.3',
+  version: '0.1.4',
 });
 
 // -- play_music -----------------------------------------------------------
