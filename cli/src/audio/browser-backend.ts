@@ -159,6 +159,7 @@ export class BrowserAudioBackend implements AudioBackend {
   }
 
   dispose(): void {
+    this.hush();
     for (const [id, pending] of this.pendingEvals) {
       clearTimeout(pending.timer);
       pending.reject(new Error('Backend disposed'));

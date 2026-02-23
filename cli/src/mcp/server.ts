@@ -203,18 +203,24 @@ server.tool(
       };
     }
 
-    // Stop any current playback
-    engineHush();
-    updateAfterHush();
+    const { currentCode, isPlaying } = getState();
 
-    // Switch backend and reset engine state
+    // switchBackend() disposes the old backend (which hushes internally)
     await switchBackend(mode as BackendMode);
     enginePromise = Promise.resolve();
     setEngineReady();
     setAudioMode(mode as BackendMode);
 
+    // Replay on the new backend if music was playing
+    if (isPlaying && currentCode) {
+      const result = await safeEvaluate(currentCode, '');
+      if (!result.success) {
+        updateAfterHush();
+      }
+    }
+
     return {
-      content: [{ type: 'text' as const, text: `Switched to ${mode} audio backend.` }],
+      content: [{ type: 'text' as const, text: `Switched to ${mode} audio backend.${isPlaying && currentCode ? ' Music resumed.' : ''}` }],
     };
   },
 );
