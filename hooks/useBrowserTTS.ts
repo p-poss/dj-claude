@@ -56,14 +56,7 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
     };
 
     setIsLoading(true);
-
-    // Chrome bug: cancel() immediately followed by speak() can silently fail.
-    // A short delay ensures the cancellation completes before queuing new speech.
-    setTimeout(() => {
-      if (utteranceRef.current === utterance) {
-        window.speechSynthesis.speak(utterance);
-      }
-    }, 10);
+    window.speechSynthesis.speak(utterance);
   }, []);
 
   useEffect(() => {
