@@ -3,7 +3,6 @@
 import { useCallback } from 'react';
 import { useVoice } from '@/context/VoiceContext';
 import { useElevenLabsTTS } from './useElevenLabsTTS';
-import { useBrowserTTS } from './useBrowserTTS';
 
 interface UseTTSReturn {
   speak: (text: string) => void;
@@ -14,36 +13,17 @@ interface UseTTSReturn {
 
 export function useTTS(): UseTTSReturn {
   const { selectedElevenLabsVoice } = useVoice();
-  const {
-    speak: elevenLabsSpeak, stop: elevenLabsStop,
-    isSpeaking: elevenLabsIsSpeaking, isLoading: elevenLabsIsLoading,
-  } = useElevenLabsTTS();
-  const {
-    speak: browserSpeak, stop: browserStop,
-    isSpeaking: browserIsSpeaking, isLoading: browserIsLoading,
-  } = useBrowserTTS();
-
-  const isBrowser = selectedElevenLabsVoice?.id === 'browser-tts';
+  const { speak: elevenLabsSpeak, stop, isSpeaking, isLoading } = useElevenLabsTTS();
 
   const speak = useCallback((text: string) => {
     if (!text || !selectedElevenLabsVoice) return;
-
-    if (selectedElevenLabsVoice.id === 'browser-tts') {
-      browserSpeak(text);
-    } else {
-      elevenLabsSpeak(text, selectedElevenLabsVoice.id);
-    }
-  }, [elevenLabsSpeak, browserSpeak, selectedElevenLabsVoice]);
-
-  const stop = useCallback(() => {
-    elevenLabsStop();
-    browserStop();
-  }, [elevenLabsStop, browserStop]);
+    elevenLabsSpeak(text, selectedElevenLabsVoice.id);
+  }, [elevenLabsSpeak, selectedElevenLabsVoice]);
 
   return {
     speak,
     stop,
-    isSpeaking: isBrowser ? browserIsSpeaking : elevenLabsIsSpeaking,
-    isLoading: isBrowser ? browserIsLoading : elevenLabsIsLoading,
+    isSpeaking,
+    isLoading,
   };
 }
