@@ -16,10 +16,27 @@ export function getApiKey(): string {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) {
     console.error(
-      '\n  Missing ANTHROPIC_API_KEY!\n\n' +
+      '\n' +
+      '  ╔═════════════════════════════════════════════════════╗\n' +
+      '  ║  DJ Claude — AI-generated music in your terminal  ║\n' +
+      '  ╚═════════════════════════════════════════════════════╝\n' +
+      '\n' +
+      '  ─── Ways to play ───────────────────────────────────\n' +
+      '\n' +
+      '  Web app           https://claude.dj\n' +
+      '  Terminal TUI      npx dj-claude\n' +
+      '  Browser mode      npx dj-claude --browser\n' +
+      '  Headless          npx dj-claude --headless "jazz piano"\n' +
+      '  MCP server        npx dj-claude-mcp\n' +
+      '\n' +
+      '  ─── Setup ──────────────────────────────────────────\n' +
+      '\n' +
+      '  Missing ANTHROPIC_API_KEY!\n' +
+      '\n' +
       '  Set it as an environment variable:\n' +
-      '    export ANTHROPIC_API_KEY=sk-ant-...\n\n' +
-      '  Or create a .env file:\n' +
+      '    export ANTHROPIC_API_KEY=sk-ant-...\n' +
+      '\n' +
+      '  Or create a .env file in your project directory:\n' +
       '    echo "ANTHROPIC_API_KEY=sk-ant-..." > .env\n'
     );
     process.exit(1);
