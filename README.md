@@ -89,6 +89,7 @@ The easiest way to use DJ Claude with Claude Code. Installs the MCP server and g
 | `/dj-claude:hush` | Stop all music |
 | `/dj-claude:now-playing` | Check what's currently playing |
 | `/dj-claude:strudel [code]` | Evaluate raw Strudel code directly |
+| `/dj-claude:browser` | Switch between Node and browser audio backends mid-session |
 
 Or just ask naturally — Claude will call the right tool:
 
@@ -138,6 +139,7 @@ For higher quality audio through the browser's Web Audio engine:
 | `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` |
 | `hush` | Stop all music playback |
 | `now_playing` | Check what's currently playing |
+| `switch_audio` | Switch between Node and browser audio backends at runtime |
 
 ## Keyboard Shortcuts (TUI)
 
@@ -167,6 +169,8 @@ Features:
 | `ANTHROPIC_API_KEY` | Yes (CLI / MCP) | Your Anthropic API key |
 | `ELEVENLABS_API_KEY` | No (web only) | Enables voice DJ commentary |
 | `DJ_CLAUDE_BROWSER` | No | Set to `1` for browser audio backend in MCP mode |
+| `DJ_CLAUDE_MODEL` | No | Claude model for CLI/MCP (default: `claude-sonnet-4-6`) |
+| `DJ_CLAUDE_MAX_TOKENS` | No | Max response tokens for CLI/MCP (default: `16384`) |
 
 The CLI also loads `.env` and `.env.local` files from your project directory automatically.
 
