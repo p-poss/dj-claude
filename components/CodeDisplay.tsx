@@ -62,7 +62,7 @@ export function CodeDisplay({ code, isStreaming, previousCode }: CodeDisplayProp
             {isStreaming ? (
               <span className="cursor" />
             ) : (
-              'Give DJ Claude a prompt above to start coding music!'
+              'Write DJ Claude a prompt above to start coding music!'
             )}
           </div>
         )}
