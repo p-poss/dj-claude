@@ -827,7 +827,7 @@ export function DJInterface() {
               <pre className="m-0">╔═══╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">⬆</pre>
+                <pre className="m-0 flex-1 text-center">↓</pre>
                 <pre className="m-0">║</pre>
               </div>
               <pre className="m-0">╚═══╝</pre>
