@@ -1,41 +1,40 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  const password = process.env.SITE_PASSWORD;
+const ALLOWED_ORIGINS = [
+  'https://claude.dj',
+  'https://www.claude.dj',
+  'https://dj-claude.vercel.app',
+];
 
-  // If no password is set, allow access (useful for local development)
-  if (!password) {
+export function middleware(request: NextRequest) {
+  // Only guard API routes — let the public site through
+  if (!request.nextUrl.pathname.startsWith('/api/')) {
     return NextResponse.next();
   }
 
-  const authHeader = request.headers.get('authorization');
-
-  if (authHeader) {
-    const [scheme, encoded] = authHeader.split(' ');
-
-    if (scheme === 'Basic' && encoded) {
-      const decoded = atob(encoded);
-      const [, pwd] = decoded.split(':');
-
-      if (pwd === password) {
-        return NextResponse.next();
-      }
+  // Allow in local development
+  const origin = request.headers.get('origin');
+  if (!origin) {
+    // No origin = server-side or same-origin navigation; check referer as fallback
+    const referer = request.headers.get('referer');
+    if (referer && ALLOWED_ORIGINS.some((o) => referer.startsWith(o))) {
+      return NextResponse.next();
     }
+    // Block bare API calls with no origin or referer (e.g. curl)
+    if (process.env.NODE_ENV === 'development') {
+      return NextResponse.next();
+    }
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  // Return 401 with WWW-Authenticate header to trigger browser login prompt
-  return new NextResponse('Authentication required', {
-    status: 401,
-    headers: {
-      'WWW-Authenticate': 'Basic realm="Secure Area"',
-    },
-  });
+  if (ALLOWED_ORIGINS.includes(origin) || origin.startsWith('http://localhost')) {
+    return NextResponse.next();
+  }
+
+  return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 }
 
 export const config = {
-  matcher: [
-    // Match all paths except static files and Next.js internals
-    '/((?!_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ['/api/:path*'],
 };
