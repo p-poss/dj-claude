@@ -1,4 +1,10 @@
 {
+  "name": "dj-claude-marketplace",
+  "description": "DJ Claude — live coding music for AI agents",
+  "owner": {
+    "name": "p-poss",
+    "url": "https://github.com/p-poss"
+  },
   "plugins": [
     {
       "name": "dj-claude",
