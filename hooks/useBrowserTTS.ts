@@ -12,13 +12,17 @@ interface UseBrowserTTSReturn {
 export function useBrowserTTS(): UseBrowserTTSReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const stop = useCallback(() => {
+    // Clear any pending debounced speak
+    if (pendingTimerRef.current) {
+      clearTimeout(pendingTimerRef.current);
+      pendingTimerRef.current = null;
+    }
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
     }
-    utteranceRef.current = null;
     setIsSpeaking(false);
     setIsLoading(false);
   }, []);
@@ -26,41 +30,44 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
   const speak = useCallback((text: string) => {
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
 
-    // Do NOT call speechSynthesis.cancel() here — Chrome silently drops
-    // a speak() that immediately follows cancel() in the same call stack.
-    // Explicit stopping is handled by the stop() function instead.
+    // Clear any previous pending speak
+    if (pendingTimerRef.current) {
+      clearTimeout(pendingTimerRef.current);
+    }
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utteranceRef.current = utterance;
+    // Cancel current speech
+    window.speechSynthesis.cancel();
+    setIsLoading(true);
 
-    utterance.onstart = () => {
-      if (utteranceRef.current === utterance) {
+    // Chrome drops speechSynthesis.speak() when called in the same stack
+    // as cancel(). Deferring the speak avoids this bug entirely.
+    pendingTimerRef.current = setTimeout(() => {
+      pendingTimerRef.current = null;
+      const utterance = new SpeechSynthesisUtterance(text);
+
+      utterance.onstart = () => {
         setIsLoading(false);
         setIsSpeaking(true);
-      }
-    };
+      };
 
-    utterance.onend = () => {
-      if (utteranceRef.current === utterance) {
+      utterance.onend = () => {
         setIsSpeaking(false);
-        utteranceRef.current = null;
-      }
-    };
+      };
 
-    utterance.onerror = () => {
-      if (utteranceRef.current === utterance) {
+      utterance.onerror = () => {
         setIsLoading(false);
         setIsSpeaking(false);
-        utteranceRef.current = null;
-      }
-    };
+      };
 
-    setIsLoading(true);
-    window.speechSynthesis.speak(utterance);
+      window.speechSynthesis.speak(utterance);
+    }, 50);
   }, []);
 
   useEffect(() => {
     return () => {
+      if (pendingTimerRef.current) {
+        clearTimeout(pendingTimerRef.current);
+      }
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
