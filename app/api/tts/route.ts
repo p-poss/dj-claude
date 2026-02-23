@@ -11,6 +11,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!/^[a-zA-Z0-9]+$/.test(voiceId)) {
+      return NextResponse.json(
+        { error: 'Invalid voiceId' },
+        { status: 400 }
+      );
+    }
+
     const apiKey = process.env.ELEVENLABS_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
