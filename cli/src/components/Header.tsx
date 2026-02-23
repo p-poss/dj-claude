@@ -43,7 +43,7 @@ export function Header({ isPlaying, isStreaming, audioInitialized }: HeaderProps
       <Text color="#E8704E">{WELCOME_BTM}</Text>
       <Text color="#E8704E">{BANNER}</Text>
       <Text color="#E8704E" dimColor={dim}>
-        {`╔═══════════════╗\n║   ${statusSymbol} ${statusLabel.padEnd(9)} ║\n╚═══════════════╝`}
+        {`╔═════════════════════════╗\n║        ${statusSymbol} ${statusLabel.padEnd(14)} ║\n╚═════════════════════════╝`}
       </Text>
     </Box>
   );
