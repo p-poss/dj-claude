@@ -33,7 +33,7 @@ DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for m
 | Web app | [claude.dj](https://claude.dj) | Full browser experience, no API key needed |
 | Terminal TUI | `npx dj-claude` | Interactive terminal DJ |
 | TUI + Web audio | `npx dj-claude --browser` | TUI with browser audio engine for higher quality sound |
-| Headless | `npx dj-claude --headless "lofi"` | Script and automation friendly, plays and exits (`--duration N` to set seconds) |
+| Headless | `npx dj-claude --headless "lofi"` | Script and automation friendly, plays and exits (`--duration N` to set seconds, default 10) |
 | MCP server | `npx dj-claude-mcp` | For AI agent integration (Claude Code, etc.) |
 
 > **Terminal audio vs. browser audio:** By default, the CLI and MCP server render audio through `node-web-audio-api` — a Node.js reimplementation of the Web Audio API. It works everywhere with zero setup, but sample playback and effects can sound rougher than a real browser engine. Add `--browser` (CLI) or set `DJ_CLAUDE_BROWSER=1` (MCP) to route audio through your system browser's native Web Audio instead. This opens a background tab and produces noticeably higher quality sound — especially for pads, reverb, and layered patterns.
@@ -48,11 +48,18 @@ DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for m
 ### Install & Run
 
 ```bash
-# Set your API key
+# Set your API key (or add to a .env file)
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # Launch the terminal DJ
 npx dj-claude
+```
+
+Or install globally:
+
+```bash
+npm i -g dj-claude
+dj-claude
 ```
 
 Or go headless for scripting:
@@ -63,7 +70,7 @@ npx dj-claude --headless "jazzy lo-fi beats" --duration 30
 
 ## MCP / Claude Code Integration
 
-DJ Claude exposes an MCP server so AI agents can play music during coding sessions. This is the recommended way to use DJ Claude with Claude Code.
+DJ Claude exposes an MCP server so AI agents can play music during coding sessions. This is the recommended way to use DJ Claude with Claude Code. The server uses standard MCP stdio transport, so it also works with other MCP clients like Cursor, Windsurf, and Zed.
 
 ### Setup
 
@@ -171,10 +178,12 @@ Claude Code will call the appropriate DJ Claude tools automatically.
 Visit [claude.dj](https://claude.dj) for the full browser experience — no API key or install needed.
 
 Features:
-- Multiple visual themes
-- Voice commentary (via ElevenLabs TTS)
-- Dancing Claude animation
-- Live Strudel code display
+- 5 club themes — Anthropic, Gemini, Codex, Fairlight, OpenClaw
+- RAVE mode (CRT scanlines), DISCO mode (rainbow hue cycling), FLIP (color inversion)
+- Voice DJ commentary with idle hype phrases (via ElevenLabs TTS)
+- Dancing Claude that follows your cursor
+- Live Strudel code display with export to clipboard
+- Space bar to toggle play/pause
 
 ## Environment Variables
 
@@ -183,6 +192,8 @@ Features:
 | `ANTHROPIC_API_KEY` | Yes (CLI / MCP) | Your Anthropic API key |
 | `ELEVENLABS_API_KEY` | No (web only) | Enables voice DJ commentary |
 | `DJ_CLAUDE_BROWSER` | No | Set to `1` for browser audio backend in MCP mode |
+
+The CLI also loads `.env` and `.env.local` files from your project directory automatically.
 
 ## Architecture
 
