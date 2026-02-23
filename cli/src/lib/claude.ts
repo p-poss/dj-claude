@@ -41,8 +41,8 @@ export async function* streamChat(
   }
 
   const stream = await client.messages.stream({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 8192,
+    model: process.env.DJ_CLAUDE_MODEL ?? 'claude-sonnet-4-6',
+    max_tokens: Number(process.env.DJ_CLAUDE_MAX_TOKENS) || 16384,
     system: SYSTEM_PROMPT,
     messages,
   });
