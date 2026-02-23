@@ -24,33 +24,47 @@ export function useBrowserTTS(): UseBrowserTTSReturn {
   }, []);
 
   const speak = useCallback((text: string) => {
-    stop();
-
     if (!text || typeof window === 'undefined' || !window.speechSynthesis) return;
 
-    setIsLoading(true);
+    // Cancel directly instead of calling stop() to avoid React state churn
+    window.speechSynthesis.cancel();
+    utteranceRef.current = null;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utteranceRef.current = utterance;
 
     utterance.onstart = () => {
-      setIsLoading(false);
-      setIsSpeaking(true);
+      if (utteranceRef.current === utterance) {
+        setIsLoading(false);
+        setIsSpeaking(true);
+      }
     };
 
     utterance.onend = () => {
-      setIsSpeaking(false);
-      utteranceRef.current = null;
+      if (utteranceRef.current === utterance) {
+        setIsSpeaking(false);
+        utteranceRef.current = null;
+      }
     };
 
     utterance.onerror = () => {
-      setIsLoading(false);
-      setIsSpeaking(false);
-      utteranceRef.current = null;
+      if (utteranceRef.current === utterance) {
+        setIsLoading(false);
+        setIsSpeaking(false);
+        utteranceRef.current = null;
+      }
     };
 
-    window.speechSynthesis.speak(utterance);
-  }, [stop]);
+    setIsLoading(true);
+
+    // Chrome bug: cancel() immediately followed by speak() can silently fail.
+    // A short delay ensures the cancellation completes before queuing new speech.
+    setTimeout(() => {
+      if (utteranceRef.current === utterance) {
+        window.speechSynthesis.speak(utterance);
+      }
+    }, 10);
+  }, []);
 
   useEffect(() => {
     return () => {

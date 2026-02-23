@@ -14,30 +14,36 @@ interface UseTTSReturn {
 
 export function useTTS(): UseTTSReturn {
   const { selectedElevenLabsVoice } = useVoice();
-  const elevenLabs = useElevenLabsTTS();
-  const browserTTS = useBrowserTTS();
+  const {
+    speak: elevenLabsSpeak, stop: elevenLabsStop,
+    isSpeaking: elevenLabsIsSpeaking, isLoading: elevenLabsIsLoading,
+  } = useElevenLabsTTS();
+  const {
+    speak: browserSpeak, stop: browserStop,
+    isSpeaking: browserIsSpeaking, isLoading: browserIsLoading,
+  } = useBrowserTTS();
 
   const isBrowser = selectedElevenLabsVoice?.id === 'browser-tts';
 
   const speak = useCallback((text: string) => {
     if (!text || !selectedElevenLabsVoice) return;
 
-    if (isBrowser) {
-      browserTTS.speak(text);
+    if (selectedElevenLabsVoice.id === 'browser-tts') {
+      browserSpeak(text);
     } else {
-      elevenLabs.speak(text, selectedElevenLabsVoice.id);
+      elevenLabsSpeak(text, selectedElevenLabsVoice.id);
     }
-  }, [elevenLabs, browserTTS, selectedElevenLabsVoice, isBrowser]);
+  }, [elevenLabsSpeak, browserSpeak, selectedElevenLabsVoice]);
 
   const stop = useCallback(() => {
-    elevenLabs.stop();
-    browserTTS.stop();
-  }, [elevenLabs, browserTTS]);
+    elevenLabsStop();
+    browserStop();
+  }, [elevenLabsStop, browserStop]);
 
   return {
     speak,
     stop,
-    isSpeaking: isBrowser ? browserTTS.isSpeaking : elevenLabs.isSpeaking,
-    isLoading: isBrowser ? browserTTS.isLoading : elevenLabs.isLoading,
+    isSpeaking: isBrowser ? browserIsSpeaking : elevenLabsIsSpeaking,
+    isLoading: isBrowser ? browserIsLoading : elevenLabsIsLoading,
   };
 }
