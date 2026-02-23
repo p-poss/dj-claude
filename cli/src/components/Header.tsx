@@ -3,7 +3,7 @@ import { Box, Text } from 'ink';
 
 const WELCOME_BOX = [
   '╔═════════════════════════════════════════════╗',
-  '║       Welcome to DJ Claude  v 0.1.0        ║',
+  '║       Welcome to DJ Claude  v 0.1.3        ║',
   '╚═════════════════════════════════════════════╝',
 ].join('\n');
 
