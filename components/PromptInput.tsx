@@ -44,6 +44,7 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
     }), [disabled, value, onSubmit]);
 
     // Sync scrollLeft when value changes (for cursor positioning during overflow)
+    const prevHasValueRef = useRef(false);
     useEffect(() => {
       if (inputRef.current) {
         requestAnimationFrame(() => {
@@ -52,7 +53,12 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
           }
         });
       }
-      onHasValueChange?.(value.trim().length > 0);
+      // Only notify parent on transitions between empty <-> non-empty
+      const hasValue = value.trim().length > 0;
+      if (hasValue !== prevHasValueRef.current) {
+        prevHasValueRef.current = hasValue;
+        onHasValueChange?.(hasValue);
+      }
     }, [value, onHasValueChange]);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -92,6 +98,7 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
             .prompt-input,
             .cursor-overlay {
               font-size: 16px !important;
+              line-height: 1 !important;
             }
           }
           .prompt-input {
