@@ -1,11 +1,8 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 
-const WELCOME_BOX = [
-  '╔═════════════════════════════════════════════╗',
-  '║       Welcome to DJ Claude  v 0.1.3        ║',
-  '╚═════════════════════════════════════════════╝',
-].join('\n');
+const WELCOME_TOP = '╔════════════════════════════════════════════╗';
+const WELCOME_BTM = '╚════════════════════════════════════════════╝';
 
 const BANNER = [
   ' ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗',
@@ -29,7 +26,7 @@ export function Header({ isPlaying, isStreaming, audioInitialized }: HeaderProps
 
   if (!audioInitialized) {
     statusSymbol = '◌';
-    statusLabel = 'Booting Up';
+    statusLabel = 'Booting';
     dim = true;
   } else if (isStreaming) {
     statusSymbol = '◎';
@@ -41,10 +38,12 @@ export function Header({ isPlaying, isStreaming, audioInitialized }: HeaderProps
 
   return (
     <Box flexDirection="column" alignItems="center">
-      <Text color="#E8704E">{WELCOME_BOX}</Text>
+      <Text color="#E8704E">{WELCOME_TOP}</Text>
+      <Text color="#E8704E">{'║        Welcome to DJ Claude '}<Text dimColor>v 0.1.3</Text>{'        ║'}</Text>
+      <Text color="#E8704E">{WELCOME_BTM}</Text>
       <Text color="#E8704E">{BANNER}</Text>
       <Text color="#E8704E" dimColor={dim}>
-        {statusSymbol} {statusLabel}
+        {`╔═══════════════╗\n║   ${statusSymbol} ${statusLabel.padEnd(9)} ║\n╚═══════════════╝`}
       </Text>
     </Box>
   );
