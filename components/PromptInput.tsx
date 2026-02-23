@@ -100,6 +100,19 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
               font-size: 16px !important;
               line-height: 1 !important;
             }
+            .prompt-input:focus {
+              color: transparent !important;
+              -webkit-text-fill-color: transparent !important;
+              text-shadow: none !important;
+            }
+          }
+          .mobile-text-overlay {
+            visibility: hidden;
+          }
+          @media (max-width: 767px) {
+            .mobile-text-overlay {
+              visibility: visible;
+            }
           }
           .prompt-input {
             background: transparent;
@@ -196,7 +209,8 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
                   {/* Cursor overlay - positioned after the text */}
                   {isFocused && !disabled && (
                     <div className="cursor-overlay text-xs" style={{ fontFamily: 'inherit', transform: `translateX(-${scrollLeft}px)` }}>
-                      <span style={{ visibility: 'hidden', whiteSpace: 'pre', marginLeft: '4px' }}>{value.slice(0, cursorPosition)}</span>
+                      {/* Text before cursor - hidden on desktop (input shows it), visible on mobile (input text is transparent) */}
+                      <span className="mobile-text-overlay" style={{ whiteSpace: 'pre', marginLeft: '4px', color: colors.text, textShadow: `0 0 2px ${colors.text}, 0 0 4px ${colors.text}` }}>{value.slice(0, cursorPosition)}</span>
                       <span
                         style={{
                           display: 'inline-block',
@@ -208,6 +222,8 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
                           boxShadow: `0 0 4px ${colors.text}, 0 0 8px ${colors.text}`,
                         }}
                       />
+                      {/* Text after cursor - visible on mobile only */}
+                      <span className="mobile-text-overlay" style={{ whiteSpace: 'pre', color: colors.text, textShadow: `0 0 2px ${colors.text}, 0 0 4px ${colors.text}` }}>{value.slice(cursorPosition)}</span>
                     </div>
                   )}
                 </div>
