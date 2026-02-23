@@ -131,7 +131,7 @@ export function getPageHtml(wsPort: number): string {
 </div>
 
 <!-- Start Audio button -->
-<div id="start-box">
+<div id="start-box" role="button" tabindex="0" aria-label="Start Audio">
   <pre>╔════════════════════╗</pre>
   <div style="display:flex"><pre>║</pre><pre id="start-label" style="flex:1;text-align:center">▶ Unmute Audio</pre><pre>║</pre></div>
   <pre>╚════════════════════╝</pre>
@@ -273,6 +273,16 @@ function connectWs() {
 }
 
 startBox.addEventListener('click', start);
+startBox.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); start(); }
+});
+
+// Allow automation agents to trigger start via ?autoplay=true query param.
+// This dispatches a trusted-context click; whether the browser honours it
+// depends on the automation framework (Playwright/Puppeteer trusted clicks work).
+if (new URLSearchParams(location.search).has('autoplay')) {
+  startBox.click();
+}
 </script>
 </body>
 </html>`;

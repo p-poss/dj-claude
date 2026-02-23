@@ -101,8 +101,8 @@ export class BrowserAudioBackend implements AudioBackend {
       });
     });
 
-    // Open the browser
-    const url = `http://127.0.0.1:${this.port}`;
+    // Open the browser (with autoplay hint for automation agents)
+    const url = `http://127.0.0.1:${this.port}?autoplay`;
     console.error(`[dj-claude] Opening browser audio at ${url}`);
     openBrowser(url);
 
