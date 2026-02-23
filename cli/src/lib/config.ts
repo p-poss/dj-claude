@@ -38,6 +38,11 @@ export function getApiKey(): string {
       '  • \x1b[1mHeadless\x1b[0m          \x1b[34mnpx dj-claude --headless "lofi"\x1b[0m\n' +
       '  • \x1b[1mMCP server\x1b[0m        \x1b[34mnpx dj-claude-mcp\x1b[0m\n' +
       '\n' +
+      '  MCP is the best way for AI agents to play music\n' +
+      '  during Claude Code sessions — works seamlessly on\n' +
+      '  any project. Add --browser for higher quality audio\n' +
+      '  through your browser\'s Web Audio engine.\n' +
+      '\n' +
       '  \x1b[1m─── Anthropic API Setup ───────────────────────────────\x1b[0m\n' +
       '\n' +
       '  \x1b[1;4;31mNo Anthropic API key found!\x1b[0m\n' +
