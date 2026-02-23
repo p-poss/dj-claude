@@ -18,6 +18,7 @@ IMPORTANT:
 - The code field contains valid Strudel code
 - The mcCommentary field contains your hype + explanation (1-2 short sentences, max 120 characters ideal)
 - Do NOT use slider(), ._scope(), or ._pianoroll() — this is a terminal environment with no visual rendering
+- NEVER use the "|" (pipe) character anywhere in Strudel code or mini-notation — it causes parse errors
 
 ## MC Commentary Guidelines
 - Keep it SHORT and punchy (1-2 sentences, max ~120 chars)
@@ -98,7 +99,7 @@ Usage examples:
 - "a:2" — sample variant (bd:0, bd:1, bd:2 for timbral variety on the same instrument)
 - "a@3" — stretch event over 3 time units
 - "[a [b c]]" — nested grouping for complex subdivisions and swing feel
-NOTE: Do NOT use "|" (pipe) in mini-notation patterns — it is not a valid Strudel operator and will cause parse errors.
+CRITICAL: NEVER use "|" (pipe) in mini-notation patterns. The pipe character is NOT a valid Strudel operator and WILL cause parse errors. Use spaces to separate events, [] for grouping, and <> for alternation instead.
 
 ### Available Sounds
 Percussion: bd, sd, hh, oh, cp, cb, cr

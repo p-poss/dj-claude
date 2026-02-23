@@ -96,6 +96,18 @@ export function getPageHtml(wsPort: number): string {
     width: 6px;
     height: 6px;
   }
+
+  /* ── Speech bubble ── */
+  #speech {
+    margin-top: 16px;
+    opacity: 0.4;
+    user-select: none;
+    text-align: center;
+    border: 1px solid var(--fg);
+    border-radius: 4px;
+    padding: 8px 16px;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -127,6 +139,12 @@ export function getPageHtml(wsPort: number): string {
 
 <!-- Dancing Claude pixel art -->
 <div id="claude"></div>
+
+<!-- Speech bubble -->
+<div id="speech">
+Browser audio engine for the Terminal DJ.<br>
+Press Unmute, then head back to the TUI!
+</div>
 
 <script type="module">
 import { initStrudel } from 'https://unpkg.com/@strudel/web@1.2.6/dist/index.mjs';
@@ -217,6 +235,8 @@ function connectWs() {
   ws = new WebSocket('ws://localhost:${wsPort}');
 
   ws.onopen = () => {
+    startLabel.textContent = '● Audio On';
+    startBox.classList.remove('dim');
     ws.send(JSON.stringify({ type: 'ready' }));
   };
 
@@ -240,7 +260,10 @@ function connectWs() {
   };
 
   ws.onclose = () => {
+    if (strudelHush) strudelHush();
     stopDancing();
+    startLabel.textContent = '○ Disconnected';
+    startBox.classList.add('dim');
     setTimeout(connectWs, 2000);
   };
 
