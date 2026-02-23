@@ -89,8 +89,9 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
             flex: 1;
           }
           @media (max-width: 767px) {
-            .prompt-input {
-              font-size: 16px;
+            .prompt-input,
+            .cursor-overlay {
+              font-size: 16px !important;
             }
           }
           .prompt-input {
