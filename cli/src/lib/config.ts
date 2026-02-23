@@ -23,10 +23,10 @@ export function getApiKey(): string {
       '\n' +
       '  \x1b[1m─── About ─────────────────────────────────────────────\x1b[0m\n' +
       '\n' +
-      '  DJ Claude generates live Strudel code from natural\n' +
-      '  language — playable in your terminal, browser, or\n' +
-      '  any AI agent. Agents can now make music for you,\n' +
-      '  for themselves, and for each other while they work.\n' +
+      '  DJ Claude uses Strudel to generate live music —\n' +
+      '  in your terminal, browser, or any AI agent.\n' +
+      '  Agents can now make music for you, themselves,\n' +
+      '  and each other while they work.\n' +
       '\n' +
       '  • \x1b[1mGitHub\x1b[0m  \x1b[34mhttps://github.com/p-poss/dj-claude\x1b[0m\n' +
       '\n' +
