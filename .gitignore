@@ -44,3 +44,6 @@ next-env.d.ts
 # screenshots and reference images
 *.png
 Screenshot*
+
+# MCP registry tokens
+.mcpregistry_*

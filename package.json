@@ -1,7 +1,10 @@
 {
   "name": "dj-claude",
-  "version": "0.1.4",
-  "private": true,
+  "version": "0.1.5",
+  "mcpName": "io.github.p-poss/dj-claude",
+  "bin": {
+    "dj-claude": "cli/mcp.mjs"
+  },
   "scripts": {
     "dev": "next dev -p 2502",
     "build": "next build",
