@@ -30,11 +30,12 @@ DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for m
 
 | Mode | Command | Description |
 |------|---------|-------------|
+| Claude Code plugin | `/plugin install dj-claude` | Slash commands + MCP server, one-step install |
 | Web app | [claude.dj](https://claude.dj) | Full browser experience, no API key needed |
 | Terminal TUI | `npx dj-claude` | Interactive terminal DJ |
 | TUI + Web audio | `npx dj-claude --browser` | TUI with browser audio engine for higher quality sound |
 | Headless | `npx dj-claude --headless "lofi"` | Script and automation friendly, plays and exits (`--duration N` to set seconds, default 10) |
-| MCP server | `npx dj-claude-mcp` | For AI agent integration (Claude Code, etc.) |
+| MCP server | `npx dj-claude-mcp` | For AI agent integration (Cursor, Windsurf, Zed, etc.) |
 
 > **Terminal audio vs. browser audio:** By default, the CLI and MCP server render audio through `node-web-audio-api` — a Node.js reimplementation of the Web Audio API. It works everywhere with zero setup, but sample playback and effects can sound rougher than a real browser engine. Add `--browser` (CLI) or set `DJ_CLAUDE_BROWSER=1` (MCP) to route audio through your system browser's native Web Audio instead. This opens a background tab and produces noticeably higher quality sound — especially for pads, reverb, and layered patterns.
 
@@ -68,13 +69,38 @@ Or go headless for scripting:
 npx dj-claude --headless "jazzy lo-fi beats" --duration 30
 ```
 
-## MCP / Claude Code Integration
+## Claude Code Plugin
 
-DJ Claude exposes an MCP server so AI agents can play music during coding sessions. This is the recommended way to use DJ Claude with Claude Code. The server uses standard MCP stdio transport, so it also works with other MCP clients like Cursor, Windsurf, and Zed.
+The easiest way to use DJ Claude with Claude Code. Installs the MCP server and gives you slash commands.
 
-### Setup
+### Install
 
-Add this to your `.mcp.json` (project root or `~/.claude/.mcp.json` for global access):
+```
+/plugin marketplace add p-poss/dj-claude
+/plugin install dj-claude@dj-claude-marketplace
+```
+
+### Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/dj-claude:play [prompt]` | Play music from a description |
+| `/dj-claude:vibe [mood]` | Set the vibe — chill, dark, hype, focus, funky, dreamy, weird, epic |
+| `/dj-claude:hush` | Stop all music |
+| `/dj-claude:now-playing` | Check what's currently playing |
+| `/dj-claude:strudel [code]` | Evaluate raw Strudel code directly |
+
+Or just ask naturally — Claude will call the right tool:
+
+```
+> play some chill lo-fi while I work on this PR
+> set the vibe to hype
+> hush
+```
+
+## MCP Server (Manual Setup)
+
+If you prefer manual configuration, or want to use DJ Claude with other MCP clients (Cursor, Windsurf, Zed, etc.), add this to your `.mcp.json`:
 
 ```json
 {
@@ -105,64 +131,13 @@ For higher quality audio through the browser's Web Audio engine:
 
 ### MCP Tools
 
-#### `play_music`
-
-Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. DJ Claude will compose a Strudel pattern and play it through the speakers.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `prompt` | string | What kind of music to play, e.g. `"jazzy lo-fi beats"` or `"intense drum and bass"` |
-
-#### `play_strudel`
-
-Evaluate raw Strudel/Tidal code directly, bypassing Claude generation. Use this when you already have Strudel code to play.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `code` | string | Strudel/Tidal code to evaluate |
-
-#### `set_vibe`
-
-Instantly set the musical vibe to match a mood. Great for matching music to the current coding task.
-
-| Param | Type | Description |
-|-------|------|-------------|
-| `mood` | enum | The mood/vibe to set (see table below) |
-
-**Mood values:**
-
-| Mood | Description |
+| Tool | Description |
 |------|-------------|
-| `chill` | Lo-fi beats, soft pads, gentle rhythms |
-| `dark` | Minor keys, heavy bass, atmospheric textures |
-| `hype` | Driving beats, punchy bass, high energy |
-| `focus` | Minimal, repetitive, non-distracting ambient |
-| `funky` | Groovy basslines, syncopated rhythms |
-| `dreamy` | Lush reverb, floating pads, gentle arpeggios |
-| `weird` | Unusual sounds, unpredictable rhythms, glitchy textures |
-| `epic` | Big builds, soaring melodies, powerful drums |
-
-#### `hush`
-
-Stop all music playback immediately. No parameters.
-
-#### `now_playing`
-
-Check what music is currently playing, including the Strudel code and DJ commentary. No parameters.
-
-### Example
-
-Once the MCP server is configured, just ask Claude Code naturally:
-
-```
-> play some chill lo-fi while I work on this PR
-
-> set the vibe to hype
-
-> hush
-```
-
-Claude Code will call the appropriate DJ Claude tools automatically.
+| `play_music` | Generate and play music from a text prompt |
+| `play_strudel` | Evaluate raw Strudel/Tidal code directly |
+| `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` |
+| `hush` | Stop all music playback |
+| `now_playing` | Check what's currently playing |
 
 ## Keyboard Shortcuts (TUI)
 
@@ -204,6 +179,7 @@ DJ Claude is a Next.js app with a companion CLI package:
 - **`/cli/src/mcp`** — MCP tool definitions and JSON-RPC server
 - **`/cli/src/audio`** — Strudel audio engine (node + browser backends)
 - **`/cli/src/lib`** — Shared utilities, Claude API client, prompt generation
+- **`/plugin`** — Claude Code plugin (skills, MCP config, marketplace)
 
 Music is generated by Claude composing [Strudel](https://strudel.cc) live-coding patterns, which are then evaluated in real-time through either the Node `node-web-audio-api` backend or the browser's native Web Audio API.
 
