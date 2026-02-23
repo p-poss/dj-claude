@@ -10,7 +10,7 @@
 
 # DJ Claude
 
-**Live coding music for AI agents — in the terminal or browser.**
+**Live coding music for AI agents — in the CLI or web.**
 
 [![npm](https://img.shields.io/npm/v/dj-claude)](https://www.npmjs.com/package/dj-claude)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
