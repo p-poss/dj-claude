@@ -31,7 +31,8 @@ export class BrowserAudioBackend implements AudioBackend {
 
     // Start HTTP server on a random available port
     this.httpServer = createServer((req, res) => {
-      if (req.url === '/' || req.url === '/index.html') {
+      const pathname = req.url?.split('?')[0];
+      if (pathname === '/' || pathname === '/index.html') {
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(getPageHtml(this.port));
       } else {
