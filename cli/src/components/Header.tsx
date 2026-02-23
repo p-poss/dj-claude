@@ -1,6 +1,12 @@
 import React from 'react';
 import { Box, Text } from 'ink';
 
+const WELCOME_BOX = [
+  '╔═════════════════════════════════════════════╗',
+  '║       Welcome to DJ Claude  v 0.1.0        ║',
+  '╚═════════════════════════════════════════════╝',
+].join('\n');
+
 const BANNER = [
   ' ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗',
   ' ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝',
@@ -17,25 +23,28 @@ interface HeaderProps {
 }
 
 export function Header({ isPlaying, isStreaming, audioInitialized }: HeaderProps) {
-  let status = 'READY';
-  let statusColor: string = 'gray';
+  let statusSymbol = '○';
+  let statusLabel = 'On Deck';
+  let dim = false;
 
   if (!audioInitialized) {
-    status = 'LOADING...';
-    statusColor = 'yellow';
+    statusSymbol = '◌';
+    statusLabel = 'Booting Up';
+    dim = true;
   } else if (isStreaming) {
-    status = 'MIXING...';
-    statusColor = 'magenta';
+    statusSymbol = '◎';
+    statusLabel = 'Mixing';
   } else if (isPlaying) {
-    status = 'PLAYING';
-    statusColor = 'green';
+    statusSymbol = '●';
+    statusLabel = 'Playing';
   }
 
   return (
     <Box flexDirection="column" alignItems="center">
-      <Text color="cyan">{BANNER}</Text>
-      <Text>
-        {'  '}Status: <Text color={statusColor} bold>{status}</Text>
+      <Text color="#E8704E">{WELCOME_BOX}</Text>
+      <Text color="#E8704E">{BANNER}</Text>
+      <Text color="#E8704E" dimColor={dim}>
+        {statusSymbol} {statusLabel}
       </Text>
     </Box>
   );

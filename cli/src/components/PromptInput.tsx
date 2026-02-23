@@ -12,9 +12,9 @@ interface PromptInputProps {
 export function PromptInput({ value, onChange, onSubmit, isDisabled }: PromptInputProps) {
   return (
     <Box>
-      <Text color={isDisabled ? 'gray' : 'green'} bold>{'> '}</Text>
+      <Text color="#E8704E" bold dimColor={isDisabled}>{'> '}</Text>
       {isDisabled ? (
-        <Text color="gray">Mixing...</Text>
+        <Text color="#E8704E" dimColor>Mixing...</Text>
       ) : (
         <TextInput
           value={value}

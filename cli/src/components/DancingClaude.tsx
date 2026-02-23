@@ -33,7 +33,7 @@ export function DancingClaude({ isPlaying }: DancingClaudeProps) {
   return (
     <Box flexDirection="column" alignItems="center">
       {allRows.map((row, i) => (
-        <Text key={i} color="cyan">
+        <Text key={i} color="#E8704E">
           {row.map(cellToChar).join('')}
         </Text>
       ))}

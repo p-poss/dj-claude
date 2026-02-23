@@ -16,12 +16,12 @@ export function CodeDisplay({ code, label = 'Now playing' }: CodeDisplayProps) {
 
   return (
     <Box flexDirection="column" marginTop={1}>
-      <Text color="magenta" bold dimColor>{'── '}{label}{' ──'}</Text>
+      <Text color="#E8704E" bold dimColor>{'── '}{label}{' ──'}</Text>
       <Box flexDirection="column" paddingLeft={1}>
         {shown.map((line, i) => (
-          <Text key={i} color="gray">{line}</Text>
+          <Text key={i} color="#E8704E" dimColor>{line}</Text>
         ))}
-        {truncated && <Text color="gray" dimColor>  ... ({lines.length - 15} more lines)</Text>}
+        {truncated && <Text color="#E8704E" dimColor>  ... ({lines.length - 15} more lines)</Text>}
       </Box>
     </Box>
   );

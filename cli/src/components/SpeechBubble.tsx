@@ -24,17 +24,17 @@ export function SpeechBubble({ text }: SpeechBubbleProps) {
   if (current) lines.push(current);
 
   const contentWidth = Math.max(...lines.map((l) => l.length), 10);
-  const border = '─'.repeat(contentWidth + 2);
+  const border = '═'.repeat(contentWidth + 2);
 
   return (
     <Box flexDirection="column" alignItems="center">
-      <Text color="yellow">{'╭' + border + '╮'}</Text>
+      <Text color="#E8704E">{'╔' + border + '╗'}</Text>
       {lines.map((line, i) => (
-        <Text key={i} color="yellow">
-          {'│ '}{line.padEnd(contentWidth)}{' │'}
+        <Text key={i} color="#E8704E">
+          {'║ '}{line.padEnd(contentWidth)}{' ║'}
         </Text>
       ))}
-      <Text color="yellow">{'╰' + border + '╯'}</Text>
+      <Text color="#E8704E">{'╚' + border + '╝'}</Text>
     </Box>
   );
 }
