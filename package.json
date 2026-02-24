@@ -1,6 +1,6 @@
 {
   "name": "dj-claude",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "mcpName": "io.github.p-poss/dj-claude",
   "files": [
     "cli/dist",
