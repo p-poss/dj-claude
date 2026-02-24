@@ -16,6 +16,8 @@ If no arguments were provided, ask the user what kind of music they'd like to he
 
 ## Workflow
 
+IMPORTANT: The `play_strudel` and `now_playing` MCP tools are already available — do NOT search for files, explore the plugin directory, or check tool availability. Just generate code and call the tool immediately.
+
 1. If this is a follow-up request (modifying what's currently playing), call `now_playing` first to get the current code and context.
 2. Generate Strudel code based on the user's prompt, following ALL the rules and reference below.
 3. Call the `play_strudel` tool from the `dj-claude` MCP server with your generated code.

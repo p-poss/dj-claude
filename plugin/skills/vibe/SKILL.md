@@ -20,6 +20,8 @@ If the mood is not one of the 8 valid options, pick the closest match or ask the
 
 ## Workflow
 
+IMPORTANT: The `play_strudel` MCP tool is already available — do NOT search for files, explore the plugin directory, or check tool availability. Just generate code and call the tool immediately.
+
 1. Map the mood to the musical direction below.
 2. Generate Strudel code following the mood mapping and Strudel reference below.
 3. Call the `play_strudel` tool from the `dj-claude` MCP server with your generated code.
