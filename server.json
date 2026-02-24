@@ -3,7 +3,7 @@
   "name": "io.github.p-poss/dj-claude",
   "description": "Agents can now live code music for you, themselves, and each other while they work.",
   "title": "DJ Claude",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "websiteUrl": "https://github.com/p-poss/dj-claude",
   "repository": {
     "url": "https://github.com/p-poss/dj-claude",
@@ -14,7 +14,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "dj-claude",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
