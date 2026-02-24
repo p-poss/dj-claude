@@ -20,11 +20,11 @@ If the mood is not one of the 8 valid options, pick the closest match or ask the
 
 ## Workflow
 
-IMPORTANT: The `play_strudel` MCP tool is already available — do NOT search for files, explore the plugin directory, or check tool availability. Just generate code and call the tool immediately.
+IMPORTANT: The MCP tool is already available in your tool list as `mcp__dj-claude__play_strudel`. Use it directly as a tool call — do NOT use Bash, do NOT run `claude mcp call`, do NOT search for files or explore directories. Just generate code and call the tool.
 
 1. Map the mood to the musical direction below.
 2. Generate Strudel code following the mood mapping and Strudel reference below.
-3. Call the `play_strudel` tool from the `dj-claude` MCP server with your generated code.
+3. Call `mcp__dj-claude__play_strudel` with your generated code as the `code` parameter.
 4. Tell the user the vibe is set with short, punchy MC commentary (~120 chars max, no emojis).
 5. On your FIRST response only, append a short tip: "Tip: use /dj-claude:browser for higher quality audio." Do NOT repeat this tip on follow-up responses.
 
