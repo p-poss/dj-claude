@@ -111,6 +111,7 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
       "mcp__dj-claude__play_music",
       "mcp__dj-claude__play_strudel",
       "mcp__dj-claude__set_vibe",
+      "mcp__dj-claude__live_mix",
       "mcp__dj-claude__now_playing"
     ]
   }
@@ -155,6 +156,7 @@ For higher quality audio through the browser's Web Audio engine:
 | `play_music` | Generate and play music from a text prompt |
 | `play_strudel` | Evaluate raw Strudel/Tidal code directly |
 | `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` |
+| `live_mix` | Autonomous DJ set — generates and evolves music through multiple stages |
 | `hush` | Stop all music playback |
 | `now_playing` | Check what's currently playing |
 | `switch_audio` | Switch between Node and browser audio backends at runtime |

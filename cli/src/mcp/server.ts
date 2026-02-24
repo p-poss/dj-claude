@@ -173,6 +173,99 @@ server.tool(
   },
 );
 
+// -- live_mix -------------------------------------------------------------
+
+const EVOLUTION_PROMPTS = [
+  { type: 'key/scale change', prompt: 'Evolve the current track: shift to a different key or scale. Keep the groove but change the harmonic color.' },
+  { type: 'add layers', prompt: 'Evolve the current track: add new layers — extra percussion, a counter-melody, or textural elements. Build up the density.' },
+  { type: 'strip back', prompt: 'Evolve the current track: strip it back to a minimal breakdown. Remove layers, leave just a core element or two. Create space.' },
+  { type: 'filter sweep', prompt: 'Evolve the current track: introduce a filter sweep or spectral shift. Gradually open or close filters for a dramatic effect.' },
+  { type: 'tempo shift', prompt: 'Evolve the current track: subtly shift the tempo or rhythmic feel. Speed up, slow down, or change the swing.' },
+  { type: 'genre drift', prompt: 'Evolve the current track: drift toward a different genre while keeping the current vibe as an anchor. Blend styles.' },
+  { type: 'rhythmic shift', prompt: 'Evolve the current track: change the rhythmic pattern — new drum patterns, syncopation, polyrhythms, or a completely different groove.' },
+  { type: 'texture swap', prompt: 'Evolve the current track: swap out timbres and textures. Replace synths with new sounds, change the sonic palette while keeping the structure.' },
+];
+
+function buildSetArc(stages: number): string[] {
+  // Predefined arc ensures: opening → build → peak → breakdown → rebuild → finale
+  const arcTemplate = [
+    'opening',       // stage 1: user prompt (handled separately)
+    'add layers',    // stage 2: build
+    'tempo shift',   // stage 3: peak energy
+    'strip back',    // stage 4: breakdown
+    'genre drift',   // stage 5: rebuild
+    'key/scale change', // stage 6: finale
+    'filter sweep',  // stage 7+: extras
+    'rhythmic shift',
+    'texture swap',
+    'add layers',
+  ];
+  // Return evolution types for stages 2..N (stage 1 is the opening)
+  return arcTemplate.slice(1, stages);
+}
+
+server.tool(
+  'live_mix',
+  'Autonomous DJ set — generates and evolves music through multiple stages with ~20s between each. Runs as a long tool call. Call hush to stop early.',
+  {
+    prompt: z.string().describe('Starting direction for the mix, e.g. "deep house sunset set" or "ambient techno journey"'),
+    stages: z.number().min(3).max(10).default(6).optional().describe('Number of stages in the set (default 6)'),
+  },
+  async ({ prompt, stages: stagesParam }) => {
+    const stageCount = stagesParam ?? 6;
+    await ensureEngine();
+
+    // Stage 1: opening
+    const opening = await generateAndPlay(prompt);
+    const log: { stage: number; evolution: string; commentary: string; code: string }[] = [
+      { stage: 1, evolution: 'opening', commentary: opening.commentary, code: opening.code },
+    ];
+
+    const arc = buildSetArc(stageCount);
+
+    // Stages 2..N
+    for (let i = 0; i < arc.length; i++) {
+      // Wait 20s between stages
+      await new Promise((r) => setTimeout(r, 20_000));
+
+      // If hush was called concurrently, stop the mix
+      if (!getState().isPlaying) {
+        log.push({ stage: i + 2, evolution: 'stopped', commentary: 'Mix stopped — hush was called.', code: '' });
+        break;
+      }
+
+      const evolutionType = arc[i];
+      const evo = EVOLUTION_PROMPTS.find((e) => e.type === evolutionType) ?? EVOLUTION_PROMPTS[i % EVOLUTION_PROMPTS.length];
+
+      try {
+        const result = await generateAndPlay(evo.prompt);
+        log.push({ stage: i + 2, evolution: evo.type, commentary: result.commentary, code: result.code });
+      } catch (err) {
+        log.push({ stage: i + 2, evolution: evo.type, commentary: `Error: ${err instanceof Error ? err.message : String(err)}`, code: '' });
+      }
+    }
+
+    // Format set summary
+    const summary = log
+      .map((entry) => {
+        const header = `## Stage ${entry.stage}: ${entry.evolution}`;
+        const body = entry.commentary || '(no commentary)';
+        const code = entry.code ? `\n\`\`\`javascript\n${entry.code}\n\`\`\`` : '';
+        return `${header}\n${body}${code}`;
+      })
+      .join('\n\n---\n\n');
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: `# DJ Claude Live Mix — ${stageCount} stages\n\n${summary}`,
+        },
+      ],
+    };
+  },
+);
+
 // -- hush -----------------------------------------------------------------
 server.tool(
   'hush',
