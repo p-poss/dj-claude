@@ -143,6 +143,8 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
 
 ## MCP Server (Manual Setup)
 
+> For the full MCP tool reference, keyless operation guide, and multi-agent details, see [docs/MCP.md](docs/MCP.md).
+
 If you prefer manual configuration, or want to use DJ Claude with other MCP clients (Cursor, Windsurf, Zed, etc.), add this to your `.mcp.json`:
 
 ```json
