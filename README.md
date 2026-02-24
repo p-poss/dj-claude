@@ -175,9 +175,9 @@ For higher quality audio through the browser's Web Audio engine:
 
 | Tool | Description |
 |------|-------------|
-| `play_music` | Generate and play music from a text prompt |
-| `play_strudel` | Evaluate raw Strudel/Tidal code directly |
-| `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` |
+| `play_music` | Generate and play music from a text prompt (requires API key) |
+| `play_strudel` | Evaluate raw Strudel/Tidal code directly (no API key needed) |
+| `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` (no API key needed — uses built-in patterns as fallback) |
 | `live_mix` | Autonomous DJ set — generates and evolves music through multiple stages |
 | `jam` | Add/update a single layer (drums, bass, melody, etc.) — layers compose with `stack()` |
 | `jam_clear` | Remove one or all layers from the jam session |
@@ -273,6 +273,12 @@ snapshot_load(name: "verse1")    # restore and resume playback
 export_code                      # get raw Strudel code with headers
 ```
 
+## Terminal TUI Features
+
+- **Live pattern visualization** — a real-time ASCII pianoroll and drum grid appears between DancingClaude and the code display while music is playing, showing note positions and rhythm patterns synchronized to the audio
+- **DancingClaude** — animated pixel art that dances to the beat
+- **Live code display** — shows the current Strudel pattern as it streams in
+
 ## Keyboard Shortcuts (TUI)
 
 | Key | Action |
@@ -298,7 +304,7 @@ Features:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | CLI / MCP only | Your Anthropic API key (not needed for the plugin or web app) |
+| `ANTHROPIC_API_KEY` | Partial | Required for `play_music`, `live_mix`, `jam`, `conduct`, and other AI-generated tools. Not needed for `play_strudel`, `set_vibe`, `hush`, snapshots, or the web app/plugin |
 | `ELEVENLABS_API_KEY` | No (web only) | Enables voice DJ commentary |
 | `DJ_CLAUDE_BROWSER` | No | Set to `1` for browser audio backend in MCP mode |
 | `DJ_CLAUDE_PORT` | No | HTTP server port for multi-agent mode (default: `4321`) |
