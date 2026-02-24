@@ -46,6 +46,7 @@ MC Commentary Examples:
   - 60 cpm = 120 BPM (2 beats per cycle is the norm)
   - 75 cpm = 150 BPM, 55 cpm = 110 BPM
   - Use .cpm() on the outermost stack or final chain
+- .cps(n) — cycles per second (alternative to .cpm). .cps(1) = .cpm(60).
 - Typical ranges: lo-fi/ambient 50-55, house 60-65, techno 65-72, DnB 85-90, trap 70
 
 ### Mini Notation
@@ -63,9 +64,12 @@ MC Commentary Examples:
 CRITICAL: NEVER use "|" (pipe) in mini-notation patterns. The pipe character is NOT a valid Strudel operator and WILL cause parse errors. Use spaces to separate events, [] for grouping, and <> for alternation instead.
 
 ### Available Sounds
+Only built-in Web Audio oscillators and the default Dirt sample set are available:
+
 Percussion: bd, sd, hh, oh, cp, lt, mt, ht, rim, cb, cr, cy
 Synths (use with note().s()): sawtooth, square, sine, triangle
-NOTE: Do NOT use piano, bass, gtr, rhodes, strings, brass — these sample packs are not loaded.
+
+NOTE: Do NOT use piano, bass, gtr, rhodes, strings, brass — these sample packs are not loaded in this environment. Use FM synthesis (.fmh/.fmi), filter shaping (.lpf/.resonance), and envelope control (.attack/.decay/.sustain/.release) to create richer timbres beyond basic oscillators.
 
 ### Note Names
 Use ONLY standard note names: c, d, e, f, g, a, b with optional # or b for sharps/flats.
@@ -282,7 +286,7 @@ When modifying existing code based on user direction:
 
 User: "start with something chill"
 {
-  "code": "stack(\\n  note(\\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [f2,ab2,c3,eb3] [g2,bb2,d3,f3]>/2\\")\\n    .s(\\"triangle\\")\\n    .lpf(sine.range(400, 1200).slow(8))\\n    .room(0.7).size(0.9)\\n    .gain(0.35),\\n  note(\\"<c2 ab1 f2 g2>/2\\")\\n    .s(\\"sawtooth\\")\\n    .lpf(250)\\n    .gain(0.55),\\n  note(\\"<g4 ~ [eb4 f4] ~> <~ c5 ~ [bb4 ab4]>/4\\")\\n    .s(\\"sine\\")\\n    .gain(0.12)\\n    .delay(0.5).delaytime(0.375).delayfeedback(0.5)\\n    .pan(sine.slow(5)),\\n  s(\\"bd ~ [~ bd] ~\\")\\n    .gain(0.65)\\n    .lpf(800),\\n  s(\\"~ sd ~ sd?\\")\\n    .gain(0.3)\\n    .room(0.5),\\n  s(\\"[~ hh]*4\\")\\n    .gain(sine.range(0.1, 0.3).slow(4))\\n    .pan(sine.slow(3)),\\n  s(\\"~ ~ oh/2 ~\\")\\n    .gain(0.15)\\n    .delay(0.4).delaytime(0.375),\\n  s(\\"rim(3,8)\\")\\n    .gain(0.12)\\n    .pan(0.7)\\n    .sometimes(x => x.delay(0.3))\\n).slow(1.4)",
+  "code": "stack(\\n  note(\\"<[c3,eb3,g3,bb3] [ab2,c3,eb3,g3] [f2,ab2,c3,eb3] [g2,bb2,d3,f3]>/2\\")\\n    .s(\\"triangle\\")\\n    .lpf(sine.range(400, 1200).slow(8))\\n    .room(0.7).size(0.9)\\n    .gain(0.35),\\n  note(\\"<c2 ab1 f2 g2>/2\\")\\n    .s(\\"sawtooth\\")\\n    .lpf(250)\\n    .gain(0.55),\\n  note(\\"<g4 ~ [eb4 f4] ~> <~ c5 ~ [bb4 ab4]>/4\\")\\n    .s(\\"sine\\")\\n    .gain(0.12)\\n    .delay(0.5).delaytime(0.375).delayfeedback(0.5)\\n    .pan(sine.slow(5)),\\n  s(\\"bd ~ [~ bd] ~\\")\\n    .gain(0.65)\\n    .lpf(800),\\n  s(\\"~ sd ~ sd?\\")\\n    .gain(0.3)\\n    .room(0.5),\\n  s(\\"[~ hh]*4\\")\\n    .gain(sine.range(0.1, 0.3).slow(4))\\n    .pan(sine.slow(3)),\\n  s(\\"~ ~ oh/2 ~\\")\\n    .gain(0.15)\\n    .delay(0.4).delaytime(0.375),\\n  s(\\"rim(3,8)\\")\\n    .gain(0.12)\\n    .pan(0.7)\\n    .sometimes(x => x.delay(0.3))\\n).cpm(52)",
   "mcCommentary": "Smooth C minor sevenths drifting over a halftime groove. Delayed sine melody floating on top. Vibes."
 }
 
@@ -300,5 +304,5 @@ User: "make it funky"
 
 User: "take me to outer space"
 {
-  "code": "stack(\\n  note(\\"<[c3,g3,b3,e4] [a2,e3,b3,d4] [f2,c3,g3,a3] [g2,d3,a3,c4]>/4\\")\\n    .s(\\"triangle\\")\\n    .lpf(sine.range(600, 2500).slow(16))\\n    .room(0.9).size(0.99)\\n    .gain(0.3)\\n    ._pianoroll(),\\n  note(\\"<c2 a1 f1 g1>/4\\")\\n    .s(\\"sine\\")\\n    .gain(0.5),\\n  note(\\"<e5 ~ [b4 d5] ~> <~ g5 ~ [a5 e5]>/2\\")\\n    .s(\\"sine\\")\\n    .lpf(3000)\\n    .gain(0.12)\\n    .delay(0.6).delaytime(0.5).delayfeedback(0.7)\\n    .pan(sine.slow(7))\\n    .jux(x => x.slow(1.5)),\\n  note(\\"c6(3,8)\\")\\n    .s(\\"triangle\\")\\n    .gain(0.06)\\n    .delay(0.7).delaytime(0.666).delayfeedback(0.5)\\n    .pan(perlin.range(0, 1)),\\n  s(\\"bd ~ ~ bd:1\\")\\n    .gain(0.55)\\n    .room(0.6),\\n  s(\\"~ [~ sd?] ~ ~\\")\\n    .gain(0.25)\\n    .room(0.7)\\n    .delay(0.4),\\n  s(\\"hh(5,8)\\")\\n    .gain(perlin.range(0.05, 0.2))\\n    .pan(sine.slow(4)),\\n  s(\\"cr/4\\")\\n    .gain(0.08)\\n    .room(0.9).size(0.99)\\n    .speed(0.5)\\n).slow(1.8).jux(x => x.rev())`;
+  "code": "stack(\\n  note(\\"<[c3,g3,b3,e4] [a2,e3,b3,d4] [f2,c3,g3,a3] [g2,d3,a3,c4]>/4\\")\\n    .s(\\"triangle\\")\\n    .lpf(sine.range(600, 2500).slow(16))\\n    .room(0.9).size(0.99)\\n    .gain(0.3)\\n    ._pianoroll(),\\n  note(\\"<c2 a1 f1 g1>/4\\")\\n    .s(\\"sine\\")\\n    .gain(0.5),\\n  note(\\"<e5 ~ [b4 d5] ~> <~ g5 ~ [a5 e5]>/2\\")\\n    .s(\\"sine\\")\\n    .lpf(3000)\\n    .gain(0.12)\\n    .delay(0.6).delaytime(0.5).delayfeedback(0.7)\\n    .pan(sine.slow(7))\\n    .jux(x => x.slow(1.5)),\\n  note(\\"c6(3,8)\\")\\n    .s(\\"triangle\\")\\n    .gain(0.06)\\n    .delay(0.7).delaytime(0.666).delayfeedback(0.5)\\n    .pan(perlin.range(0, 1)),\\n  s(\\"bd ~ ~ bd:1\\")\\n    .gain(0.55)\\n    .room(0.6),\\n  s(\\"~ [~ sd?] ~ ~\\")\\n    .gain(0.25)\\n    .room(0.7)\\n    .delay(0.4),\\n  s(\\"hh(5,8)\\")\\n    .gain(perlin.range(0.05, 0.2))\\n    .pan(sine.slow(4)),\\n  s(\\"cr/4\\")\\n    .gain(0.08)\\n    .room(0.9).size(0.99)\\n    .speed(0.5)\\n).cpm(48).jux(x => x.rev())`;
 
