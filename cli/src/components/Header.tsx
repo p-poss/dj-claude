@@ -39,7 +39,7 @@ export function Header({ isPlaying, isStreaming, audioInitialized }: HeaderProps
   return (
     <Box flexDirection="column" alignItems="center">
       <Text color="#E8704E">{WELCOME_TOP}</Text>
-      <Text color="#E8704E">{'║        Welcome to DJ Claude '}<Text dimColor>v 0.1.14</Text>{'        ║'}</Text>
+      <Text color="#E8704E">{'║        Welcome to DJ Claude '}<Text dimColor>v 0.1.15</Text>{'        ║'}</Text>
       <Text color="#E8704E">{WELCOME_BTM}</Text>
       <Text color="#E8704E">{BANNER}</Text>
       <Text color="#E8704E" dimColor={dim}>
