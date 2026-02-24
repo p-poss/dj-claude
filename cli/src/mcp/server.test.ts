@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { registerTools } from './server.js';
+import { registerTools, registerResources } from './server.js';
 import {
   setLayer,
   clearLayers,
@@ -16,6 +16,7 @@ import {
   updateAfterPlay,
   updateAfterHush,
   getState,
+  setEngineReady,
 } from './state.js';
 
 // ---------------------------------------------------------------------------
@@ -52,6 +53,12 @@ vi.mock('../lib/parseCode.js', () => ({
 
 vi.mock('../lib/prompts.js', () => ({
   buildLayerPrompt: vi.fn().mockReturnValue('You are a layer generator.'),
+  STRUDEL_REFERENCE: 'Mock Strudel reference content',
+  ROLE_GUIDANCE: {
+    drums: 'Focus on percussion.',
+    bass: 'Focus on bass.',
+    melody: 'Focus on melody.',
+  },
 }));
 
 beforeEach(() => {
@@ -71,11 +78,11 @@ beforeEach(() => {
 // ---------------------------------------------------------------------------
 
 describe('Tool registration', () => {
-  it('registers exactly 19 tools', () => {
+  it('registers exactly 20 tools', () => {
     const server = new McpServer({ name: 'test', version: '0.0.1' });
     const toolSpy = vi.spyOn(server, 'tool');
     registerTools(server);
-    expect(toolSpy).toHaveBeenCalledTimes(19);
+    expect(toolSpy).toHaveBeenCalledTimes(20);
   });
 
   it('registers all expected tool names', () => {
@@ -104,6 +111,7 @@ describe('Tool registration', () => {
       'snapshot_load',
       'snapshot_list',
       'export_code',
+      'play_preset',
     ];
 
     for (const name of expectedTools) {
@@ -514,5 +522,504 @@ describe('Jam with metadata', () => {
     expect(drumsEntry.notes).toBeUndefined();
     expect(drumsEntry.key).toBeUndefined();
     expect(drumsEntry.tempo).toBeUndefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Play preset tool
+// ---------------------------------------------------------------------------
+
+describe('Play preset tool', () => {
+  function getToolHandler(toolName: string) {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const toolSpy = vi.spyOn(server, 'tool');
+    registerTools(server);
+    const call = toolSpy.mock.calls.find((c) => c[0] === toolName);
+    return call![call!.length - 1] as (...args: unknown[]) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
+  }
+
+  it('lists all presets when called without a name', async () => {
+    const handler = getToolHandler('play_preset');
+    const result = await handler({ name: undefined, category: undefined });
+    const text = result.content[0].text;
+
+    expect(text).toContain('Available Presets');
+    expect(text).toContain('jazz');
+    expect(text).toContain('chill');
+    expect(text).toContain('coding');
+  });
+
+  it('filters presets by category', async () => {
+    const handler = getToolHandler('play_preset');
+    const result = await handler({ name: undefined, category: 'genre' });
+    const text = result.content[0].text;
+
+    expect(text).toContain('jazz');
+    expect(text).toContain('techno');
+    // Should not contain activity-only presets at top level
+    expect(text).not.toContain('## Mood');
+  });
+
+  it('plays a preset by name', async () => {
+    setEngineReady();
+
+    const handler = getToolHandler('play_preset');
+    const result = await handler({ name: 'jazz', category: undefined });
+    const text = result.content[0].text;
+
+    expect(text).toContain('jazz');
+    expect(text).toContain('genre');
+    expect(result.isError).toBeFalsy();
+  });
+
+  it('returns error for unknown preset', async () => {
+    const handler = getToolHandler('play_preset');
+    const result = await handler({ name: 'nonexistent', category: undefined });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('not found');
+    expect(result.content[0].text).toContain('Available');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Direct code parameters (keyless operation)
+// ---------------------------------------------------------------------------
+
+describe('Direct code parameters', () => {
+  function getToolHandler(toolName: string) {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const toolSpy = vi.spyOn(server, 'tool');
+    registerTools(server);
+    const call = toolSpy.mock.calls.find((c) => c[0] === toolName);
+    return call![call!.length - 1] as (...args: unknown[]) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
+  }
+
+  it('play_music with code skips AI generation', async () => {
+    setEngineReady();
+
+    const handler = getToolHandler('play_music');
+    const result = await handler({ prompt: undefined, code: 's("bd sd hh")' });
+
+    expect(result.content[0].text).toContain('Now playing');
+    expect(result.content[0].text).toContain('s("bd sd hh")');
+    expect(result.isError).toBeFalsy();
+  });
+
+  it('play_music with neither prompt nor code returns error', async () => {
+    const handler = getToolHandler('play_music');
+    const result = await handler({ prompt: undefined, code: undefined });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('prompt');
+    expect(result.content[0].text).toContain('code');
+  });
+
+  it('jam with code skips AI generation', async () => {
+    setEngineReady();
+
+    const handler = getToolHandler('jam');
+    const result = await handler({
+      role: 'drums',
+      prompt: undefined,
+      code: 's("bd sd")',
+      added_by: undefined,
+      notes: undefined,
+      key: undefined,
+      tempo: undefined,
+    });
+
+    expect(result.content[0].text).toContain('drums');
+    expect(result.isError).toBeFalsy();
+    expect(getLayers().has('drums')).toBe(true);
+  });
+
+  it('jam with neither prompt nor code returns error', async () => {
+    setEngineReady();
+
+    const handler = getToolHandler('jam');
+    const result = await handler({
+      role: 'drums',
+      prompt: undefined,
+      code: undefined,
+      added_by: undefined,
+      notes: undefined,
+      key: undefined,
+      tempo: undefined,
+    });
+
+    expect(result.isError).toBe(true);
+  });
+
+  it('jam_preview with code returns preview without AI', async () => {
+    const handler = getToolHandler('jam_preview');
+    const result = await handler({ role: 'bass', prompt: undefined, code: 'note("c1").s("sine")' });
+    const parsed = JSON.parse(result.content[0].text);
+
+    expect(parsed.role).toBe('bass');
+    expect(parsed.code).toBe('note("c1").s("sine")');
+    expect(parsed.preview).toBe(true);
+    expect(getLayers().size).toBe(0);
+  });
+
+  it('conduct with layers creates band without AI', async () => {
+    setEngineReady();
+
+    const handler = getToolHandler('conduct');
+    const result = await handler({
+      directive: undefined,
+      roles: undefined,
+      layers: { drums: 's("bd sd")', bass: 'note("c1").s("sine")' },
+    });
+    const text = result.content[0].text;
+
+    expect(text).toContain('drums');
+    expect(text).toContain('bass');
+    expect(text).toContain('direct code');
+    expect(getLayers().size).toBe(2);
+  });
+
+  it('conduct with neither directive nor layers returns error', async () => {
+    const handler = getToolHandler('conduct');
+    const result = await handler({ directive: undefined, roles: undefined, layers: undefined });
+
+    expect(result.isError).toBe(true);
+  });
+
+  it('conduct_evolve with layers updates existing layers without AI', async () => {
+    setEngineReady();
+    setLayer('drums', 's("bd sd")');
+    setLayer('bass', 'note("c1")');
+    updateAfterPlay('stack(s("bd sd"), note("c1"))', '');
+
+    const handler = getToolHandler('conduct_evolve');
+    const result = await handler({
+      directive: undefined,
+      stages: undefined,
+      layers: { drums: 's("bd sd hh")' },
+    });
+    const text = result.content[0].text;
+
+    expect(text).toContain('drums');
+    expect(text).toContain('updated');
+  });
+
+  it('conduct_evolve with layers skips non-existent roles', async () => {
+    setEngineReady();
+    setLayer('drums', 's("bd sd")');
+    updateAfterPlay('s("bd sd")', '');
+
+    const handler = getToolHandler('conduct_evolve');
+    const result = await handler({
+      directive: undefined,
+      stages: undefined,
+      layers: { nonexistent: 's("bd")' },
+    });
+    const text = result.content[0].text;
+
+    expect(text).toContain('Failed');
+    expect(text).toContain('nonexistent');
+  });
+
+  it('conduct_evolve with neither directive nor layers returns error', async () => {
+    setLayer('drums', 's("bd sd")');
+
+    const handler = getToolHandler('conduct_evolve');
+    const result = await handler({ directive: undefined, stages: undefined, layers: undefined });
+
+    expect(result.isError).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// MCP Resources
+// ---------------------------------------------------------------------------
+
+describe('MCP Resources', () => {
+  it('registers 3 resources', () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+    expect(resourceSpy).toHaveBeenCalledTimes(3);
+  });
+
+  it('registers strudel://reference resource', () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+
+    const calls = resourceSpy.mock.calls;
+    const refCall = calls.find((c) => String(c[1]) === 'strudel://reference');
+    expect(refCall).toBeDefined();
+    expect(refCall![0]).toBe('Strudel Reference');
+  });
+
+  it('registers strudel://roles resource', () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+
+    const calls = resourceSpy.mock.calls;
+    const rolesCall = calls.find((c) => String(c[1]) === 'strudel://roles');
+    expect(rolesCall).toBeDefined();
+    expect(rolesCall![0]).toBe('Strudel Role Guidance');
+  });
+
+  it('registers strudel://examples resource', () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+
+    const calls = resourceSpy.mock.calls;
+    const examplesCall = calls.find((c) => String(c[1]) === 'strudel://examples');
+    expect(examplesCall).toBeDefined();
+    expect(examplesCall![0]).toBe('Strudel Examples');
+  });
+
+  it('strudel://reference callback returns content', async () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+
+    const calls = resourceSpy.mock.calls;
+    const refCall = calls.find((c) => String(c[1]) === 'strudel://reference');
+    // The callback is the last argument
+    const callback = refCall![refCall!.length - 1] as (uri: URL) => Promise<{ contents: { uri: string; text: string }[] }>;
+    const result = await callback(new URL('strudel://reference'));
+
+    expect(result.contents).toHaveLength(1);
+    expect(result.contents[0].text).toContain('Strudel');
+  });
+
+  it('strudel://roles callback returns role guidance', async () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+
+    const calls = resourceSpy.mock.calls;
+    const rolesCall = calls.find((c) => String(c[1]) === 'strudel://roles');
+    const callback = rolesCall![rolesCall!.length - 1] as (uri: URL) => Promise<{ contents: { uri: string; text: string }[] }>;
+    const result = await callback(new URL('strudel://roles'));
+
+    expect(result.contents).toHaveLength(1);
+    expect(result.contents[0].text).toContain('drums');
+    expect(result.contents[0].text).toContain('bass');
+  });
+
+  it('strudel://examples callback returns preset examples', async () => {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const resourceSpy = vi.spyOn(server, 'registerResource');
+    registerResources(server);
+
+    const calls = resourceSpy.mock.calls;
+    const exCall = calls.find((c) => String(c[1]) === 'strudel://examples');
+    const callback = exCall![exCall!.length - 1] as (uri: URL) => Promise<{ contents: { uri: string; text: string }[] }>;
+    const result = await callback(new URL('strudel://examples'));
+
+    expect(result.contents).toHaveLength(1);
+    const text = result.contents[0].text;
+    expect(text).toContain('Mood');
+    expect(text).toContain('Genre');
+    expect(text).toContain('Activity');
+    expect(text).toContain('jazz');
+    expect(text).toContain('chill');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Evaluation failure paths on direct code params
+// ---------------------------------------------------------------------------
+
+describe('Evaluation failure paths', () => {
+  function getToolHandler(toolName: string) {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const toolSpy = vi.spyOn(server, 'tool');
+    registerTools(server);
+    const call = toolSpy.mock.calls.find((c) => c[0] === toolName);
+    return call![call!.length - 1] as (...args: unknown[]) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
+  }
+
+  it('play_music with bad code returns eval error', async () => {
+    setEngineReady();
+    const { safeEvaluate } = await import('../audio/engine.js');
+    vi.mocked(safeEvaluate).mockResolvedValueOnce({ success: false, error: 'SyntaxError: bad code' } as never);
+
+    const handler = getToolHandler('play_music');
+    const result = await handler({ prompt: undefined, code: 'invalid((' });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('Evaluation error');
+  });
+
+  it('jam with bad code rolls back layer', async () => {
+    setEngineReady();
+    const { safeEvaluate } = await import('../audio/engine.js');
+    vi.mocked(safeEvaluate).mockResolvedValueOnce({ success: false, error: 'parse error' } as never);
+
+    const handler = getToolHandler('jam');
+    const result = await handler({
+      role: 'drums',
+      prompt: undefined,
+      code: 'invalid((',
+      added_by: undefined,
+      notes: undefined,
+      key: undefined,
+      tempo: undefined,
+    });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('Failed');
+    // Layer should be rolled back
+    expect(getLayers().has('drums')).toBe(false);
+  });
+
+  it('play_preset with eval failure returns error', async () => {
+    setEngineReady();
+    const { safeEvaluate } = await import('../audio/engine.js');
+    vi.mocked(safeEvaluate).mockResolvedValueOnce({ success: false, error: 'engine error' } as never);
+
+    const handler = getToolHandler('play_preset');
+    const result = await handler({ name: 'jazz', category: undefined });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('Preset evaluation error');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// set_vibe without API key (fallback to preset)
+// ---------------------------------------------------------------------------
+
+describe('set_vibe fallback (no API key)', () => {
+  function getToolHandler(toolName: string) {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const toolSpy = vi.spyOn(server, 'tool');
+    registerTools(server);
+    const call = toolSpy.mock.calls.find((c) => c[0] === toolName);
+    return call![call!.length - 1] as (...args: unknown[]) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
+  }
+
+  it('uses preset pattern when no API key', async () => {
+    setEngineReady();
+    const { findApiKey } = await import('../lib/config.js');
+    vi.mocked(findApiKey).mockReturnValueOnce(undefined as unknown as string);
+
+    const handler = getToolHandler('set_vibe');
+    const result = await handler({ mood: 'chill' });
+
+    expect(result.content[0].text).toContain('Vibe set to chill');
+    expect(result.content[0].text).toContain('built-in pattern');
+    expect(result.isError).toBeFalsy();
+  });
+
+  it('returns error when fallback eval fails', async () => {
+    setEngineReady();
+    const { findApiKey } = await import('../lib/config.js');
+    const { safeEvaluate } = await import('../audio/engine.js');
+    vi.mocked(findApiKey).mockReturnValueOnce(undefined as unknown as string);
+    vi.mocked(safeEvaluate).mockResolvedValueOnce({ success: false, error: 'engine error' } as never);
+
+    const handler = getToolHandler('set_vibe');
+    const result = await handler({ mood: 'chill' });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('Vibe fallback failed');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// live_mix with stages_code
+// ---------------------------------------------------------------------------
+
+describe('live_mix with stages_code', () => {
+  function getToolHandler(toolName: string) {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const toolSpy = vi.spyOn(server, 'tool');
+    registerTools(server);
+    const call = toolSpy.mock.calls.find((c) => c[0] === toolName);
+    return call![call!.length - 1] as (...args: unknown[]) => Promise<{ content: { type: string; text: string }[] }>;
+  }
+
+  it('plays single stage without delay', async () => {
+    setEngineReady();
+
+    const handler = getToolHandler('live_mix');
+    const result = await handler({
+      prompt: undefined,
+      stages: undefined,
+      stages_code: ['s("bd sd hh")'],
+    });
+    const text = result.content[0].text;
+
+    expect(text).toContain('Live Mix');
+    expect(text).toContain('Stage 1');
+    expect(text).toContain('direct code');
+    expect(text).toContain('s("bd sd hh")');
+  });
+
+  it('returns error when neither prompt nor stages_code', async () => {
+    const handler = getToolHandler('live_mix');
+    const result = await handler({
+      prompt: undefined,
+      stages: undefined,
+      stages_code: undefined,
+    }) as { content: { type: string; text: string }[]; isError?: boolean };
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('prompt');
+    expect(result.content[0].text).toContain('stages_code');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// conduct_evolve with layers — state verification
+// ---------------------------------------------------------------------------
+
+describe('conduct_evolve with layers (state verification)', () => {
+  function getToolHandler(toolName: string) {
+    const server = new McpServer({ name: 'test', version: '0.0.1' });
+    const toolSpy = vi.spyOn(server, 'tool');
+    registerTools(server);
+    const call = toolSpy.mock.calls.find((c) => c[0] === toolName);
+    return call![call!.length - 1] as (...args: unknown[]) => Promise<{ content: { type: string; text: string }[]; isError?: boolean }>;
+  }
+
+  it('updates layer code in state on success', async () => {
+    setEngineReady();
+    setLayer('drums', 's("bd sd")');
+    updateAfterPlay('s("bd sd")', '');
+
+    const handler = getToolHandler('conduct_evolve');
+    await handler({
+      directive: undefined,
+      stages: undefined,
+      layers: { drums: 's("bd sd hh oh")' },
+    });
+
+    // Verify the layer code was actually updated in state
+    const drums = getLayers().get('drums');
+    expect(drums).toBeDefined();
+    expect(drums!.code).toBe('s("bd sd hh oh")');
+  });
+
+  it('rolls back layer on eval failure', async () => {
+    setEngineReady();
+    setLayer('drums', 's("bd sd")');
+    updateAfterPlay('s("bd sd")', '');
+
+    const { safeEvaluate } = await import('../audio/engine.js');
+    vi.mocked(safeEvaluate).mockResolvedValueOnce({ success: false, error: 'eval error' } as never);
+
+    const handler = getToolHandler('conduct_evolve');
+    await handler({
+      directive: undefined,
+      stages: undefined,
+      layers: { drums: 's("invalid")' },
+    });
+
+    // Layer should be rolled back to original
+    const drums = getLayers().get('drums');
+    expect(drums).toBeDefined();
+    expect(drums!.code).toBe('s("bd sd")');
   });
 });

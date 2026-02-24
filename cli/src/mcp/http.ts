@@ -10,7 +10,7 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 import { createMcpExpressApp } from '@modelcontextprotocol/sdk/server/express.js';
 
 import { setAudioMode } from './state.js';
-import { registerTools } from './server.js';
+import { registerTools, registerResources } from './server.js';
 
 type Req = IncomingMessage & { headers: Record<string, string | string[] | undefined>; body?: unknown };
 type Res = ServerResponse & { status(code: number): Res; json(body: unknown): void };
@@ -58,6 +58,7 @@ export async function startHttpServer(isBrowserMode = false): Promise<void> {
     });
 
     registerTools(server);
+    registerResources(server);
 
     transport.onclose = () => {
       sessions.delete(sid);

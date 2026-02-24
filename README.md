@@ -45,7 +45,7 @@ DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for m
 ### Prerequisites
 
 - **Node.js** >= 18
-- **Anthropic API key** (not needed for the web app or Claude Code plugin)
+- **Anthropic API key** — optional. Enables AI-generated music from text prompts. Without it, every tool still works via presets, direct Strudel code, or the `code`/`layers` parameters
 
 ### Install & Run
 
@@ -134,7 +134,8 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
       "mcp__dj-claude__snapshot_save",
       "mcp__dj-claude__snapshot_load",
       "mcp__dj-claude__snapshot_list",
-      "mcp__dj-claude__export_code"
+      "mcp__dj-claude__export_code",
+      "mcp__dj-claude__play_preset"
     ]
   }
 }
@@ -173,27 +174,65 @@ For higher quality audio through the browser's Web Audio engine:
 
 ### MCP Tools
 
-| Tool | Description |
-|------|-------------|
-| `play_music` | Generate and play music from a text prompt (requires API key) |
-| `play_strudel` | Evaluate raw Strudel/Tidal code directly (no API key needed) |
-| `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` (no API key needed — uses built-in patterns as fallback) |
-| `live_mix` | Autonomous DJ set — generates and evolves music through multiple stages |
-| `jam` | Add/update a single layer (drums, bass, melody, etc.) — layers compose with `stack()` |
-| `jam_clear` | Remove one or all layers from the jam session |
-| `jam_status` | Show all active layers with their role names and code |
-| `hush` | Stop all music playback |
-| `now_playing` | Check what's currently playing |
-| `switch_audio` | Switch between Node and browser audio backends at runtime |
-| `set_context` | Set coding context so music adapts to your activity |
-| `jam_preview` | Preview a jam layer without adding it to the mix |
-| `mix_analysis` | Analyze the mix for frequency balance, gains, and suggestions |
-| `conduct` | Orchestrate a full band from a single directive |
-| `conduct_evolve` | Evolve all layers through multiple stages |
-| `snapshot_save` | Save the current mix as a named snapshot |
-| `snapshot_load` | Restore a previously saved snapshot |
-| `snapshot_list` | List all saved snapshots |
-| `export_code` | Export current Strudel code with header comments |
+Every tool works without an API key — use the `code`/`layers` params to pass Strudel directly, or use `play_preset`/`set_vibe` for zero-effort music. Add `ANTHROPIC_API_KEY` to unlock AI generation from text prompts.
+
+| Tool | Description | Keyless? |
+|------|-------------|----------|
+| `play_preset` | Play from the curated preset library (22 patterns across mood, genre, activity) | Yes |
+| `play_music` | Play music — via `prompt` (AI) or `code` (direct Strudel) | Yes, via `code` |
+| `play_strudel` | Evaluate raw Strudel/Tidal code directly | Yes |
+| `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` | Yes |
+| `live_mix` | Autonomous DJ set — via `prompt` (AI) or `stages_code` (array of Strudel) | Yes, via `stages_code` |
+| `jam` | Add/update a layer — via `prompt` (AI) or `code` (direct Strudel) | Yes, via `code` |
+| `jam_clear` | Remove one or all layers from the jam session | Yes |
+| `jam_status` | Show all active layers with their role names and code | Yes |
+| `jam_preview` | Preview a jam layer without adding it — via `prompt` or `code` | Yes, via `code` |
+| `conduct` | Orchestrate a full band — via `directive` (AI) or `layers` map | Yes, via `layers` |
+| `conduct_evolve` | Evolve layers — via `directive` (AI) or `layers` map | Yes, via `layers` |
+| `mix_analysis` | Analyze the mix for frequency balance, gains, and suggestions | Yes |
+| `hush` | Stop all music playback | Yes |
+| `now_playing` | Check what's currently playing | Yes |
+| `switch_audio` | Switch between Node and browser audio backends at runtime | Yes |
+| `set_context` | Set coding context so music adapts to your activity | Yes |
+| `snapshot_save` | Save the current mix as a named snapshot | Yes |
+| `snapshot_load` | Restore a previously saved snapshot | Yes |
+| `snapshot_list` | List all saved snapshots | Yes |
+| `export_code` | Export current Strudel code with header comments | Yes |
+
+### MCP Resources
+
+The server exposes Strudel knowledge as MCP resources so agents can learn the syntax and write their own code:
+
+| Resource | Description |
+|----------|-------------|
+| `strudel://reference` | Complete Strudel syntax reference — core functions, mini-notation, effects, modulation |
+| `strudel://roles` | Musical role guidance for building jam layers (drums, bass, melody, chords, etc.) |
+| `strudel://examples` | Working Strudel patterns from the preset library, organized by mood, genre, and activity |
+
+Agents can read these resources, learn the syntax, and then call `play_music(code: ...)`, `jam(code: ...)`, or `conduct(layers: ...)` — no API key needed.
+
+## Keyless Operation
+
+Every tool works without `ANTHROPIC_API_KEY`. There are three tiers of keyless usage:
+
+**1. Zero effort — presets and vibes**
+```
+play_preset(name: "jazz")          # 22 curated patterns
+set_vibe(mood: "chill")            # 8 mood presets
+```
+
+**2. Direct code — agent writes Strudel**
+```
+play_music(code: 'stack(s("bd*4").gain(0.75), note("c2").s("sawtooth").lpf(300))')
+jam(role: "drums", code: 's("bd*4").gain(0.75)')
+conduct(layers: { drums: 's("bd*4")', bass: 'note("c1").s("sine")' })
+```
+
+**3. Full power — agent learns Strudel from resources**
+
+An agent can read `strudel://reference` to learn the complete syntax, `strudel://roles` for layer-building guidance, and `strudel://examples` for working patterns — then compose its own original Strudel code.
+
+This means any AI agent connected via MCP can make music, regardless of whether `ANTHROPIC_API_KEY` is set. The calling agent IS the LLM.
 
 ## Multi-Agent Jam Session
 
@@ -228,21 +267,37 @@ Each connected client gets its own MCP session, but they all share the same audi
 
 ### Jam tool workflow
 
+With AI generation (requires API key):
 ```
 Agent 1: jam(role: "drums", prompt: "four-on-the-floor house kick")
 Agent 2: jam(role: "bass", prompt: "deep sub bass in C minor")
-Agent 1: jam(role: "melody", prompt: "ethereal sine lead")
-Agent 2: jam_clear(role: "bass")  # remove just the bass layer
+```
+
+With direct code (no API key):
+```
+Agent 1: jam(role: "drums", code: 's("bd*4").gain(0.75)')
+Agent 2: jam(role: "bass", code: 'note("c1 ~ c1 ~").s("sawtooth").lpf(300).gain(0.5)')
 Agent 1: jam_status               # see all active layers
+Agent 2: jam_clear(role: "bass")  # remove just the bass layer
 ```
 
 ## Conductor Mode
 
 Orchestrate a full band from a single directive — `conduct` generates multiple layers at once.
 
+With AI generation (requires API key):
 ```
 conduct(directive: "jazz combo in C minor, late night mood")
 # → creates drums, bass, chords, melody layers automatically
+```
+
+With direct code (no API key):
+```
+conduct(layers: {
+  drums: 's("bd*4").gain(0.75)',
+  bass: 'note("c1 ~ c1 ~").s("sawtooth").lpf(300).gain(0.5)',
+  chords: 'note("<[c3,eb3,g3] [ab2,c3,eb3]>/2").s("triangle").gain(0.3)'
+})
 ```
 
 Band templates are auto-detected from the directive:
@@ -259,6 +314,9 @@ Use `conduct_evolve` to evolve all layers through stages:
 ```
 conduct_evolve(directive: "shift darker", stages: 3)
 # → evolves each layer 3 times with 15s pauses
+
+# Or provide evolved code directly (no API key):
+conduct_evolve(layers: { drums: 's("bd ~ sd ~").gain(0.7)' })
 ```
 
 ## Mix Snapshots
@@ -304,7 +362,7 @@ Features:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | Partial | Required for `play_music`, `live_mix`, `jam`, `conduct`, and other AI-generated tools. Not needed for `play_strudel`, `set_vibe`, `hush`, snapshots, or the web app/plugin |
+| `ANTHROPIC_API_KEY` | No | Enables AI generation from text prompts. Without it, all tools still work — use `play_preset`, `set_vibe`, `play_strudel`, or pass Strudel code via the `code`/`layers`/`stages_code` parameters |
 | `ELEVENLABS_API_KEY` | No (web only) | Enables voice DJ commentary |
 | `DJ_CLAUDE_BROWSER` | No | Set to `1` for browser audio backend in MCP mode |
 | `DJ_CLAUDE_PORT` | No | HTTP server port for multi-agent mode (default: `4321`) |

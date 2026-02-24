@@ -312,7 +312,7 @@ User: "take me to outer space"
 // Layer-specific prompt — used by jam tools for single-layer generation.
 // ---------------------------------------------------------------------------
 
-const ROLE_GUIDANCE: Record<string, string> = {
+export const ROLE_GUIDANCE: Record<string, string> = {
   drums: 'Focus on percussion — kicks, snares, hi-hats, claps, cymbals, rims. Use s() with drum samples. Set appropriate gain levels for each drum element.',
   kick: 'Focus on the kick drum pattern only. Use s("bd ..."). Keep it punchy and well-timed.',
   bass: 'Focus on bass — octaves 1-2, use sawtooth or sine with .lpf(200-500). Keep it low and powerful. Use .fmh()/.fmi() for FM bass character.',

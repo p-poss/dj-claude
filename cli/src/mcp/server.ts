@@ -12,7 +12,8 @@ import { renderPatternSnapshot } from '../lib/pattern-viz.js';
 import { findApiKey } from '../lib/config.js';
 import { streamChat } from '../lib/claude.js';
 import { parseStreamingCode } from '../lib/parseCode.js';
-import { buildLayerPrompt } from '../lib/prompts.js';
+import { buildLayerPrompt, STRUDEL_REFERENCE, ROLE_GUIDANCE } from '../lib/prompts.js';
+import { PRESETS, PRESET_MAP, PRESET_NAMES, getPresetsByCategory } from '../lib/presets.js';
 import {
   getState,
   setEngineReady,
@@ -75,7 +76,7 @@ function getPatternViz(): string {
 async function generateAndPlay(prompt: string): Promise<{ commentary: string; code: string }> {
   const apiKey = findApiKey();
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not set. Use play_strudel to play Strudel code directly, or set your API key for AI-generated music.');
+    throw new Error('ANTHROPIC_API_KEY not set. Provide the `code` parameter with Strudel code directly (read the strudel://reference resource for syntax), or set your API key for AI generation.');
   }
   const { currentCode, messages } = getState();
 
@@ -117,7 +118,7 @@ async function generateAndPlay(prompt: string): Promise<{ commentary: string; co
 async function generateLayerCode(role: string, prompt: string): Promise<{ commentary: string; code: string }> {
   const apiKey = findApiKey();
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not set. Use play_strudel to play Strudel code directly, or set your API key for AI-generated music.');
+    throw new Error('ANTHROPIC_API_KEY not set. Provide the `code` parameter with Strudel code directly (read the strudel://reference resource for syntax), or set your API key for AI generation.');
   }
   const { messages } = getState();
   const systemPrompt = buildLayerPrompt(role);
@@ -173,53 +174,8 @@ const MOOD_PROMPTS: Record<string, string> = {
   epic: 'Play something epic and cinematic — big builds, soaring melodies, powerful drums. Make it feel legendary.',
 };
 
-// Pre-baked Strudel patterns for each mood — used when no API key is available.
-const MOOD_FALLBACKS: Record<string, string> = {
-  chill: `stack(
-  note("c3 eb3 g3 bb3").s("sawtooth").lpf(800).gain(0.3).room(0.5).delay(0.25),
-  s("bd ~ sd ~").gain(0.5),
-  s("hh*8").gain(0.2).lpf(3000)
-).cps(0.45)`,
-  dark: `stack(
-  note("c2 ~ eb2 ~").s("sawtooth").lpf(400).gain(0.5),
-  note("c4 eb4 g4 c5").s("square").lpf(1200).gain(0.15).room(0.7).delay(0.3),
-  s("bd bd ~ bd sd ~ bd ~").gain(0.6),
-  s("hh*4").gain(0.15).lpf(2000)
-).cps(0.5)`,
-  hype: `stack(
-  s("bd bd sd bd bd sd bd sd").gain(0.7),
-  s("hh*16").gain(0.3).lpf(5000),
-  note("c3 c3 eb3 c3 f3 c3 eb3 g3").s("sawtooth").lpf(2000).gain(0.4),
-  s("~ cp ~ cp").gain(0.5)
-).cps(0.7)`,
-  focus: `stack(
-  note("c4 eb4 g4 bb4 c5 bb4 g4 eb4").s("triangle").lpf(1500).gain(0.15).room(0.6).delay(0.4),
-  note("c2 ~ ~ g2 ~ ~ c2 ~").s("sine").gain(0.2)
-).cps(0.35)`,
-  funky: `stack(
-  s("bd ~ bd sd ~ bd sd ~").gain(0.6),
-  s("~ hh hh ~ hh hh ~ hh").gain(0.3).lpf(4000),
-  note("c3 ~ eb3 c3 ~ f3 eb3 ~").s("sawtooth").lpf(1800).gain(0.35),
-  s("~ ~ cp ~ ~ ~ cp ~").gain(0.4)
-).cps(0.55)`,
-  dreamy: `stack(
-  note("c4 e4 g4 b4 c5 b4 g4 e4").s("sine").room(0.8).gain(0.15).delay(0.5),
-  note("c3 g3 e3 b3").s("triangle").lpf(800).gain(0.1).room(0.7),
-  s("~ ~ hh ~").gain(0.1).lpf(2000).delay(0.6)
-).cps(0.3)`,
-  weird: `stack(
-  note("c3 f#3 bb3 e4 ab2 d4 g#3 db4").s("square").lpf(2500).gain(0.25).room(0.4),
-  s("bd ~ cp ~ bd bd ~ sd").gain(0.5),
-  s("hh hh oh hh ~ hh oh ~").gain(0.2).lpf(3000).delay(0.3)
-).cps(0.5)`,
-  epic: `stack(
-  s("bd ~ ~ bd sd ~ bd sd").gain(0.7),
-  s("hh*8").gain(0.25).lpf(4000),
-  note("c3 g3 c4 g3 eb3 bb3 eb4 bb3").s("sawtooth").lpf(2000).gain(0.4).room(0.5),
-  note("c5 eb5 g5 c6").s("square").lpf(3000).gain(0.2).room(0.6).delay(0.25),
-  s("~ ~ ~ cp").gain(0.5)
-).cps(0.6)`,
-};
+// MOOD_FALLBACKS removed — mood patterns now live in presets.ts and are
+// accessed via PRESET_MAP.
 
 // ---------------------------------------------------------------------------
 // Evolution prompts for live_mix.
@@ -379,11 +335,38 @@ export function registerTools(server: McpServer): void {
   // -- play_music -----------------------------------------------------------
   server.tool(
     'play_music',
-    'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. DJ Claude will compose a Strudel pattern and play it through the speakers. Requires ANTHROPIC_API_KEY. If no API key is set, use play_strudel to write and play Strudel code directly, or use set_vibe for instant mood-based music without a key.',
-    { prompt: z.string().describe('What kind of music to play, e.g. "jazzy lo-fi beats" or "intense drum and bass"') },
-    async ({ prompt }) => {
+    'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. Works without an API key when you provide the `code` parameter with Strudel code directly (read the strudel://reference resource for syntax). With ANTHROPIC_API_KEY set, you can use `prompt` for AI-generated music.',
+    {
+      prompt: z.string().optional().describe('What kind of music to play, e.g. "jazzy lo-fi beats" or "intense drum and bass"'),
+      code: z.string().optional().describe('Strudel code to play directly — no API key needed. Read strudel://reference for syntax.'),
+    },
+    async ({ prompt, code: directCode }) => {
       clearLayers();
       await ensureEngine();
+
+      if (directCode) {
+        const { currentCode } = getState();
+        const result = await safeEvaluate(directCode, currentCode);
+        if (!result.success) {
+          return {
+            content: [{ type: 'text' as const, text: `Evaluation error: ${result.error}` }],
+            isError: true,
+          };
+        }
+        updateAfterPlay(directCode, '');
+        const viz = getPatternViz();
+        return {
+          content: [{ type: 'text' as const, text: `Now playing:\n\`\`\`javascript\n${directCode}\n\`\`\`${viz}` }],
+        };
+      }
+
+      if (!prompt) {
+        return {
+          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          isError: true,
+        };
+      }
+
       const { commentary, code } = await generateAndPlay(prompt);
       const viz = getPatternViz();
       return {
@@ -453,8 +436,8 @@ export function registerTools(server: McpServer): void {
         };
       }
 
-      // No API key — use fallback pattern
-      const code = MOOD_FALLBACKS[mood];
+      // No API key — use fallback pattern from preset library
+      const code = PRESET_MAP.get(mood)!.code;
       const { currentCode } = getState();
       const result = await safeEvaluate(code, currentCode);
       if (!result.success) {
@@ -479,14 +462,61 @@ export function registerTools(server: McpServer): void {
   // -- live_mix -------------------------------------------------------------
   server.tool(
     'live_mix',
-    'Autonomous DJ set — generates and evolves music through multiple stages with ~20s between each. Runs as a long tool call. Call hush to stop early.',
+    'Autonomous DJ set — generates and evolves music through multiple stages with ~20s between each. Works without an API key when you provide `stages_code` with an array of Strudel code strings (one per stage). With ANTHROPIC_API_KEY, use `prompt` for AI-generated evolution. Read strudel://reference for syntax.',
     {
-      prompt: z.string().describe('Starting direction for the mix, e.g. "deep house sunset set" or "ambient techno journey"'),
+      prompt: z.string().optional().describe('Starting direction for the mix, e.g. "deep house sunset set" or "ambient techno journey"'),
       stages: z.number().min(3).max(10).default(6).optional().describe('Number of stages in the set (default 6)'),
+      stages_code: z.array(z.string()).min(1).max(10).optional().describe('Array of Strudel code strings, one per stage — no API key needed. Played sequentially with ~20s gaps.'),
     },
-    async ({ prompt, stages: stagesParam }) => {
-      const stageCount = stagesParam ?? 6;
+    async ({ prompt, stages: stagesParam, stages_code }) => {
       await ensureEngine();
+
+      // Direct code path — no API key needed
+      if (stages_code) {
+        const log: { stage: number; evolution: string; commentary: string; code: string }[] = [];
+
+        for (let i = 0; i < stages_code.length; i++) {
+          if (i > 0) {
+            await new Promise((r) => setTimeout(r, 20_000));
+            if (!getState().isPlaying) {
+              log.push({ stage: i + 1, evolution: 'stopped', commentary: 'Mix stopped — hush was called.', code: '' });
+              break;
+            }
+          }
+
+          clearLayers();
+          const { currentCode } = getState();
+          const result = await safeEvaluate(stages_code[i], currentCode);
+          if (!result.success) {
+            log.push({ stage: i + 1, evolution: `stage ${i + 1}`, commentary: `Evaluation error: ${result.error}`, code: stages_code[i] });
+          } else {
+            updateAfterPlay(stages_code[i], '');
+            log.push({ stage: i + 1, evolution: `stage ${i + 1}`, commentary: '', code: stages_code[i] });
+          }
+        }
+
+        const summary = log
+          .map((entry) => {
+            const header = `## Stage ${entry.stage}: ${entry.evolution}`;
+            const body = entry.commentary || '(playing)';
+            const code = entry.code ? `\n\`\`\`javascript\n${entry.code}\n\`\`\`` : '';
+            return `${header}\n${body}${code}`;
+          })
+          .join('\n\n---\n\n');
+
+        return {
+          content: [{ type: 'text' as const, text: `# DJ Claude Live Mix — ${stages_code.length} stages (direct code)\n\n${summary}` }],
+        };
+      }
+
+      if (!prompt) {
+        return {
+          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `stages_code` (array of Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          isError: true,
+        };
+      }
+
+      const stageCount = stagesParam ?? 6;
 
       const opening = await generateAndPlay(prompt);
       const log: { stage: number; evolution: string; commentary: string; code: string }[] = [
@@ -620,20 +650,36 @@ export function registerTools(server: McpServer): void {
   // -- jam ------------------------------------------------------------------
   server.tool(
     'jam',
-    'Add or update a single layer in a collaborative jam session. Each layer has a role (drums, bass, melody, etc.) and layers are composed together with stack(). Use this for building music incrementally or multi-agent collaboration.',
+    'Add or update a single layer in a collaborative jam session. Each layer has a role (drums, bass, melody, etc.) and layers are composed together with stack(). Works without an API key when you provide `code` with Strudel code directly (read strudel://reference and strudel://roles for syntax). With ANTHROPIC_API_KEY, use `prompt` for AI generation.',
     {
       role: z.string().describe('The role/name for this layer, e.g. "drums", "bass", "melody", "chords", "pads", "fx"'),
-      prompt: z.string().describe('What this layer should sound like, e.g. "funky breakbeat pattern" or "deep sub bass in C minor"'),
+      prompt: z.string().optional().describe('What this layer should sound like, e.g. "funky breakbeat pattern" or "deep sub bass in C minor"'),
+      code: z.string().optional().describe('Strudel code for this layer — no API key needed. Should be a single pattern chain (no stack, no .cpm).'),
       added_by: z.string().optional().describe('Name of the session/agent adding this layer'),
       notes: z.string().optional().describe('Free text notes, e.g. "C minor, 120bpm"'),
       key: z.string().optional().describe('Musical key, e.g. "C minor", "F# major"'),
       tempo: z.number().optional().describe('BPM for this layer'),
     },
-    async ({ role, prompt, added_by, notes, key, tempo }) => {
+    async ({ role, prompt, code: directCode, added_by, notes, key, tempo }) => {
       return withEvalLock(async () => {
         await ensureEngine();
 
-        const { commentary, code: layerCode } = await generateLayerCode(role, prompt);
+        let layerCode: string;
+        let commentary: string;
+
+        if (directCode) {
+          layerCode = directCode;
+          commentary = '';
+        } else if (prompt) {
+          const generated = await generateLayerCode(role, prompt);
+          layerCode = generated.code;
+          commentary = generated.commentary;
+        } else {
+          return {
+            content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+            isError: true,
+          };
+        }
         const metadata: LayerMetadata = {};
         if (added_by) metadata.addedBy = added_by;
         if (notes) metadata.notes = notes;
@@ -805,12 +851,31 @@ export function registerTools(server: McpServer): void {
   // -- jam_preview ----------------------------------------------------------
   server.tool(
     'jam_preview',
-    'Preview what a jam layer would sound like without actually adding it. Generates code but does NOT evaluate, store, or play it. Use this to audition ideas before committing.',
+    'Preview what a jam layer would sound like without actually adding it. Generates code but does NOT evaluate, store, or play it. Works without an API key when you provide `code` directly. Read strudel://reference for syntax.',
     {
       role: z.string().describe('The role to preview, e.g. "drums", "bass", "melody"'),
-      prompt: z.string().describe('What this layer should sound like'),
+      prompt: z.string().optional().describe('What this layer should sound like'),
+      code: z.string().optional().describe('Strudel code to preview directly — no API key needed.'),
     },
-    async ({ role, prompt }) => {
+    async ({ role, prompt, code: directCode }) => {
+      if (directCode) {
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: JSON.stringify({ role, code: directCode, commentary: '', preview: true }),
+            },
+          ],
+        };
+      }
+
+      if (!prompt) {
+        return {
+          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed).' }],
+          isError: true,
+        };
+      }
+
       const { commentary, code } = await generateLayerCode(role, prompt);
       return {
         content: [
@@ -857,16 +922,73 @@ export function registerTools(server: McpServer): void {
   // -- conduct --------------------------------------------------------------
   server.tool(
     'conduct',
-    'Orchestrate a full band — generates multiple layers at once from a single directive. Matches band templates (jazz combo, rock band, electronic, ambient, etc.) or specify custom roles. Clears existing layers first.',
+    'Orchestrate a full band — generates multiple layers at once from a single directive. Works without an API key when you provide `layers` (a map of role -> Strudel code). With ANTHROPIC_API_KEY, use `directive` for AI generation. Matches band templates (jazz combo, rock band, electronic, ambient, etc.) or specify custom roles. Read strudel://reference and strudel://roles for syntax.',
     {
-      directive: z.string().describe('What the band should play, e.g. "jazz combo in C minor, late night mood" or "electronic ambient with evolving textures"'),
+      directive: z.string().optional().describe('What the band should play, e.g. "jazz combo in C minor, late night mood"'),
       roles: z.array(z.string()).optional().describe('Custom roles to override template matching, e.g. ["drums", "bass", "keys", "sax"]'),
+      layers: z.record(z.string(), z.string()).optional().describe('Map of role name to Strudel code — no API key needed. e.g. { "drums": "s(\\"bd sd\\")", "bass": "note(\\"c1\\")" }'),
     },
-    async ({ directive, roles: customRoles }) => {
-      const roles = customRoles ?? matchBandTemplate(directive);
-
+    async ({ directive, roles: customRoles, layers: directLayers }) => {
       clearLayers();
       await ensureEngine();
+
+      // Direct code path — no API key needed
+      if (directLayers) {
+        const roles = Object.keys(directLayers);
+        const results: { role: string; success: boolean; code: string; error?: string }[] = [];
+
+        for (const role of roles) {
+          await withEvalLock(async () => {
+            try {
+              setLayer(role, directLayers[role]);
+
+              const composed = composeLayers();
+              const { currentCode } = getState();
+              const evalResult = await safeEvaluate(composed, currentCode);
+
+              if (!evalResult.success) {
+                removeLayer(role);
+                results.push({ role, success: false, code: directLayers[role], error: evalResult.error });
+              } else {
+                updateAfterPlay(composed, '');
+                results.push({ role, success: true, code: directLayers[role] });
+              }
+            } catch (err) {
+              results.push({ role, success: false, code: directLayers[role], error: err instanceof Error ? err.message : String(err) });
+            }
+          });
+        }
+
+        const succeeded = results.filter((r) => r.success);
+        const failed = results.filter((r) => !r.success);
+
+        let summary = `# Conductor — ${succeeded.length}/${roles.length} layers created (direct code)\n\n`;
+        summary += `**Roles:** ${roles.join(', ')}\n\n`;
+
+        for (const r of succeeded) {
+          summary += `## ${r.role}\n\`\`\`javascript\n${r.code}\n\`\`\`\n\n`;
+        }
+
+        if (failed.length > 0) {
+          summary += `### Skipped\n`;
+          for (const r of failed) {
+            summary += `- **${r.role}**: ${r.error}\n`;
+          }
+        }
+
+        return {
+          content: [{ type: 'text' as const, text: summary }],
+        };
+      }
+
+      if (!directive) {
+        return {
+          content: [{ type: 'text' as const, text: 'Provide either `directive` (requires ANTHROPIC_API_KEY) or `layers` (map of role -> Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          isError: true,
+        };
+      }
+
+      const roles = customRoles ?? matchBandTemplate(directive);
 
       const results: { role: string; success: boolean; commentary: string; code: string; error?: string }[] = [];
 
@@ -922,20 +1044,81 @@ export function registerTools(server: McpServer): void {
   // -- conduct_evolve -------------------------------------------------------
   server.tool(
     'conduct_evolve',
-    'Evolve all active layers through multiple stages — each layer gets modified 20-40% per stage with pauses between. Requires active layers from a jam or conduct session.',
+    'Evolve all active layers through multiple stages — each layer gets modified 20-40% per stage with pauses between. Works without an API key when you provide `layers` (a map of role -> new Strudel code) for a single-pass update. With ANTHROPIC_API_KEY, use `directive` for AI-driven multi-stage evolution. Requires active layers from a jam or conduct session.',
     {
-      directive: z.string().describe('Evolution direction, e.g. "shift darker", "build energy", "deconstruct gradually"'),
+      directive: z.string().optional().describe('Evolution direction, e.g. "shift darker", "build energy", "deconstruct gradually"'),
       stages: z.number().min(1).max(6).optional().describe('Number of evolution stages (default 3, max 6)'),
+      layers: z.record(z.string(), z.string()).optional().describe('Map of role name to new Strudel code — applies evolved code in one pass, no API key needed.'),
     },
-    async ({ directive, stages: stagesParam }) => {
-      const stageCount = stagesParam ?? 3;
-      const layers = getLayers();
+    async ({ directive, stages: stagesParam, layers: directLayers }) => {
+      const currentLayers = getLayers();
 
-      if (layers.size === 0) {
+      if (currentLayers.size === 0) {
         return {
           content: [{ type: 'text' as const, text: 'No active layers to evolve. Use jam or conduct first.' }],
         };
       }
+
+      // Direct code path — apply evolved code in one pass, no API key needed
+      if (directLayers) {
+        const results: { role: string; success: boolean; error?: string }[] = [];
+
+        for (const [role, code] of Object.entries(directLayers)) {
+          const existing = currentLayers.get(role);
+          if (!existing) {
+            results.push({ role, success: false, error: `No active layer with role "${role}"` });
+            continue;
+          }
+
+          const previousCode = existing.code;
+          await withEvalLock(async () => {
+            try {
+              setLayer(role, code);
+              const composed = composeLayers();
+              const { currentCode } = getState();
+              const evalResult = await safeEvaluate(composed, currentCode);
+
+              if (!evalResult.success) {
+                setLayer(role, previousCode);
+                results.push({ role, success: false, error: evalResult.error });
+              } else {
+                updateAfterPlay(composed, '');
+                results.push({ role, success: true });
+              }
+            } catch (err) {
+              setLayer(role, previousCode);
+              results.push({ role, success: false, error: err instanceof Error ? err.message : String(err) });
+            }
+          });
+        }
+
+        const succeeded = results.filter((r) => r.success);
+        const failed = results.filter((r) => !r.success);
+
+        let summary = `# Evolution — ${succeeded.length}/${results.length} layers updated (direct code)\n\n`;
+        for (const r of succeeded) {
+          summary += `- **${r.role}**: updated\n`;
+        }
+        if (failed.length > 0) {
+          summary += `\n### Failed\n`;
+          for (const r of failed) {
+            summary += `- **${r.role}**: ${r.error}\n`;
+          }
+        }
+
+        return {
+          content: [{ type: 'text' as const, text: summary }],
+        };
+      }
+
+      if (!directive) {
+        return {
+          content: [{ type: 'text' as const, text: 'Provide either `directive` (requires ANTHROPIC_API_KEY) or `layers` (map of role -> Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          isError: true,
+        };
+      }
+
+      const stageCount = stagesParam ?? 3;
 
       const log: { stage: number; results: { role: string; success: boolean }[] }[] = [];
 
@@ -949,9 +1132,9 @@ export function registerTools(server: McpServer): void {
         }
 
         const stageResults: { role: string; success: boolean }[] = [];
-        const currentLayers = Array.from(getLayers().values());
+        const activeLayers = Array.from(getLayers().values());
 
-        for (const layer of currentLayers) {
+        for (const layer of activeLayers) {
           const previousCode = layer.code;
 
           await withEvalLock(async () => {
@@ -1134,6 +1317,131 @@ export function registerTools(server: McpServer): void {
       };
     },
   );
+
+  // -- play_preset ----------------------------------------------------------
+  server.tool(
+    'play_preset',
+    'Play from the curated pattern library. No API key needed. Call without arguments to list all available presets.',
+    {
+      name: z.string().optional().describe('Preset name, e.g. "jazz", "techno", "coding", "chill"'),
+      category: z.enum(['mood', 'genre', 'activity']).optional().describe('Filter by category when listing presets'),
+    },
+    async ({ name, category }) => {
+      // List mode — no name provided
+      if (!name) {
+        const presets = getPresetsByCategory(category);
+        const grouped: Record<string, { name: string; description: string }[]> = {};
+        for (const p of presets) {
+          (grouped[p.category] ??= []).push({ name: p.name, description: p.description });
+        }
+
+        let listing = '# Available Presets\n\n';
+        for (const [cat, items] of Object.entries(grouped)) {
+          listing += `## ${cat.charAt(0).toUpperCase() + cat.slice(1)}\n`;
+          for (const item of items) {
+            listing += `- **${item.name}** — ${item.description}\n`;
+          }
+          listing += '\n';
+        }
+        listing += `Use \`play_preset\` with a \`name\` to play one.`;
+
+        return {
+          content: [{ type: 'text' as const, text: listing }],
+        };
+      }
+
+      // Play mode
+      const preset = PRESET_MAP.get(name);
+      if (!preset) {
+        return {
+          content: [{ type: 'text' as const, text: `Preset "${name}" not found. Available: ${PRESET_NAMES.join(', ')}` }],
+          isError: true,
+        };
+      }
+
+      clearLayers();
+      await ensureEngine();
+
+      const { currentCode } = getState();
+      const result = await safeEvaluate(preset.code, currentCode);
+      if (!result.success) {
+        return {
+          content: [{ type: 'text' as const, text: `Preset evaluation error: ${result.error}` }],
+          isError: true,
+        };
+      }
+
+      updateAfterPlay(preset.code, '');
+      const viz = getPatternViz();
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `Now playing preset: **${preset.name}** (${preset.category})\n${preset.description}\n\n\`\`\`javascript\n${preset.code}\n\`\`\`${viz}`,
+          },
+        ],
+      };
+    },
+  );
+}
+
+// ---------------------------------------------------------------------------
+// MCP Resources — expose Strudel knowledge for keyless agent usage.
+// ---------------------------------------------------------------------------
+
+export function registerResources(server: McpServer): void {
+  // strudel://reference — full syntax guide
+  server.registerResource(
+    'Strudel Reference',
+    'strudel://reference',
+    {
+      description: 'Complete Strudel syntax reference — core functions, mini-notation, effects, modulation.',
+      mimeType: 'text/plain',
+    },
+    async (uri) => ({
+      contents: [{ uri: uri.href, mimeType: 'text/plain', text: STRUDEL_REFERENCE }],
+    }),
+  );
+
+  // strudel://roles — role guidance for jam/conduct layers
+  const rolesText = Object.entries(ROLE_GUIDANCE)
+    .map(([role, guidance]) => `## ${role}\n${guidance}`)
+    .join('\n\n');
+
+  server.registerResource(
+    'Strudel Role Guidance',
+    'strudel://roles',
+    {
+      description: 'Musical role guidance for building jam layers (drums, bass, melody, chords, pads, etc.).',
+      mimeType: 'text/plain',
+    },
+    async (uri) => ({
+      contents: [{ uri: uri.href, mimeType: 'text/plain', text: `# Strudel Role Guidance\n\nUse these guidelines when writing code for specific roles in a jam session.\n\n${rolesText}` }],
+    }),
+  );
+
+  // strudel://examples — working code from preset library
+  const examplesText = (['mood', 'genre', 'activity'] as const)
+    .map((cat) => {
+      const presets = getPresetsByCategory(cat);
+      const entries = presets
+        .map((p) => `### ${p.name}\n${p.description}\n\`\`\`javascript\n${p.code}\n\`\`\``)
+        .join('\n\n');
+      return `## ${cat.charAt(0).toUpperCase() + cat.slice(1)}\n\n${entries}`;
+    })
+    .join('\n\n');
+
+  server.registerResource(
+    'Strudel Examples',
+    'strudel://examples',
+    {
+      description: 'Working Strudel patterns organized by mood, genre, and activity. Use as reference for writing your own.',
+      mimeType: 'text/plain',
+    },
+    async (uri) => ({
+      contents: [{ uri: uri.href, mimeType: 'text/plain', text: `# Strudel Examples\n\nWorking patterns from the DJ Claude preset library.\n\n${examplesText}` }],
+    }),
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -1154,6 +1462,7 @@ export async function startServer(isBrowserMode = false): Promise<void> {
   });
 
   registerTools(server);
+  registerResources(server);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
