@@ -384,7 +384,7 @@ export function registerTools(server: McpServer): void {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo }, null, 2),
+            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo }),
           },
         ],
       };
@@ -506,7 +506,7 @@ export function registerTools(server: McpServer): void {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ layers: entries, composed: composeLayers() }, null, 2),
+            text: JSON.stringify({ layers: entries, composed: composeLayers() }),
           },
         ],
       };
