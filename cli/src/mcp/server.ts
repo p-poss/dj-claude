@@ -165,6 +165,54 @@ const MOOD_PROMPTS: Record<string, string> = {
   epic: 'Play something epic and cinematic — big builds, soaring melodies, powerful drums. Make it feel legendary.',
 };
 
+// Pre-baked Strudel patterns for each mood — used when no API key is available.
+const MOOD_FALLBACKS: Record<string, string> = {
+  chill: `stack(
+  note("c3 eb3 g3 bb3").s("sawtooth").lpf(800).gain(0.3).room(0.5).delay(0.25),
+  s("bd ~ sd ~").gain(0.5),
+  s("hh*8").gain(0.2).lpf(3000)
+).cps(0.45)`,
+  dark: `stack(
+  note("c2 ~ eb2 ~").s("sawtooth").lpf(400).gain(0.5),
+  note("c4 eb4 g4 c5").s("square").lpf(1200).gain(0.15).room(0.7).delay(0.3),
+  s("bd bd ~ bd sd ~ bd ~").gain(0.6),
+  s("hh*4").gain(0.15).lpf(2000)
+).cps(0.5)`,
+  hype: `stack(
+  s("bd bd sd bd bd sd bd sd").gain(0.7),
+  s("hh*16").gain(0.3).lpf(5000),
+  note("c3 c3 eb3 c3 f3 c3 eb3 g3").s("sawtooth").lpf(2000).gain(0.4),
+  s("~ cp ~ cp").gain(0.5)
+).cps(0.7)`,
+  focus: `stack(
+  note("c4 eb4 g4 bb4 c5 bb4 g4 eb4").s("triangle").lpf(1500).gain(0.15).room(0.6).delay(0.4),
+  note("c2 ~ ~ g2 ~ ~ c2 ~").s("sine").gain(0.2)
+).cps(0.35)`,
+  funky: `stack(
+  s("bd ~ bd sd ~ bd sd ~").gain(0.6),
+  s("~ hh hh ~ hh hh ~ hh").gain(0.3).lpf(4000),
+  note("c3 ~ eb3 c3 ~ f3 eb3 ~").s("sawtooth").lpf(1800).gain(0.35),
+  s("~ ~ cp ~ ~ ~ cp ~").gain(0.4)
+).cps(0.55)`,
+  dreamy: `stack(
+  note("c4 e4 g4 b4 c5 b4 g4 e4").s("sine").room(0.8).gain(0.15).delay(0.5),
+  note("c3 g3 e3 b3").s("triangle").lpf(800).gain(0.1).room(0.7),
+  s("~ ~ hh ~").gain(0.1).lpf(2000).delay(0.6)
+).cps(0.3)`,
+  weird: `stack(
+  note("c3 f#3 bb3 e4 ab2 d4 g#3 db4").s("square").lpf(2500).gain(0.25).room(0.4),
+  s("bd ~ cp ~ bd bd ~ sd").gain(0.5),
+  s("hh hh oh hh ~ hh oh ~").gain(0.2).lpf(3000).delay(0.3)
+).cps(0.5)`,
+  epic: `stack(
+  s("bd ~ ~ bd sd ~ bd sd").gain(0.7),
+  s("hh*8").gain(0.25).lpf(4000),
+  note("c3 g3 c4 g3 eb3 bb3 eb4 bb3").s("sawtooth").lpf(2000).gain(0.4).room(0.5),
+  note("c5 eb5 g5 c6").s("square").lpf(3000).gain(0.2).room(0.6).delay(0.25),
+  s("~ ~ ~ cp").gain(0.5)
+).cps(0.6)`,
+};
+
 // ---------------------------------------------------------------------------
 // Evolution prompts for live_mix.
 // ---------------------------------------------------------------------------
@@ -323,7 +371,7 @@ export function registerTools(server: McpServer): void {
   // -- play_music -----------------------------------------------------------
   server.tool(
     'play_music',
-    'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. DJ Claude will compose a Strudel pattern and play it through the speakers.',
+    'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. DJ Claude will compose a Strudel pattern and play it through the speakers. Requires ANTHROPIC_API_KEY. If no API key is set, use play_strudel to write and play Strudel code directly, or use set_vibe for instant mood-based music without a key.',
     { prompt: z.string().describe('What kind of music to play, e.g. "jazzy lo-fi beats" or "intense drum and bass"') },
     async ({ prompt }) => {
       clearLayers();
@@ -345,7 +393,7 @@ export function registerTools(server: McpServer): void {
   // -- play_strudel ---------------------------------------------------------
   server.tool(
     'play_strudel',
-    'Evaluate raw Strudel/Tidal code directly, bypassing Claude generation. Use this when you already have Strudel code to play.',
+    'Evaluate raw Strudel/Tidal code directly, bypassing Claude generation. Use this when you already have Strudel code to play. No API key needed — this is the best option when ANTHROPIC_API_KEY is not set. You can write Strudel patterns using functions like note(), s(), stack(), and mini-notation strings.',
     { code: z.string().describe('Strudel/Tidal code to evaluate') },
     async ({ code }) => {
       clearLayers();
@@ -368,7 +416,7 @@ export function registerTools(server: McpServer): void {
   // -- set_vibe -------------------------------------------------------------
   server.tool(
     'set_vibe',
-    'Instantly set the musical vibe to match a mood. Great for matching music to the current coding task.',
+    'Instantly set the musical vibe to match a mood. Great for matching music to the current coding task. Works without an API key using built-in patterns. If you want more creative/custom music and can write Strudel code yourself, prefer play_strudel instead.',
     {
       mood: z.enum(['chill', 'dark', 'hype', 'focus', 'funky', 'dreamy', 'weird', 'epic'])
         .describe('The mood/vibe to set'),
@@ -376,15 +424,40 @@ export function registerTools(server: McpServer): void {
     async ({ mood }) => {
       clearLayers();
       await ensureEngine();
-      const prompt = MOOD_PROMPTS[mood];
-      const { commentary, code } = await generateAndPlay(prompt);
+
+      // Try AI generation first, fall back to pre-baked pattern
+      const apiKey = findApiKey();
+      if (apiKey) {
+        const prompt = MOOD_PROMPTS[mood];
+        const { commentary, code } = await generateAndPlay(prompt);
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: commentary
+                ? `Vibe set to ${mood}! ${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\``
+                : `Vibe set to ${mood}!\n\n\`\`\`javascript\n${code}\n\`\`\``,
+            },
+          ],
+        };
+      }
+
+      // No API key — use fallback pattern
+      const code = MOOD_FALLBACKS[mood];
+      const { currentCode } = getState();
+      const result = await safeEvaluate(code, currentCode);
+      if (!result.success) {
+        return {
+          content: [{ type: 'text' as const, text: `Vibe fallback failed: ${result.error}` }],
+          isError: true,
+        };
+      }
+      updateAfterPlay(code, '');
       return {
         content: [
           {
             type: 'text' as const,
-            text: commentary
-              ? `Vibe set to ${mood}! ${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\``
-              : `Vibe set to ${mood}!\n\n\`\`\`javascript\n${code}\n\`\`\``,
+            text: `Vibe set to ${mood}! (using built-in pattern — set ANTHROPIC_API_KEY for AI-generated music)\n\n\`\`\`javascript\n${code}\n\`\`\``,
           },
         ],
       };
