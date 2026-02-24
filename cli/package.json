@@ -1,6 +1,6 @@
 {
   "name": "dj-claude",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "mcpName": "io.github.p-poss/dj-claude",
   "description": "AI-generated music in your terminal — DJ Claude CLI",
   "type": "module",

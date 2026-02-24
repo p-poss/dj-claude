@@ -26,7 +26,7 @@ export function getPageHtml(wsPort: number): string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DJ Claude | v 0.1.12</title>
+<title>DJ Claude | v 0.1.13</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔈</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -115,7 +115,7 @@ export function getPageHtml(wsPort: number): string {
 <!-- Welcome box -->
 <div class="ascii-box">
   <pre>╔═════════════════════════════════════════════╗</pre>
-  <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">Welcome to DJ Claude <span class="dim">v 0.1.12</span></pre><pre>║</pre></div>
+  <div style="display:flex"><pre>║</pre><pre style="flex:1;text-align:center">Welcome to DJ Claude <span class="dim">v 0.1.13</span></pre><pre>║</pre></div>
   <pre>╚═════════════════════════════════════════════╝</pre>
 </div>
 
