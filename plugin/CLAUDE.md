@@ -5,27 +5,28 @@ You have access to DJ Claude — a live music engine. You can play music at any 
 ## Tools
 
 ### Playback
-- `play_music` — generate and play music from a text description
+- `play_music` — generate and play music from a text description, or pass `code` with Strudel directly (no API key needed)
 - `play_strudel` — evaluate raw Strudel code directly
+- `play_preset` — play from the curated preset library (22 patterns: mood, genre, activity). No args = list all
 - `set_vibe` — instantly set the mood (chill, dark, hype, focus, funky, dreamy, weird, epic)
-- `live_mix` — autonomous DJ set that evolves through multiple stages
+- `live_mix` — autonomous DJ set that evolves through multiple stages, or pass `stages_code` with an array of Strudel
 - `hush` — stop all music
 - `now_playing` — check what's currently playing
 - `switch_audio` — switch between Node and browser audio backends
 
 ### Jam Session
-- `jam` — add a single layer (drums, bass, melody, etc.) to a collaborative jam session
+- `jam` — add a single layer (drums, bass, melody, etc.) via `prompt` or `code` (no API key needed with `code`)
 - `jam_clear` — remove one layer by role, or clear all layers
 - `jam_status` — show all active layers with their code
-- `jam_preview` — preview a layer without adding it (generates code but doesn't play)
+- `jam_preview` — preview a layer without adding it, via `prompt` or `code`
 - `mix_analysis` — analyze the mix for frequency balance, gain levels, and suggestions
 
 ### Reactive DJ
 - `set_context` — tell DJ Claude what you're working on so music adapts to your activity
 
 ### Conductor Mode
-- `conduct` — orchestrate a full band from a single directive (jazz combo, rock band, electronic, etc.)
-- `conduct_evolve` — evolve all active layers through multiple stages with a directive
+- `conduct` — orchestrate a full band via `directive` (AI) or `layers` map (no API key needed with `layers`)
+- `conduct_evolve` — evolve active layers via `directive` (AI multi-stage) or `layers` map (single-pass, no key)
 
 ### Mix Snapshots
 - `snapshot_save` — save the current mix as a named snapshot
