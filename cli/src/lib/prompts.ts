@@ -24,7 +24,8 @@ export const STRUDEL_REFERENCE = `## Strudel Reference
   - 60 cpm = 120 BPM (2 beats per cycle is the norm)
   - 75 cpm = 150 BPM, 55 cpm = 110 BPM
   - Use .cpm() on the outermost stack or final chain
-- Typical ranges: lo-fi/ambient 50-55, house 60-65, techno 65-72, DnB 85-90, trap 70
+- .cps(n) — cycles per second (alternative to .cpm). .cps(1) = .cpm(60).
+- Typical ranges (cpm): lo-fi/ambient 50-55, house 60-65, techno 65-72, DnB 85-90, trap 70
 
 ### Mini Notation
 - "a b c d" — events spread evenly across one cycle
@@ -41,9 +42,10 @@ export const STRUDEL_REFERENCE = `## Strudel Reference
 CRITICAL: NEVER use "|" (pipe) in mini-notation patterns. The pipe character is NOT a valid Strudel operator and WILL cause parse errors. Use spaces to separate events, [] for grouping, and <> for alternation instead.
 
 ### Available Sounds
+Only built-in Web Audio oscillators and the default Dirt sample set are available:
 Percussion: bd, sd, hh, oh, cp, lt, mt, ht, rim, cb, cr, cy
 Synths (use with note().s()): sawtooth, square, sine, triangle
-NOTE: Do NOT use piano, bass, gtr, rhodes, strings, brass — these sample packs are not loaded.
+NOTE: Do NOT use piano, bass, gtr, rhodes, strings, brass — these sample packs are not loaded in this environment. Use FM synthesis (.fmh/.fmi), filter shaping (.lpf/.resonance), and envelope control (.attack/.decay/.sustain/.release) to create richer timbres beyond basic oscillators.
 NOTE: Do NOT use .shape(), .crush(), .coarse() — AudioWorklet is not available in this environment. For grit/distortion effects, use heavy .lpf() filtering, .vowel(), aggressive .resonance(), or FM synthesis (.fmh/.fmi) instead.
 
 ### Note Names

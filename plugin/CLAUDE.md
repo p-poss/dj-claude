@@ -34,14 +34,44 @@ You have access to DJ Claude — a live music engine. You can play music at any 
 - `snapshot_list` — list all saved snapshots
 - `export_code` — export current Strudel code with header comments
 
+## MCP Resources — Learn Strudel
+
+Three resources teach you Strudel syntax so you can write your own code without an API key:
+
+- `strudel://reference` — Complete syntax reference: core functions, mini-notation, effects, modulation, common mistakes
+- `strudel://roles` — Role guidance for jam layers: what drums, bass, melody, chords, pads, fx should sound like
+- `strudel://examples` — All 22 preset patterns as working code examples
+
+Read `strudel://reference` to learn the syntax, then pass Strudel code directly via the `code` parameter on `play_music`, `jam`, `jam_preview`, or the `layers` parameter on `conduct`/`conduct_evolve`. No API key needed.
+
+## Available Sounds
+
+Only built-in Web Audio oscillators and the default Dirt sample set are available:
+
+- **Synths** (use with `note().s()`): sawtooth, square, sine, triangle
+- **Percussion**: bd, sd, hh, oh, cp, lt, mt, ht, rim, cb, cr, cy
+
+Do NOT use piano, bass, gtr, rhodes, strings, brass — these sample packs are not loaded. Use FM synthesis (`.fmh()/.fmi()`), filter shaping (`.lpf()/.resonance()`), and envelope control (`.attack()/.decay()/.sustain()/.release()`) to create richer timbres beyond basic oscillators.
+
+Do NOT use `.shape()`, `.crush()`, or `.coarse()` — AudioWorklet is not available. For grit/distortion, use heavy `.lpf()` filtering, `.vowel()`, aggressive `.resonance()`, or FM synthesis instead.
+
 ## When to play music
 
-Some good moments to play music:
+Good moments to play music:
 - At the start of a session, set a vibe that matches the work
 - After a successful build or test run, celebrate with something upbeat
 - During long tasks, put on focus music
 - When the user seems stuck, lighten the mood
 - When the activity changes, use `set_context` to keep music relevant
+
+## What to say in chat
+
+When playing music, communicate naturally with the user:
+- After first play, mention: "Tip: use /dj-claude:browser for higher quality audio."
+- After creating a good mix, suggest saving it: "Want me to save this mix? Use /dj-claude:save."
+- If the user seems to like the music, offer transitions: "Want me to shift this darker?" or "I can evolve this into something more intense."
+- Remind the user they can stop anytime: "Say 'stop the music' or /dj-claude:hush whenever."
+- Keep MC commentary short and punchy (1-2 sentences, ~120 chars). Name specific techniques. No emojis.
 
 ## Jam sessions
 
