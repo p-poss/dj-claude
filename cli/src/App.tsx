@@ -6,6 +6,7 @@ import { DancingClaude } from './components/DancingClaude.js';
 import { SpeechBubble } from './components/SpeechBubble.js';
 import { StatusBar } from './components/StatusBar.js';
 import { CodeDisplay } from './components/CodeDisplay.js';
+import { PatternDisplay } from './components/PatternDisplay.js';
 import { djReducer, initialState } from './lib/reducer.js';
 import { parseStreamingCode } from './lib/parseCode.js';
 import { handlePrompt } from './lib/session.js';
@@ -89,6 +90,12 @@ export function App({ apiKey }: AppProps) {
       {state.mcCommentary && (
         <Box justifyContent="center" marginBottom={1}>
           <SpeechBubble text={state.mcCommentary} />
+        </Box>
+      )}
+
+      {state.isPlaying && state.audioInitialized && (
+        <Box marginY={1} justifyContent="center">
+          <PatternDisplay isPlaying={state.isPlaying} />
         </Box>
       )}
 

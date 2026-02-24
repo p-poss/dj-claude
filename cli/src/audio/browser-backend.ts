@@ -3,7 +3,7 @@
 import { createServer, type Server as HttpServer } from 'node:http';
 import { randomUUID } from 'node:crypto';
 import { exec } from 'node:child_process';
-import type { AudioBackend, SafeEvalResult } from './backend.js';
+import type { AudioBackend, SafeEvalResult, VisualizationData } from './backend.js';
 import { getPageHtml } from './browser-page.js';
 
 // ws is dynamically imported so it's not loaded in node mode
@@ -178,6 +178,14 @@ export class BrowserAudioBackend implements AudioBackend {
       this.httpServer.close();
       this.httpServer = null;
     }
+  }
+
+  getVisualizationData(): VisualizationData | null {
+    return null;
+  }
+
+  getPattern(): unknown | null {
+    return null;
   }
 
   private send(msg: object): void {

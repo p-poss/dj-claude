@@ -1,10 +1,10 @@
 // Strudel audio engine — thin wrapper around AudioBackend.
 // polyfill.ts MUST be imported before this file when using 'node' mode.
 
-import type { AudioBackend, SafeEvalResult, BackendMode } from './backend.js';
+import type { AudioBackend, SafeEvalResult, BackendMode, VisualizationData } from './backend.js';
 import { createBackend } from './backend.js';
 
-export type { SafeEvalResult };
+export type { SafeEvalResult, VisualizationData };
 
 let backend: AudioBackend | null = null;
 let currentMode: BackendMode = 'node';
@@ -51,4 +51,14 @@ export async function switchBackend(mode: BackendMode): Promise<void> {
 export function hush(): void {
   if (!backend) return;
   backend.hush();
+}
+
+export function getVisualizationData(): VisualizationData | null {
+  if (!backend) return null;
+  return backend.getVisualizationData();
+}
+
+export function getPattern(): unknown | null {
+  if (!backend) return null;
+  return backend.getPattern();
 }

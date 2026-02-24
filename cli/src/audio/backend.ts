@@ -5,12 +5,20 @@ export interface SafeEvalResult {
   error?: string;
 }
 
+export interface VisualizationData {
+  currentTime: number;       // Cycle position (0-∞)
+  cps: number;               // Cycles per second
+  isStarted: boolean;        // Scheduler running
+}
+
 export interface AudioBackend {
   init(): Promise<void>;
   evaluate(code: string): Promise<void>;
   safeEvaluate(newCode: string, previousCode: string): Promise<SafeEvalResult>;
   hush(): void;
   dispose(): void;
+  getVisualizationData(): VisualizationData | null;
+  getPattern(): unknown | null;
 }
 
 export type BackendMode = 'node' | 'browser';

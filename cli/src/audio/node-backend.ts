@@ -2,7 +2,7 @@
 // This is a direct extraction of the logic from the original engine.ts.
 
 import { AudioContext } from 'node-web-audio-api';
-import type { AudioBackend, SafeEvalResult } from './backend.js';
+import type { AudioBackend, SafeEvalResult, VisualizationData } from './backend.js';
 
 export class NodeAudioBackend implements AudioBackend {
   private repl: Awaited<ReturnType<typeof import('@strudel/core')['repl']>> | null = null;
@@ -123,6 +123,21 @@ export class NodeAudioBackend implements AudioBackend {
   hush(): void {
     if (!this.repl) return;
     this.repl.scheduler.stop();
+  }
+
+  getVisualizationData(): VisualizationData | null {
+    if (!this.repl) return null;
+    const scheduler = this.repl.scheduler as any;
+    return {
+      currentTime: typeof scheduler.now === 'function' ? scheduler.now() : 0,
+      cps: scheduler.cps ?? 0.5,
+      isStarted: scheduler.started ?? false,
+    };
+  }
+
+  getPattern(): unknown | null {
+    if (!(this.repl as any)?.state?.pattern) return null;
+    return (this.repl as any).state.pattern;
   }
 
   dispose(): void {
