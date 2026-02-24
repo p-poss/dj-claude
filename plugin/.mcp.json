@@ -2,7 +2,7 @@
   "mcpServers": {
     "dj-claude": {
       "command": "npx",
-      "args": ["-y", "dj-claude@latest"]
+      "args": ["-y", "--package", "dj-claude@latest", "dj-claude-mcp"]
     }
   }
 }
