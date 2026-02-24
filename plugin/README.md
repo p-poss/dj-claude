@@ -22,6 +22,7 @@ claude --plugin-dir ./plugin
 | Command | Description |
 |---------|-------------|
 | `/dj-claude:play [prompt]` | Play music from a description |
+| `/dj-claude:play-preset [name]` | Play from the curated preset library (22 patterns) |
 | `/dj-claude:vibe [mood]` | Set the vibe — chill, dark, hype, focus, funky, dreamy, weird, epic |
 | `/dj-claude:live-mix [prompt]` | Autonomous DJ set — 5-6 evolving stages in one turn |
 | `/dj-claude:jam [role] [prompt]` | Add a layer to the jam session (drums, bass, melody, etc.) |
