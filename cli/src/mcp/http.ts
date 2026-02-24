@@ -34,9 +34,22 @@ export async function startHttpServer(isBrowserMode = false): Promise<void> {
       return;
     }
 
-    // New session — create server + transport
+    // Stale session ID — client sent an ID we don't recognise
+    if (sessionId) {
+      res.status(404).json({
+        jsonrpc: '2.0',
+        error: { code: -32001, message: 'Session not found' },
+        id: null,
+      });
+      return;
+    }
+
+    // New session — pre-generate ID so we can store the session before
+    // handleRequest (which keeps the SSE stream open and may not resolve
+    // until the client disconnects).
+    const sid = randomUUID();
     const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => randomUUID(),
+      sessionIdGenerator: () => sid,
     });
 
     const server = new McpServer({
@@ -47,16 +60,11 @@ export async function startHttpServer(isBrowserMode = false): Promise<void> {
     registerTools(server);
 
     transport.onclose = () => {
-      const sid = transport.sessionId;
-      if (sid) sessions.delete(sid);
-      console.error(`[dj-claude-http] Session ${sid} closed.`);
+      sessions.delete(sid);
     };
 
     await server.connect(transport);
-
-    const sid = transport.sessionId!;
     sessions.set(sid, { transport, server });
-    console.error(`[dj-claude-http] New session: ${sid}`);
 
     await transport.handleRequest(req, res, req.body);
   });
