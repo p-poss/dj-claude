@@ -210,7 +210,19 @@ function stopDancing() {
 renderClaude(0);
 
 // ── Audio init ──
+let audioCtx = null;
+
 async function start() {
+  // If audio is already initialized but suspended, just resume it
+  if (started && audioCtx && audioCtx.state === 'suspended') {
+    await audioCtx.resume();
+    startLabel.textContent = '● Audio On';
+    startBox.style.cursor = 'default';
+    startBox.style.pointerEvents = 'none';
+    startBox.classList.remove('disabled');
+    return;
+  }
+
   startBox.classList.add('disabled');
 
   try {
@@ -218,10 +230,27 @@ async function start() {
     strudelEval = evaluate;
     strudelHush = hush;
     started = true;
-    startLabel.textContent = '● Audio On';
-    startBox.style.cursor = 'default';
-    startBox.style.pointerEvents = 'none';
-    startBox.classList.remove('disabled');
+
+    // Grab the AudioContext that Strudel created
+    audioCtx = window._strudelAudioContext || (typeof getAudioContext === 'function' ? getAudioContext() : null);
+    // Fallback: find it on the global scope
+    if (!audioCtx) {
+      const allCtxs = Object.values(window).filter(v => v instanceof AudioContext);
+      if (allCtxs.length) audioCtx = allCtxs[0];
+    }
+
+    if (audioCtx && audioCtx.state === 'suspended') {
+      // Autoplay blocked — keep button clickable so user can unmute
+      startLabel.textContent = '▶ Click to Unmute';
+      startBox.style.cursor = 'pointer';
+      startBox.style.pointerEvents = 'auto';
+      startBox.classList.remove('disabled');
+    } else {
+      startLabel.textContent = '● Audio On';
+      startBox.style.cursor = 'default';
+      startBox.style.pointerEvents = 'none';
+      startBox.classList.remove('disabled');
+    }
     connectWs();
   } catch (err) {
     startBox.classList.remove('disabled');
@@ -235,7 +264,9 @@ function connectWs() {
   ws = new WebSocket('ws://localhost:${wsPort}');
 
   ws.onopen = () => {
-    startLabel.textContent = '● Audio On';
+    if (!audioCtx || audioCtx.state !== 'suspended') {
+      startLabel.textContent = '● Audio On';
+    }
     startBox.classList.remove('dim');
     ws.send(JSON.stringify({ type: 'ready' }));
   };
@@ -247,7 +278,7 @@ function connectWs() {
     if (msg.type === 'evaluate') {
       try {
         await strudelEval(msg.code);
-        startDancing();
+        if (audioCtx && audioCtx.state !== 'suspended') startDancing();
         ws.send(JSON.stringify({ type: 'ack', id: msg.id }));
       } catch (err) {
         stopDancing();
