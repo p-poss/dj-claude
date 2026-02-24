@@ -44,7 +44,7 @@ DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for m
 ### Prerequisites
 
 - **Node.js** >= 18
-- **Anthropic API key** (not needed for the web app at [claude.dj](https://claude.dj))
+- **Anthropic API key** (not needed for the web app or Claude Code plugin)
 
 ### Install & Run
 
@@ -184,7 +184,7 @@ Features:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | Yes (CLI / MCP) | Your Anthropic API key |
+| `ANTHROPIC_API_KEY` | CLI / MCP only | Your Anthropic API key (not needed for the plugin or web app) |
 | `ELEVENLABS_API_KEY` | No (web only) | Enables voice DJ commentary |
 | `DJ_CLAUDE_BROWSER` | No | Set to `1` for browser audio backend in MCP mode |
 | `DJ_CLAUDE_MODEL` | No | Claude model for CLI/MCP (default: `claude-sonnet-4-6`) |
