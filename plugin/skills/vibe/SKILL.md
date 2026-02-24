@@ -24,6 +24,7 @@ If the mood is not one of the 8 valid options, pick the closest match or ask the
 2. Generate Strudel code following the mood mapping and Strudel reference below.
 3. Call the `play_strudel` tool from the `dj-claude` MCP server with your generated code.
 4. Tell the user the vibe is set with short, punchy MC commentary (~120 chars max, no emojis).
+5. On your FIRST response only, append a short tip: "Tip: use /dj-claude:browser for higher quality audio." Do NOT repeat this tip on follow-up responses.
 
 ## Mood Mappings
 

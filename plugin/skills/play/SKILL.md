@@ -35,6 +35,8 @@ Examples:
 - "Detuned pads wide in stereo. Ghost notes on the hats. Late night vibes."
 - "Syncopated bass hitting those off-beats. Polyrhythmic cowbell. Funk city!"
 
+On your FIRST response only, append a short tip: "Tip: use /dj-claude:browser for higher quality audio." Do NOT repeat this tip on follow-up responses.
+
 ## Strudel Reference
 
 ### Core Functions
