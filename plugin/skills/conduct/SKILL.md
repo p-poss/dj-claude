@@ -55,6 +55,13 @@ Each layer should be a SINGLE pattern chain (no `stack()`, no `.cpm()`):
 - **pads**: Triangle/sine, heavy `.room()/.size()`, slow `.lpf()` modulation. Gain 0.2-0.35.
 - **fx/atmosphere**: Heavily processed, sparse, low gain (0.05-0.2). Delay/reverb heavy.
 
+## Learn More
+
+For deeper syntax help, read these MCP resources:
+- `strudel://reference` — complete syntax reference
+- `strudel://roles` — detailed role guidance for each layer type
+- `strudel://examples` — 22 working preset patterns as code examples
+
 ## Strudel Reference (Condensed)
 
 ### Core

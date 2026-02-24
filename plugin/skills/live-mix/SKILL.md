@@ -16,6 +16,22 @@ If no arguments were provided, pick a direction yourself and announce it.
 
 IMPORTANT: The MCP tools are already available in your tool list as `mcp__dj-claude__play_strudel`, `mcp__dj-claude__now_playing`, etc. Use them directly as tool calls — do NOT use Bash, do NOT run `claude mcp call`, do NOT search for files or explore directories. Just generate code and call the tools.
 
+### Alternative: `stages_code` (no API key needed)
+
+Instead of this multi-turn workflow, you can call `mcp__dj-claude__live_mix` with a `stages_code` parameter — an array of Strudel code strings, one per stage. The tool plays them sequentially with ~20s gaps. This requires NO API key:
+
+```
+mcp__dj-claude__live_mix({
+  stages_code: [
+    'stack(s("bd ~ bd ~").gain(0.8), note("c2").s("sawtooth").lpf(300).gain(0.5)).cpm(62)',
+    'stack(s("bd ~ bd ~").gain(0.8), note("c2 eb2").s("sawtooth").lpf(500).gain(0.5), s("hh*4").gain(0.2)).cpm(62)',
+    // ... more stages
+  ]
+})
+```
+
+Read `strudel://reference` for syntax help. If using this approach, skip the stage-by-stage workflow below.
+
 ### Stage 1 — Opening
 
 1. Announce the set with MC energy: what direction you're taking it, what the audience should expect.
@@ -84,6 +100,13 @@ Between stages, give short, punchy MC commentary (1-3 sentences, ~150 chars max)
 ## Interruption
 
 The user can stop the set at any time with `/dj-claude:hush` or by pressing Escape. That's fine — acknowledge it and sign off gracefully if they do.
+
+## Learn More
+
+For deeper syntax help, read these MCP resources:
+- `strudel://reference` — complete syntax reference
+- `strudel://roles` — role guidance for building layers
+- `strudel://examples` — 22 working preset patterns as code examples
 
 ## Strudel Reference
 

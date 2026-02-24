@@ -76,7 +76,7 @@ function getPatternViz(): string {
 async function generateAndPlay(prompt: string): Promise<{ commentary: string; code: string }> {
   const apiKey = findApiKey();
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not set. Provide the `code` parameter with Strudel code directly (read the strudel://reference resource for syntax), or set your API key for AI generation.');
+    throw new Error('ANTHROPIC_API_KEY not set. Pass Strudel code via the `code` parameter instead (no API key needed). Read the `strudel://reference` MCP resource to learn the syntax, or use `set_vibe`/`play_preset` for instant music.');
   }
   const { currentCode, messages } = getState();
 
@@ -118,7 +118,7 @@ async function generateAndPlay(prompt: string): Promise<{ commentary: string; co
 async function generateLayerCode(role: string, prompt: string): Promise<{ commentary: string; code: string }> {
   const apiKey = findApiKey();
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY not set. Provide the `code` parameter with Strudel code directly (read the strudel://reference resource for syntax), or set your API key for AI generation.');
+    throw new Error('ANTHROPIC_API_KEY not set. Pass Strudel code via the `code` parameter instead (no API key needed). Read the `strudel://reference` MCP resource to learn the syntax.');
   }
   const { messages } = getState();
   const systemPrompt = buildLayerPrompt(role);
@@ -335,7 +335,7 @@ export function registerTools(server: McpServer): void {
   // -- play_music -----------------------------------------------------------
   server.tool(
     'play_music',
-    'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. Works without an API key when you provide the `code` parameter with Strudel code directly (read the strudel://reference resource for syntax). With ANTHROPIC_API_KEY set, you can use `prompt` for AI-generated music.',
+    'Generate and play live music. Works without an API key when you provide `code` with Strudel code directly. With ANTHROPIC_API_KEY, use `prompt` for AI-generated music. For instant music without writing code, try `set_vibe` or `play_preset` instead. Read the `strudel://reference` MCP resource to learn Strudel syntax.',
     {
       prompt: z.string().optional().describe('What kind of music to play, e.g. "jazzy lo-fi beats" or "intense drum and bass"'),
       code: z.string().optional().describe('Strudel code to play directly — no API key needed. Read strudel://reference for syntax.'),
@@ -362,7 +362,7 @@ export function registerTools(server: McpServer): void {
 
       if (!prompt) {
         return {
-          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed). Read the `strudel://reference` MCP resource to learn Strudel syntax.' }],
           isError: true,
         };
       }
@@ -511,7 +511,7 @@ export function registerTools(server: McpServer): void {
 
       if (!prompt) {
         return {
-          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `stages_code` (array of Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `stages_code` (array of Strudel code, no key needed). Read the `strudel://reference` MCP resource to learn Strudel syntax.' }],
           isError: true,
         };
       }
@@ -676,7 +676,7 @@ export function registerTools(server: McpServer): void {
           commentary = generated.commentary;
         } else {
           return {
-            content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+            content: [{ type: 'text' as const, text: 'Provide either `prompt` (requires ANTHROPIC_API_KEY) or `code` (Strudel code, no key needed). Read the `strudel://reference` MCP resource to learn Strudel syntax.' }],
             isError: true,
           };
         }
@@ -809,7 +809,7 @@ export function registerTools(server: McpServer): void {
   // -- set_context ----------------------------------------------------------
   server.tool(
     'set_context',
-    'Tell DJ Claude what you\'re working on so the music adapts to your coding activity. Context is injected into music generation prompts for more relevant vibes.',
+    'Tell DJ Claude what you\'re working on so the music adapts to your coding activity. Context is injected into music generation prompts for more relevant vibes. Note: auto_adapt requires an API key; without one, context is saved and applied on next generation.',
     {
       activity: z.string().describe('What you\'re doing, e.g. "debugging test failures", "writing a new API endpoint", "reviewing PRs"'),
       auto_adapt: z.boolean().optional().describe('If true and music is playing, immediately generate a transition to match the new context (default false)'),
@@ -983,7 +983,7 @@ export function registerTools(server: McpServer): void {
 
       if (!directive) {
         return {
-          content: [{ type: 'text' as const, text: 'Provide either `directive` (requires ANTHROPIC_API_KEY) or `layers` (map of role -> Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          content: [{ type: 'text' as const, text: 'Provide either `directive` (requires ANTHROPIC_API_KEY) or `layers` (map of role -> Strudel code, no key needed). Read the `strudel://reference` MCP resource to learn Strudel syntax.' }],
           isError: true,
         };
       }
@@ -1113,7 +1113,7 @@ export function registerTools(server: McpServer): void {
 
       if (!directive) {
         return {
-          content: [{ type: 'text' as const, text: 'Provide either `directive` (requires ANTHROPIC_API_KEY) or `layers` (map of role -> Strudel code, no key needed). Read the strudel://reference resource for syntax help.' }],
+          content: [{ type: 'text' as const, text: 'Provide either `directive` (requires ANTHROPIC_API_KEY) or `layers` (map of role -> Strudel code, no key needed). Read the `strudel://reference` MCP resource to learn Strudel syntax.' }],
           isError: true,
         };
       }

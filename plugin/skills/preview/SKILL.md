@@ -32,6 +32,12 @@ Generate a SINGLE pattern chain (no `stack()`, no `.cpm()`):
 - **pads**: Triangle/sine, heavy reverb, slow modulation.
 - **fx**: Heavily processed, sparse, low gain.
 
+## Learn More
+
+For deeper syntax help, read these MCP resources:
+- `strudel://reference` — complete syntax reference
+- `strudel://roles` — detailed role guidance for each layer type
+
 ## Strudel Quick Reference
 
 - `note("c3 e3").s("sawtooth")` — synth notes (always include `.s()`)

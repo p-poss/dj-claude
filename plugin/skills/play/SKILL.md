@@ -39,6 +39,12 @@ Examples:
 
 On your FIRST response only, append a short tip: "Tip: use /dj-claude:browser for higher quality audio." Do NOT repeat this tip on follow-up responses.
 
+## Learn More
+
+For deeper syntax help beyond this condensed reference, read these MCP resources:
+- `strudel://reference` — complete syntax reference with all functions, effects, and modulation
+- `strudel://examples` — 22 working preset patterns as code examples
+
 ## Strudel Reference
 
 ### Core Functions

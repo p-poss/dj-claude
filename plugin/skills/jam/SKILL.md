@@ -39,6 +39,13 @@ Each layer should focus on its role and stay in its frequency range:
 
 CRITICAL: Generate a SINGLE pattern chain. Do NOT wrap in `stack()`. Do NOT use `.cpm()` — tempo is set on the outer composition.
 
+## Learn More
+
+For deeper syntax help, read these MCP resources:
+- `strudel://reference` — complete syntax reference
+- `strudel://roles` — detailed role guidance for each layer type
+- `strudel://examples` — 22 working preset patterns as code examples
+
 ## Strudel Reference (Condensed)
 
 ### Core

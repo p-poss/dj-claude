@@ -2,6 +2,19 @@
 
 You have access to DJ Claude — a live music engine. You can play music at any time using the dj-claude MCP tools. You don't need to wait for the user to ask.
 
+## Playing Music Without an API Key
+
+You do NOT need an API key to play music. Use these options in order of simplicity:
+
+1. **`set_vibe`** — Pick a mood (chill, dark, hype, focus, funky, dreamy, weird, epic). Instant, zero code.
+2. **`play_preset`** — Pick from 22 curated patterns by name (jazz, techno, coding, etc.). Call with no args to list all.
+3. **`play_strudel`** — Write Strudel code yourself and play it directly.
+4. **`play_music` with `code`** / **`jam` with `code`** / **`conduct` with `layers`** — Pass Strudel code to any generation tool via its direct-code parameter.
+
+To learn Strudel syntax, read the `strudel://reference` MCP resource. For role-specific guidance (drums, bass, etc.), read `strudel://roles`. For working examples, read `strudel://examples`.
+
+Only use the `prompt`/`directive` parameters (which call Claude to generate code) if you have `ANTHROPIC_API_KEY` set.
+
 ## Tools
 
 ### Playback
@@ -22,7 +35,7 @@ You have access to DJ Claude — a live music engine. You can play music at any 
 - `mix_analysis` — analyze the mix for frequency balance, gain levels, and suggestions
 
 ### Reactive DJ
-- `set_context` — tell DJ Claude what you're working on so music adapts to your activity
+- `set_context` — tell DJ Claude what you're working on so music adapts to your activity. Note: `auto_adapt: true` requires an API key; without one, context is stored and applied on next generation.
 
 ### Conductor Mode
 - `conduct` — orchestrate a full band via `directive` (AI) or `layers` map (no API key needed with `layers`)
