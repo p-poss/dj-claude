@@ -24,9 +24,13 @@ claude --plugin-dir ./plugin
 | `/dj-claude:play [prompt]` | Play music from a description |
 | `/dj-claude:vibe [mood]` | Set the vibe — chill, dark, hype, focus, funky, dreamy, weird, epic |
 | `/dj-claude:live-mix [prompt]` | Autonomous DJ set — 5-6 evolving stages in one turn |
+| `/dj-claude:jam [role] [prompt]` | Add a layer to the jam session (drums, bass, melody, etc.) |
+| `/dj-claude:jam-clear [role]` | Remove one or all layers from the jam |
+| `/dj-claude:jam-status` | Show all active jam layers |
 | `/dj-claude:hush` | Stop all music |
 | `/dj-claude:now-playing` | Check what's currently playing |
 | `/dj-claude:strudel [code]` | Evaluate raw Strudel code directly |
+| `/dj-claude:browser` | Switch to browser audio for higher quality playback |
 
 ## Examples
 
@@ -54,10 +58,15 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
       "mcp__dj-claude__play_music",
       "mcp__dj-claude__play_strudel",
       "mcp__dj-claude__set_vibe",
-      "mcp__dj-claude__now_playing"
+      "mcp__dj-claude__live_mix",
+      "mcp__dj-claude__hush",
+      "mcp__dj-claude__now_playing",
+      "mcp__dj-claude__jam",
+      "mcp__dj-claude__jam_clear",
+      "mcp__dj-claude__jam_status"
     ]
   }
 }
 ```
 
-This auto-allows the music tools while still prompting for everything else. `hush` is already non-destructive so you can add it too, but it's fine either way.
+This auto-allows all music tools while still prompting for everything else.

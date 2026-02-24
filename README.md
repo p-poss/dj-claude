@@ -36,6 +36,7 @@ DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for m
 | TUI + Web audio | `npx dj-claude --browser` | TUI with browser audio engine for higher quality sound |
 | Headless | `npx dj-claude --headless "lofi"` | Script and automation friendly, plays and exits (`--duration N` to set seconds, default 10) |
 | MCP server | `npx dj-claude-mcp` | For AI agent integration (Cursor, Windsurf, Zed, etc.) |
+| MCP HTTP server | `npx dj-claude-mcp-http` | Multi-agent jam sessions over HTTP |
 
 > **Terminal audio vs. browser audio:** By default, the CLI and MCP server render audio through `node-web-audio-api` — a Node.js reimplementation of the Web Audio API. It works everywhere with zero setup, but sample playback and effects can sound rougher than a real browser engine. Add `--browser` (CLI) or set `DJ_CLAUDE_BROWSER=1` (MCP) to route audio through your system browser's native Web Audio instead. This opens a background tab and produces noticeably higher quality sound — especially for pads, reverb, and layered patterns.
 
@@ -112,7 +113,11 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
       "mcp__dj-claude__play_strudel",
       "mcp__dj-claude__set_vibe",
       "mcp__dj-claude__live_mix",
-      "mcp__dj-claude__now_playing"
+      "mcp__dj-claude__hush",
+      "mcp__dj-claude__now_playing",
+      "mcp__dj-claude__jam",
+      "mcp__dj-claude__jam_clear",
+      "mcp__dj-claude__jam_status"
     ]
   }
 }

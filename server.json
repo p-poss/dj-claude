@@ -19,6 +19,18 @@
       "transport": {
         "type": "stdio"
       }
+    },
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "dj-claude",
+      "version": "0.1.13",
+      "runtimeHint": "npx",
+      "command": "dj-claude-mcp-http",
+      "transport": {
+        "type": "streamable-http",
+        "url": "http://127.0.0.1:4321/mcp"
+      }
     }
   ]
 }

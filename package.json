@@ -6,6 +6,7 @@
     "cli/dist",
     "cli/bin.mjs",
     "cli/mcp.mjs",
+    "cli/mcp-http.mjs",
     "cli/package.json",
     "plugin",
     "README.md",
