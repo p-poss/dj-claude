@@ -6,9 +6,10 @@
   "type": "module",
   "bin": {
     "dj-claude": "./bin.mjs",
-    "dj-claude-mcp": "./mcp.mjs"
+    "dj-claude-mcp": "./mcp.mjs",
+    "dj-claude-mcp-http": "./mcp-http.mjs"
   },
-  "files": ["dist", "bin.mjs", "mcp.mjs"],
+  "files": ["dist", "bin.mjs", "mcp.mjs", "mcp-http.mjs"],
   "homepage": "https://claude.dj",
   "repository": { "type": "git", "url": "https://github.com/p-poss/dj-claude" },
   "author": "p-poss",
@@ -28,6 +29,7 @@
     "@strudel/mini": "1.1.0",
     "@strudel/webaudio": "1.1.0",
     "dotenv": "^16.4.7",
+    "express": "^5.1.0",
     "ink": "^5.1.0",
     "ink-text-input": "^6.0.0",
     "node-web-audio-api": "^1.0.8",

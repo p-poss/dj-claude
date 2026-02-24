@@ -157,9 +157,53 @@ For higher quality audio through the browser's Web Audio engine:
 | `play_strudel` | Evaluate raw Strudel/Tidal code directly |
 | `set_vibe` | Set the mood — `chill`, `dark`, `hype`, `focus`, `funky`, `dreamy`, `weird`, `epic` |
 | `live_mix` | Autonomous DJ set — generates and evolves music through multiple stages |
+| `jam` | Add/update a single layer (drums, bass, melody, etc.) — layers compose with `stack()` |
+| `jam_clear` | Remove one or all layers from the jam session |
+| `jam_status` | Show all active layers with their role names and code |
 | `hush` | Stop all music playback |
 | `now_playing` | Check what's currently playing |
 | `switch_audio` | Switch between Node and browser audio backends at runtime |
+
+## Multi-Agent Jam Session
+
+Multiple agents can collaborate on music in real time using the HTTP transport and jam tools.
+
+### Start the HTTP server
+
+```bash
+# Start the HTTP MCP server (default port 4321)
+npx dj-claude-mcp-http
+
+# Or with a custom port
+DJ_CLAUDE_PORT=8080 npx dj-claude-mcp-http
+```
+
+### Connect agents
+
+Point your MCP clients at the HTTP endpoint:
+
+```json
+{
+  "mcpServers": {
+    "dj-claude": {
+      "type": "streamable-http",
+      "url": "http://127.0.0.1:4321/mcp"
+    }
+  }
+}
+```
+
+Each connected client gets its own MCP session, but they all share the same audio engine and layer state. One agent can add drums while another adds bass — the layers compose automatically with `stack()`.
+
+### Jam tool workflow
+
+```
+Agent 1: jam(role: "drums", prompt: "four-on-the-floor house kick")
+Agent 2: jam(role: "bass", prompt: "deep sub bass in C minor")
+Agent 1: jam(role: "melody", prompt: "ethereal sine lead")
+Agent 2: jam_clear(role: "bass")  # remove just the bass layer
+Agent 1: jam_status               # see all active layers
+```
 
 ## Keyboard Shortcuts (TUI)
 
@@ -189,6 +233,7 @@ Features:
 | `ANTHROPIC_API_KEY` | CLI / MCP only | Your Anthropic API key (not needed for the plugin or web app) |
 | `ELEVENLABS_API_KEY` | No (web only) | Enables voice DJ commentary |
 | `DJ_CLAUDE_BROWSER` | No | Set to `1` for browser audio backend in MCP mode |
+| `DJ_CLAUDE_PORT` | No | HTTP server port for multi-agent mode (default: `4321`) |
 | `DJ_CLAUDE_MODEL` | No | Claude model for CLI/MCP (default: `claude-sonnet-4-6`) |
 | `DJ_CLAUDE_MAX_TOKENS` | No | Max response tokens for CLI/MCP (default: `16384`) |
 

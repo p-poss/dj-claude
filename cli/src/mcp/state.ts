@@ -4,6 +4,12 @@ import type { Message } from '../lib/types.js';
 
 import type { BackendMode } from '../audio/backend.js';
 
+export interface Layer {
+  role: string;
+  code: string;
+  addedAt: number;
+}
+
 interface MCPState {
   engineReady: boolean;
   isPlaying: boolean;
@@ -12,6 +18,7 @@ interface MCPState {
   mcCommentary: string;
   messages: Message[];
   audioMode: BackendMode;
+  layers: Map<string, Layer>;
 }
 
 const state: MCPState = {
@@ -22,6 +29,7 @@ const state: MCPState = {
   mcCommentary: '',
   messages: [],
   audioMode: 'node',
+  layers: new Map(),
 };
 
 export function getState(): Readonly<MCPState> {
@@ -53,4 +61,34 @@ export function addMessage(msg: Message): void {
   if (state.messages.length > 12) {
     state.messages = state.messages.slice(-12);
   }
+}
+
+// ---------------------------------------------------------------------------
+// Layer management — for jam tools.
+// ---------------------------------------------------------------------------
+
+export function setLayer(role: string, code: string): void {
+  state.layers.set(role, { role, code, addedAt: Date.now() });
+}
+
+export function removeLayer(role: string): boolean {
+  return state.layers.delete(role);
+}
+
+export function clearLayers(): void {
+  state.layers.clear();
+}
+
+export function getLayers(): ReadonlyMap<string, Layer> {
+  return state.layers;
+}
+
+export function composeLayers(): string {
+  const entries = Array.from(state.layers.values());
+  if (entries.length === 0) return '';
+  if (entries.length === 1) return entries[0].code;
+  const inner = entries
+    .map((l) => `/* [${l.role}] */ ${l.code}`)
+    .join(',\n  ');
+  return `stack(\n  ${inner}\n)`;
 }

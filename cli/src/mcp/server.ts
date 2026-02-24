@@ -1,4 +1,6 @@
-// MCP server — exposes DJ Claude as 5 tools over stdio transport.
+// MCP server — exposes DJ Claude tools over stdio transport.
+// Tool registration is extracted into registerTools() so both stdio and HTTP
+// transports can share the same tool definitions.
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -9,6 +11,7 @@ import type { BackendMode } from '../audio/backend.js';
 import { findApiKey } from '../lib/config.js';
 import { streamChat } from '../lib/claude.js';
 import { parseStreamingCode } from '../lib/parseCode.js';
+import { buildLayerPrompt } from '../lib/prompts.js';
 import {
   getState,
   setEngineReady,
@@ -16,7 +19,13 @@ import {
   updateAfterHush,
   addMessage,
   setAudioMode,
+  setLayer,
+  removeLayer,
+  clearLayers,
+  getLayers,
+  composeLayers,
 } from './state.js';
+import { withEvalLock } from './eval-lock.js';
 
 // ---------------------------------------------------------------------------
 // Engine initialization — kicked off eagerly (node) or lazily (browser).
@@ -82,6 +91,47 @@ async function generateAndPlay(prompt: string): Promise<{ commentary: string; co
 }
 
 // ---------------------------------------------------------------------------
+// Layer-specific helper — generate a single layer with role-specific prompt.
+// ---------------------------------------------------------------------------
+
+async function generateLayerCode(role: string, prompt: string): Promise<{ commentary: string; code: string }> {
+  const apiKey = findApiKey();
+  if (!apiKey) {
+    throw new Error('ANTHROPIC_API_KEY not set. Use play_strudel to play Strudel code directly, or set your API key for AI-generated music.');
+  }
+  const { messages } = getState();
+  const systemPrompt = buildLayerPrompt(role);
+
+  // Build context about existing layers so Claude knows what's already playing
+  const layers = getLayers();
+  let layerContext = '';
+  if (layers.size > 0) {
+    const layerList = Array.from(layers.values())
+      .map((l) => `[${l.role}]: ${l.code}`)
+      .join('\n');
+    layerContext = `\n\n[Currently playing layers]\n${layerList}\n\nGenerate the ${role} layer to complement these.`;
+  }
+
+  const fullPrompt = `${prompt}${layerContext}`;
+  addMessage({ role: 'user', content: `[jam:${role}] ${prompt}` });
+
+  let fullText = '';
+  for await (const chunk of streamChat(apiKey, fullPrompt, '', messages, systemPrompt)) {
+    fullText += chunk;
+  }
+
+  const parsed = parseStreamingCode(fullText);
+  const code = parsed.isComplete ? parsed.extractedCode : parsed.displayCode;
+
+  if (!code) {
+    throw new Error(`Could not parse Strudel code for ${role} layer from Claude response.`);
+  }
+
+  addMessage({ role: 'assistant', content: fullText });
+  return { commentary: parsed.mcCommentary, code };
+}
+
+// ---------------------------------------------------------------------------
 // Mood → prompt mapping for set_vibe.
 // ---------------------------------------------------------------------------
 
@@ -97,83 +147,8 @@ const MOOD_PROMPTS: Record<string, string> = {
 };
 
 // ---------------------------------------------------------------------------
-// MCP server setup.
+// Evolution prompts for live_mix.
 // ---------------------------------------------------------------------------
-
-const server = new McpServer({
-  name: 'dj-claude',
-  version: '0.1.12',
-});
-
-// -- play_music -----------------------------------------------------------
-server.tool(
-  'play_music',
-  'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. DJ Claude will compose a Strudel pattern and play it through the speakers.',
-  { prompt: z.string().describe('What kind of music to play, e.g. "jazzy lo-fi beats" or "intense drum and bass"') },
-  async ({ prompt }) => {
-    await ensureEngine();
-    const { commentary, code } = await generateAndPlay(prompt);
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: commentary
-            ? `${commentary}\n\nNow playing:\n\`\`\`javascript\n${code}\n\`\`\``
-            : `Now playing:\n\`\`\`javascript\n${code}\n\`\`\``,
-        },
-      ],
-    };
-  },
-);
-
-// -- play_strudel ---------------------------------------------------------
-server.tool(
-  'play_strudel',
-  'Evaluate raw Strudel/Tidal code directly, bypassing Claude generation. Use this when you already have Strudel code to play.',
-  { code: z.string().describe('Strudel/Tidal code to evaluate') },
-  async ({ code }) => {
-    await ensureEngine();
-    const { currentCode } = getState();
-    const result = await safeEvaluate(code, currentCode);
-    if (!result.success) {
-      return {
-        content: [{ type: 'text' as const, text: `Evaluation error: ${result.error}` }],
-        isError: true,
-      };
-    }
-    updateAfterPlay(code, '');
-    return {
-      content: [{ type: 'text' as const, text: `Now playing:\n\`\`\`javascript\n${code}\n\`\`\`` }],
-    };
-  },
-);
-
-// -- set_vibe -------------------------------------------------------------
-server.tool(
-  'set_vibe',
-  'Instantly set the musical vibe to match a mood. Great for matching music to the current coding task.',
-  {
-    mood: z.enum(['chill', 'dark', 'hype', 'focus', 'funky', 'dreamy', 'weird', 'epic'])
-      .describe('The mood/vibe to set'),
-  },
-  async ({ mood }) => {
-    await ensureEngine();
-    const prompt = MOOD_PROMPTS[mood];
-    const { commentary, code } = await generateAndPlay(prompt);
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: commentary
-            ? `Vibe set to ${mood}! ${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\``
-            : `Vibe set to ${mood}!\n\n\`\`\`javascript\n${code}\n\`\`\``,
-        },
-      ],
-    };
-  },
-);
-
-// -- live_mix -------------------------------------------------------------
 
 const EVOLUTION_PROMPTS = [
   { type: 'key/scale change', prompt: 'Evolve the current track: shift to a different key or scale. Keep the groove but change the harmonic color.' },
@@ -187,174 +162,376 @@ const EVOLUTION_PROMPTS = [
 ];
 
 function buildSetArc(stages: number): string[] {
-  // Predefined arc ensures: opening → build → peak → breakdown → rebuild → finale
   const arcTemplate = [
-    'opening',       // stage 1: user prompt (handled separately)
-    'add layers',    // stage 2: build
-    'tempo shift',   // stage 3: peak energy
-    'strip back',    // stage 4: breakdown
-    'genre drift',   // stage 5: rebuild
-    'key/scale change', // stage 6: finale
-    'filter sweep',  // stage 7+: extras
+    'opening',
+    'add layers',
+    'tempo shift',
+    'strip back',
+    'genre drift',
+    'key/scale change',
+    'filter sweep',
     'rhythmic shift',
     'texture swap',
     'add layers',
   ];
-  // Return evolution types for stages 2..N (stage 1 is the opening)
   return arcTemplate.slice(1, stages);
 }
 
-server.tool(
-  'live_mix',
-  'Autonomous DJ set — generates and evolves music through multiple stages with ~20s between each. Runs as a long tool call. Call hush to stop early.',
-  {
-    prompt: z.string().describe('Starting direction for the mix, e.g. "deep house sunset set" or "ambient techno journey"'),
-    stages: z.number().min(3).max(10).default(6).optional().describe('Number of stages in the set (default 6)'),
-  },
-  async ({ prompt, stages: stagesParam }) => {
-    const stageCount = stagesParam ?? 6;
-    await ensureEngine();
+// ---------------------------------------------------------------------------
+// Tool registration — shared by both stdio and HTTP transports.
+// ---------------------------------------------------------------------------
 
-    // Stage 1: opening
-    const opening = await generateAndPlay(prompt);
-    const log: { stage: number; evolution: string; commentary: string; code: string }[] = [
-      { stage: 1, evolution: 'opening', commentary: opening.commentary, code: opening.code },
-    ];
-
-    const arc = buildSetArc(stageCount);
-
-    // Stages 2..N
-    for (let i = 0; i < arc.length; i++) {
-      // Wait 20s between stages
-      await new Promise((r) => setTimeout(r, 20_000));
-
-      // If hush was called concurrently, stop the mix
-      if (!getState().isPlaying) {
-        log.push({ stage: i + 2, evolution: 'stopped', commentary: 'Mix stopped — hush was called.', code: '' });
-        break;
-      }
-
-      const evolutionType = arc[i];
-      const evo = EVOLUTION_PROMPTS.find((e) => e.type === evolutionType) ?? EVOLUTION_PROMPTS[i % EVOLUTION_PROMPTS.length];
-
-      try {
-        const result = await generateAndPlay(evo.prompt);
-        log.push({ stage: i + 2, evolution: evo.type, commentary: result.commentary, code: result.code });
-      } catch (err) {
-        log.push({ stage: i + 2, evolution: evo.type, commentary: `Error: ${err instanceof Error ? err.message : String(err)}`, code: '' });
-      }
-    }
-
-    // Format set summary
-    const summary = log
-      .map((entry) => {
-        const header = `## Stage ${entry.stage}: ${entry.evolution}`;
-        const body = entry.commentary || '(no commentary)';
-        const code = entry.code ? `\n\`\`\`javascript\n${entry.code}\n\`\`\`` : '';
-        return `${header}\n${body}${code}`;
-      })
-      .join('\n\n---\n\n');
-
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: `# DJ Claude Live Mix — ${stageCount} stages\n\n${summary}`,
-        },
-      ],
-    };
-  },
-);
-
-// -- hush -----------------------------------------------------------------
-server.tool(
-  'hush',
-  'Stop all music playback immediately.',
-  {},
-  async () => {
-    await ensureEngine();
-    engineHush();
-    updateAfterHush();
-    return {
-      content: [{ type: 'text' as const, text: 'Music stopped.' }],
-    };
-  },
-);
-
-// -- switch_audio ---------------------------------------------------------
-server.tool(
-  'switch_audio',
-  'Switch the audio backend at runtime between Node (terminal) and Browser (higher quality, opens a browser tab).',
-  {
-    mode: z.enum(['node', 'browser']).describe('The audio backend to switch to: "node" for terminal audio, "browser" for browser tab audio'),
-  },
-  async ({ mode }) => {
-    const current = getBackendMode();
-    if (mode === current) {
+export function registerTools(server: McpServer): void {
+  // -- play_music -----------------------------------------------------------
+  server.tool(
+    'play_music',
+    'Generate and play live music. Describe what you want to hear — a genre, mood, activity, or anything creative. DJ Claude will compose a Strudel pattern and play it through the speakers.',
+    { prompt: z.string().describe('What kind of music to play, e.g. "jazzy lo-fi beats" or "intense drum and bass"') },
+    async ({ prompt }) => {
+      clearLayers();
+      await ensureEngine();
+      const { commentary, code } = await generateAndPlay(prompt);
       return {
-        content: [{ type: 'text' as const, text: `Already using ${mode} audio backend.` }],
+        content: [
+          {
+            type: 'text' as const,
+            text: commentary
+              ? `${commentary}\n\nNow playing:\n\`\`\`javascript\n${code}\n\`\`\``
+              : `Now playing:\n\`\`\`javascript\n${code}\n\`\`\``,
+          },
+        ],
       };
-    }
+    },
+  );
 
-    const { currentCode, isPlaying } = getState();
-
-    // switchBackend() disposes the old backend (which hushes internally)
-    await switchBackend(mode as BackendMode);
-    enginePromise = Promise.resolve();
-    setEngineReady();
-    setAudioMode(mode as BackendMode);
-
-    // Replay on the new backend if music was playing
-    if (isPlaying && currentCode) {
-      const result = await safeEvaluate(currentCode, '');
+  // -- play_strudel ---------------------------------------------------------
+  server.tool(
+    'play_strudel',
+    'Evaluate raw Strudel/Tidal code directly, bypassing Claude generation. Use this when you already have Strudel code to play.',
+    { code: z.string().describe('Strudel/Tidal code to evaluate') },
+    async ({ code }) => {
+      clearLayers();
+      await ensureEngine();
+      const { currentCode } = getState();
+      const result = await safeEvaluate(code, currentCode);
       if (!result.success) {
-        updateAfterHush();
+        return {
+          content: [{ type: 'text' as const, text: `Evaluation error: ${result.error}` }],
+          isError: true,
+        };
       }
-    }
-
-    return {
-      content: [{ type: 'text' as const, text: `Switched to ${mode} audio backend.${isPlaying && currentCode ? ' Music resumed.' : ''}` }],
-    };
-  },
-);
-
-// -- now_playing ----------------------------------------------------------
-server.tool(
-  'now_playing',
-  'Check what music is currently playing, including the Strudel code and DJ commentary.',
-  {},
-  async () => {
-    const { isPlaying, currentCode, mcCommentary, audioMode } = getState();
-    if (!isPlaying || !currentCode) {
+      updateAfterPlay(code, '');
       return {
-        content: [{ type: 'text' as const, text: `Nothing is currently playing. Audio backend: ${audioMode}` }],
+        content: [{ type: 'text' as const, text: `Now playing:\n\`\`\`javascript\n${code}\n\`\`\`` }],
       };
-    }
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode }, null, 2),
-        },
-      ],
-    };
-  },
-);
+    },
+  );
+
+  // -- set_vibe -------------------------------------------------------------
+  server.tool(
+    'set_vibe',
+    'Instantly set the musical vibe to match a mood. Great for matching music to the current coding task.',
+    {
+      mood: z.enum(['chill', 'dark', 'hype', 'focus', 'funky', 'dreamy', 'weird', 'epic'])
+        .describe('The mood/vibe to set'),
+    },
+    async ({ mood }) => {
+      clearLayers();
+      await ensureEngine();
+      const prompt = MOOD_PROMPTS[mood];
+      const { commentary, code } = await generateAndPlay(prompt);
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: commentary
+              ? `Vibe set to ${mood}! ${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\``
+              : `Vibe set to ${mood}!\n\n\`\`\`javascript\n${code}\n\`\`\``,
+          },
+        ],
+      };
+    },
+  );
+
+  // -- live_mix -------------------------------------------------------------
+  server.tool(
+    'live_mix',
+    'Autonomous DJ set — generates and evolves music through multiple stages with ~20s between each. Runs as a long tool call. Call hush to stop early.',
+    {
+      prompt: z.string().describe('Starting direction for the mix, e.g. "deep house sunset set" or "ambient techno journey"'),
+      stages: z.number().min(3).max(10).default(6).optional().describe('Number of stages in the set (default 6)'),
+    },
+    async ({ prompt, stages: stagesParam }) => {
+      const stageCount = stagesParam ?? 6;
+      await ensureEngine();
+
+      const opening = await generateAndPlay(prompt);
+      const log: { stage: number; evolution: string; commentary: string; code: string }[] = [
+        { stage: 1, evolution: 'opening', commentary: opening.commentary, code: opening.code },
+      ];
+
+      const arc = buildSetArc(stageCount);
+
+      for (let i = 0; i < arc.length; i++) {
+        await new Promise((r) => setTimeout(r, 20_000));
+
+        if (!getState().isPlaying) {
+          log.push({ stage: i + 2, evolution: 'stopped', commentary: 'Mix stopped — hush was called.', code: '' });
+          break;
+        }
+
+        const evolutionType = arc[i];
+        const evo = EVOLUTION_PROMPTS.find((e) => e.type === evolutionType) ?? EVOLUTION_PROMPTS[i % EVOLUTION_PROMPTS.length];
+
+        try {
+          const result = await generateAndPlay(evo.prompt);
+          log.push({ stage: i + 2, evolution: evo.type, commentary: result.commentary, code: result.code });
+        } catch (err) {
+          log.push({ stage: i + 2, evolution: evo.type, commentary: `Error: ${err instanceof Error ? err.message : String(err)}`, code: '' });
+        }
+      }
+
+      const summary = log
+        .map((entry) => {
+          const header = `## Stage ${entry.stage}: ${entry.evolution}`;
+          const body = entry.commentary || '(no commentary)';
+          const code = entry.code ? `\n\`\`\`javascript\n${entry.code}\n\`\`\`` : '';
+          return `${header}\n${body}${code}`;
+        })
+        .join('\n\n---\n\n');
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `# DJ Claude Live Mix — ${stageCount} stages\n\n${summary}`,
+          },
+        ],
+      };
+    },
+  );
+
+  // -- hush -----------------------------------------------------------------
+  server.tool(
+    'hush',
+    'Stop all music playback immediately.',
+    {},
+    async () => {
+      clearLayers();
+      await ensureEngine();
+      engineHush();
+      updateAfterHush();
+      return {
+        content: [{ type: 'text' as const, text: 'Music stopped.' }],
+      };
+    },
+  );
+
+  // -- switch_audio ---------------------------------------------------------
+  server.tool(
+    'switch_audio',
+    'Switch the audio backend at runtime between Node (terminal) and Browser (higher quality, opens a browser tab).',
+    {
+      mode: z.enum(['node', 'browser']).describe('The audio backend to switch to: "node" for terminal audio, "browser" for browser tab audio'),
+    },
+    async ({ mode }) => {
+      const current = getBackendMode();
+      if (mode === current) {
+        return {
+          content: [{ type: 'text' as const, text: `Already using ${mode} audio backend.` }],
+        };
+      }
+
+      const { currentCode, isPlaying } = getState();
+
+      await switchBackend(mode as BackendMode);
+      enginePromise = Promise.resolve();
+      setEngineReady();
+      setAudioMode(mode as BackendMode);
+
+      if (isPlaying && currentCode) {
+        const result = await safeEvaluate(currentCode, '');
+        if (!result.success) {
+          updateAfterHush();
+        }
+      }
+
+      return {
+        content: [{ type: 'text' as const, text: `Switched to ${mode} audio backend.${isPlaying && currentCode ? ' Music resumed.' : ''}` }],
+      };
+    },
+  );
+
+  // -- now_playing ----------------------------------------------------------
+  server.tool(
+    'now_playing',
+    'Check what music is currently playing, including the Strudel code and DJ commentary.',
+    {},
+    async () => {
+      const { isPlaying, currentCode, mcCommentary, audioMode } = getState();
+      if (!isPlaying || !currentCode) {
+        return {
+          content: [{ type: 'text' as const, text: `Nothing is currently playing. Audio backend: ${audioMode}` }],
+        };
+      }
+
+      const layers = getLayers();
+      const layerInfo = layers.size > 0
+        ? { layers: Object.fromEntries(Array.from(layers.entries()).map(([k, v]) => [k, v.code])) }
+        : {};
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo }, null, 2),
+          },
+        ],
+      };
+    },
+  );
+
+  // -- jam ------------------------------------------------------------------
+  server.tool(
+    'jam',
+    'Add or update a single layer in a collaborative jam session. Each layer has a role (drums, bass, melody, etc.) and layers are composed together with stack(). Use this for building music incrementally or multi-agent collaboration.',
+    {
+      role: z.string().describe('The role/name for this layer, e.g. "drums", "bass", "melody", "chords", "pads", "fx"'),
+      prompt: z.string().describe('What this layer should sound like, e.g. "funky breakbeat pattern" or "deep sub bass in C minor"'),
+    },
+    async ({ role, prompt }) => {
+      return withEvalLock(async () => {
+        await ensureEngine();
+
+        const { commentary, code: layerCode } = await generateLayerCode(role, prompt);
+        setLayer(role, layerCode);
+
+        const composed = composeLayers();
+        const { currentCode } = getState();
+        const result = await safeEvaluate(composed, currentCode);
+
+        if (!result.success) {
+          // Rollback on eval failure
+          removeLayer(role);
+          return {
+            content: [{ type: 'text' as const, text: `Failed to add ${role} layer: ${result.error}` }],
+            isError: true,
+          };
+        }
+
+        updateAfterPlay(composed, commentary);
+
+        const layerCount = getLayers().size;
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: commentary
+                ? `${commentary}\n\nLayer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\``
+                : `Layer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\``,
+            },
+          ],
+        };
+      });
+    },
+  );
+
+  // -- jam_clear ------------------------------------------------------------
+  server.tool(
+    'jam_clear',
+    'Remove one or all layers from the jam session. If no role is specified, all layers are cleared.',
+    {
+      role: z.string().optional().describe('The role to remove (e.g. "drums"). Omit to clear all layers.'),
+    },
+    async ({ role }) => {
+      await ensureEngine();
+
+      if (role) {
+        const existed = removeLayer(role);
+        if (!existed) {
+          return {
+            content: [{ type: 'text' as const, text: `No layer with role "${role}" found.` }],
+          };
+        }
+      } else {
+        clearLayers();
+      }
+
+      const composed = composeLayers();
+      if (composed) {
+        const { currentCode } = getState();
+        const result = await safeEvaluate(composed, currentCode);
+        if (!result.success) {
+          return {
+            content: [{ type: 'text' as const, text: `Layer removed but recomposition failed: ${result.error}` }],
+            isError: true,
+          };
+        }
+        updateAfterPlay(composed, '');
+        const remaining = getLayers().size;
+        return {
+          content: [{ type: 'text' as const, text: role ? `Layer "${role}" removed. ${remaining} layer(s) remaining.` : 'All layers cleared.' }],
+        };
+      } else {
+        // No layers left — hush
+        engineHush();
+        updateAfterHush();
+        return {
+          content: [{ type: 'text' as const, text: role ? `Layer "${role}" removed. No layers remaining — music stopped.` : 'All layers cleared. Music stopped.' }],
+        };
+      }
+    },
+  );
+
+  // -- jam_status -----------------------------------------------------------
+  server.tool(
+    'jam_status',
+    'Show all active layers in the current jam session with their role names and code.',
+    {},
+    async () => {
+      const layers = getLayers();
+      if (layers.size === 0) {
+        return {
+          content: [{ type: 'text' as const, text: 'No active layers. Use the jam tool to add layers.' }],
+        };
+      }
+
+      const entries = Array.from(layers.values()).map((l) => ({
+        role: l.role,
+        code: l.code,
+        addedAt: new Date(l.addedAt).toISOString(),
+      }));
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ layers: entries, composed: composeLayers() }, null, 2),
+          },
+        ],
+      };
+    },
+  );
+}
 
 // ---------------------------------------------------------------------------
-// Start.
+// Start — stdio transport.
 // ---------------------------------------------------------------------------
 
 export async function startServer(isBrowserMode = false): Promise<void> {
   browserMode = isBrowserMode;
   setAudioMode(browserMode ? 'browser' : 'node');
 
-  // In node mode, kick off engine init eagerly.
-  // In browser mode, defer until first tool call (opening a browser on
-  // MCP startup before any music is requested would be surprising).
   if (!browserMode) {
     startEngine();
   }
+
+  const server = new McpServer({
+    name: 'dj-claude',
+    version: '0.1.12',
+  });
+
+  registerTools(server);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

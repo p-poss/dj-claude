@@ -19,6 +19,7 @@ export async function* streamChat(
   prompt: string,
   currentCode: string,
   history: Message[],
+  systemOverride?: string,
 ): AsyncGenerator<string> {
   const client = getClient(apiKey);
 
@@ -43,7 +44,7 @@ export async function* streamChat(
   const stream = await client.messages.stream({
     model: process.env.DJ_CLAUDE_MODEL ?? 'claude-sonnet-4-6',
     max_tokens: Number(process.env.DJ_CLAUDE_MAX_TOKENS) || 16384,
-    system: SYSTEM_PROMPT,
+    system: systemOverride ?? SYSTEM_PROMPT,
     messages,
   });
 
