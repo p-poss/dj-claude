@@ -6,8 +6,9 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 
-import { initEngine, safeEvaluate, hush as engineHush, switchBackend, getBackendMode } from '../audio/engine.js';
+import { initEngine, safeEvaluate, hush as engineHush, switchBackend, getBackendMode, getPattern } from '../audio/engine.js';
 import type { BackendMode } from '../audio/backend.js';
+import { renderPatternSnapshot } from '../lib/pattern-viz.js';
 import { findApiKey } from '../lib/config.js';
 import { streamChat } from '../lib/claude.js';
 import { parseStreamingCode } from '../lib/parseCode.js';
@@ -58,6 +59,13 @@ async function ensureEngine(): Promise<void> {
   if (!getState().engineReady) {
     throw new Error('Audio engine failed to initialize.');
   }
+}
+
+function getPatternViz(): string {
+  const pattern = getPattern();
+  if (!pattern) return '';
+  const snapshot = renderPatternSnapshot(pattern);
+  return snapshot ? `\n\n\`\`\`\n${snapshot}\n\`\`\`` : '';
 }
 
 // ---------------------------------------------------------------------------
@@ -377,13 +385,14 @@ export function registerTools(server: McpServer): void {
       clearLayers();
       await ensureEngine();
       const { commentary, code } = await generateAndPlay(prompt);
+      const viz = getPatternViz();
       return {
         content: [
           {
             type: 'text' as const,
             text: commentary
-              ? `${commentary}\n\nNow playing:\n\`\`\`javascript\n${code}\n\`\`\``
-              : `Now playing:\n\`\`\`javascript\n${code}\n\`\`\``,
+              ? `${commentary}\n\nNow playing:\n\`\`\`javascript\n${code}\n\`\`\`${viz}`
+              : `Now playing:\n\`\`\`javascript\n${code}\n\`\`\`${viz}`,
           },
         ],
       };
@@ -407,8 +416,9 @@ export function registerTools(server: McpServer): void {
         };
       }
       updateAfterPlay(code, '');
+      const viz = getPatternViz();
       return {
-        content: [{ type: 'text' as const, text: `Now playing:\n\`\`\`javascript\n${code}\n\`\`\`` }],
+        content: [{ type: 'text' as const, text: `Now playing:\n\`\`\`javascript\n${code}\n\`\`\`${viz}` }],
       };
     },
   );
@@ -430,13 +440,14 @@ export function registerTools(server: McpServer): void {
       if (apiKey) {
         const prompt = MOOD_PROMPTS[mood];
         const { commentary, code } = await generateAndPlay(prompt);
+        const viz = getPatternViz();
         return {
           content: [
             {
               type: 'text' as const,
               text: commentary
-                ? `Vibe set to ${mood}! ${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\``
-                : `Vibe set to ${mood}!\n\n\`\`\`javascript\n${code}\n\`\`\``,
+                ? `Vibe set to ${mood}! ${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\`${viz}`
+                : `Vibe set to ${mood}!\n\n\`\`\`javascript\n${code}\n\`\`\`${viz}`,
             },
           ],
         };
@@ -453,11 +464,12 @@ export function registerTools(server: McpServer): void {
         };
       }
       updateAfterPlay(code, '');
+      const viz = getPatternViz();
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Vibe set to ${mood}! (using built-in pattern — set ANTHROPIC_API_KEY for AI-generated music)\n\n\`\`\`javascript\n${code}\n\`\`\``,
+            text: `Vibe set to ${mood}! (using built-in pattern — set ANTHROPIC_API_KEY for AI-generated music)\n\n\`\`\`javascript\n${code}\n\`\`\`${viz}`,
           },
         ],
       };
@@ -645,13 +657,14 @@ export function registerTools(server: McpServer): void {
         updateAfterPlay(composed, commentary);
 
         const layerCount = getLayers().size;
+        const viz = getPatternViz();
         return {
           content: [
             {
               type: 'text' as const,
               text: commentary
-                ? `${commentary}\n\nLayer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\``
-                : `Layer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\``,
+                ? `${commentary}\n\nLayer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\`${viz}`
+                : `Layer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\`${viz}`,
             },
           ],
         };
@@ -1055,11 +1068,12 @@ export function registerTools(server: McpServer): void {
       }
 
       const layerNames = Array.from(snapshot.layers.keys());
+      const viz = getPatternViz();
       return {
         content: [
           {
             type: 'text' as const,
-            text: `Snapshot "${name}" loaded with ${layerNames.length} layer(s)${layerNames.length > 0 ? `: ${layerNames.join(', ')}` : ''}. Music resumed.`,
+            text: `Snapshot "${name}" loaded with ${layerNames.length} layer(s)${layerNames.length > 0 ? `: ${layerNames.join(', ')}` : ''}. Music resumed.${viz}`,
           },
         ],
       };

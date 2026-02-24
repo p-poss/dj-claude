@@ -8,6 +8,7 @@ import {
   buildDrumGrid,
   buildPianoroll,
   renderPlayheadRow,
+  renderPatternSnapshot,
   GRID_WIDTH,
   type Hap,
 } from './pattern-viz.js';
@@ -346,5 +347,85 @@ describe('renderPlayheadRow', () => {
   it('handles last column', () => {
     const row = renderPlayheadRow('', GRID_WIDTH - 1);
     expect(row[4 + GRID_WIDTH - 1]).toBe('▏');
+  });
+});
+
+// --- renderPatternSnapshot ---
+
+describe('renderPatternSnapshot', () => {
+  function mockPattern(haps: Hap[]) {
+    return { queryArc: () => haps };
+  }
+
+  it('returns empty string for null/undefined pattern', () => {
+    expect(renderPatternSnapshot(null)).toBe('');
+    expect(renderPatternSnapshot(undefined)).toBe('');
+  });
+
+  it('returns empty string when pattern has no haps', () => {
+    expect(renderPatternSnapshot(mockPattern([]))).toBe('');
+  });
+
+  it('renders drum grid for drum haps', () => {
+    const pattern = mockPattern([
+      drumHap('bd', 0, 0.25),
+      drumHap('sd', 0.5, 0.75),
+    ]);
+    const snapshot = renderPatternSnapshot(pattern);
+    expect(snapshot).toContain('bd');
+    expect(snapshot).toContain('sd');
+    expect(snapshot).toContain('●');
+    expect(snapshot).toContain('·');
+  });
+
+  it('renders pianoroll for melodic haps', () => {
+    const pattern = mockPattern([
+      noteHap('C4', 0, 0.5),
+      noteHap('E4', 0.5, 1),
+    ]);
+    const snapshot = renderPatternSnapshot(pattern);
+    expect(snapshot).toContain('E4');
+    expect(snapshot).toContain('C4');
+    expect(snapshot).toContain('█');
+    expect(snapshot).toContain('░');
+  });
+
+  it('renders both grids for mixed patterns', () => {
+    const pattern = mockPattern([
+      drumHap('bd', 0, 0.25),
+      noteHap('C4', 0, 0.5),
+    ]);
+    const snapshot = renderPatternSnapshot(pattern);
+    expect(snapshot).toContain('bd');
+    expect(snapshot).toContain('●');
+    expect(snapshot).toContain('C4');
+    expect(snapshot).toContain('█');
+  });
+
+  it('sorts piano notes high to low', () => {
+    const pattern = mockPattern([
+      noteHap('C4', 0, 0.25),
+      noteHap('G4', 0.25, 0.5),
+      noteHap('C5', 0.5, 0.75),
+    ]);
+    const snapshot = renderPatternSnapshot(pattern);
+    const lines = snapshot.split('\n');
+    const noteLines = lines.filter((l) => l.match(/^[A-G]/));
+    expect(noteLines[0]).toMatch(/^C5/);
+    expect(noteLines[1]).toMatch(/^G4/);
+    expect(noteLines[2]).toMatch(/^C4/);
+  });
+
+  it('sorts drums in canonical order', () => {
+    const pattern = mockPattern([
+      drumHap('hh', 0, 0.25),
+      drumHap('bd', 0.25, 0.5),
+      drumHap('sd', 0.5, 0.75),
+    ]);
+    const snapshot = renderPatternSnapshot(pattern);
+    const lines = snapshot.split('\n');
+    expect(lines[0]).toMatch(/^bd/);
+    expect(lines[1]).toMatch(/^sd/);
+    expect(lines[2]).toMatch(/^hh/);
   });
 });

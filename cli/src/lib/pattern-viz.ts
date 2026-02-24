@@ -98,3 +98,46 @@ export function renderPlayheadRow(label: string, playheadCol: number): string {
   }
   return `${pad}${row}`;
 }
+
+/**
+ * Render a static ASCII snapshot of one cycle of a pattern.
+ * Returns empty string if no visualization data is available.
+ */
+export function renderPatternSnapshot(pattern: unknown): string {
+  const haps = queryHaps(pattern, 0, 1);
+  if (haps.length === 0) return '';
+
+  const drums = haps.filter(isDrum);
+  const melodic = haps.filter((h) => !isDrum(h) && getNoteValue(h) !== null);
+
+  const lines: string[] = [];
+
+  if (drums.length > 0) {
+    const grid = buildDrumGrid(drums, 0);
+    const sorted = [...grid.keys()].sort(
+      (a, b) => DRUM_NAMES.indexOf(a) - DRUM_NAMES.indexOf(b),
+    );
+    for (const name of sorted) {
+      const row = grid.get(name)!;
+      const pad = name.padEnd(4);
+      const cells = row.map((on) => (on ? '●' : '·')).join('');
+      lines.push(`${pad}${cells}`);
+    }
+  }
+
+  if (melodic.length > 0) {
+    const grid = buildPianoroll(melodic, 0);
+    const sorted = [...grid.keys()]
+      .sort((a, b) => noteToSortKey(b) - noteToSortKey(a))
+      .slice(0, 8);
+    if (lines.length > 0) lines.push('');
+    for (const note of sorted) {
+      const row = grid.get(note)!;
+      const pad = note.padEnd(4);
+      const cells = row.map((on) => (on ? '█' : '░')).join('');
+      lines.push(`${pad}${cells}`);
+    }
+  }
+
+  return lines.length > 0 ? lines.join('\n') : '';
+}

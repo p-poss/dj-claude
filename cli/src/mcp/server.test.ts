@@ -28,6 +28,7 @@ vi.mock('../audio/engine.js', () => ({
   hush: vi.fn(),
   switchBackend: vi.fn().mockResolvedValue(undefined),
   getBackendMode: vi.fn().mockReturnValue('node'),
+  getPattern: vi.fn().mockReturnValue(null),
 }));
 
 vi.mock('../lib/config.js', () => ({
