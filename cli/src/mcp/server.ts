@@ -24,7 +24,14 @@ import {
   clearLayers,
   getLayers,
   composeLayers,
+  setContext,
+  getContext,
+  clearContext,
+  saveSnapshot,
+  loadSnapshot,
+  listSnapshots,
 } from './state.js';
+import type { LayerMetadata } from './state.js';
 import { withEvalLock } from './eval-lock.js';
 
 // ---------------------------------------------------------------------------
@@ -64,10 +71,15 @@ async function generateAndPlay(prompt: string): Promise<{ commentary: string; co
   }
   const { currentCode, messages } = getState();
 
-  addMessage({ role: 'user', content: prompt });
+  // Inject coding context if available
+  const ctx = getContext();
+  const contextPrefix = ctx ? `[Coding context: ${ctx.activity}] ` : '';
+  const fullPrompt = `${contextPrefix}${prompt}`;
+
+  addMessage({ role: 'user', content: fullPrompt });
 
   let fullText = '';
-  for await (const chunk of streamChat(apiKey, prompt, currentCode, messages)) {
+  for await (const chunk of streamChat(apiKey, fullPrompt, currentCode, messages)) {
     fullText += chunk;
   }
 
@@ -107,12 +119,19 @@ async function generateLayerCode(role: string, prompt: string): Promise<{ commen
   let layerContext = '';
   if (layers.size > 0) {
     const layerList = Array.from(layers.values())
-      .map((l) => `[${l.role}]: ${l.code}`)
+      .map((l) => {
+        const meta = [l.key && `key: ${l.key}`, l.tempo && `${l.tempo}bpm`, l.notes].filter(Boolean).join(', ');
+        return `[${l.role}]${meta ? ` (${meta})` : ''}: ${l.code}`;
+      })
       .join('\n');
     layerContext = `\n\n[Currently playing layers]\n${layerList}\n\nGenerate the ${role} layer to complement these.`;
   }
 
-  const fullPrompt = `${prompt}${layerContext}`;
+  // Inject coding context if available
+  const ctx = getContext();
+  const contextSection = ctx ? `\n\n[Coding context: ${ctx.activity}]` : '';
+
+  const fullPrompt = `${prompt}${layerContext}${contextSection}`;
   addMessage({ role: 'user', content: `[jam:${role}] ${prompt}` });
 
   let fullText = '';
@@ -175,6 +194,125 @@ function buildSetArc(stages: number): string[] {
     'add layers',
   ];
   return arcTemplate.slice(1, stages);
+}
+
+// ---------------------------------------------------------------------------
+// Band templates for conductor mode.
+// ---------------------------------------------------------------------------
+
+const BAND_TEMPLATES: Record<string, string[]> = {
+  'jazz combo': ['drums', 'bass', 'chords', 'melody'],
+  'rock band': ['drums', 'bass', 'chords', 'lead'],
+  'electronic': ['drums', 'bass', 'pads', 'lead', 'fx'],
+  'ambient': ['pads', 'atmosphere', 'fx', 'melody'],
+  'full band': ['drums', 'bass', 'chords', 'melody', 'pads', 'fx'],
+  'minimal': ['drums', 'bass', 'melody'],
+  'orchestral': ['bass', 'chords', 'pads', 'melody', 'fx', 'atmosphere'],
+};
+
+function matchBandTemplate(directive: string): string[] {
+  const lower = directive.toLowerCase();
+  for (const [name, roles] of Object.entries(BAND_TEMPLATES)) {
+    if (lower.includes(name)) return roles;
+  }
+  return BAND_TEMPLATES['full band'];
+}
+
+// ---------------------------------------------------------------------------
+// Mix analysis helpers.
+// ---------------------------------------------------------------------------
+
+function analyzeLayer(role: string, code: string) {
+  const analysis: {
+    role: string;
+    octaveRange: string | null;
+    effects: string[];
+    gainLevel: number | null;
+    frequencyBand: string;
+  } = {
+    role,
+    octaveRange: null,
+    effects: [],
+    gainLevel: null,
+    frequencyBand: 'mid',
+  };
+
+  // Detect octave ranges from note names like c3, eb4, etc.
+  const noteMatches = code.match(/[a-g][#b]?\d/gi);
+  if (noteMatches) {
+    const octaves = noteMatches.map((n) => parseInt(n.slice(-1), 10));
+    const min = Math.min(...octaves);
+    const max = Math.max(...octaves);
+    analysis.octaveRange = min === max ? `${min}` : `${min}-${max}`;
+    if (max <= 2) analysis.frequencyBand = 'low';
+    else if (min >= 4) analysis.frequencyBand = 'high';
+    else analysis.frequencyBand = 'mid';
+  }
+
+  // Detect samples (percussion is typically mid-range)
+  if (/\bs\s*\(\s*["'](?:bd|sd|hh|oh|cp|lt|mt|ht|rim|cb|cr|cy)/.test(code)) {
+    analysis.frequencyBand = 'percussion';
+  }
+
+  // Detect effects
+  const effectPatterns: [string, RegExp][] = [
+    ['lpf', /\.lpf\(/],
+    ['hpf', /\.hpf\(/],
+    ['reverb', /\.room\(/],
+    ['delay', /\.delay\(/],
+    ['pan', /\.pan\(/],
+    ['vowel', /\.vowel\(/],
+    ['phaser', /\.phaser\(/],
+    ['vibrato', /\.vibrato\(/],
+    ['tremolo', /\.tremolo\(/],
+    ['fm', /\.fmh\(|\.fmi\(/],
+  ];
+  for (const [name, re] of effectPatterns) {
+    if (re.test(code)) analysis.effects.push(name);
+  }
+
+  // Detect gain level
+  const gainMatch = code.match(/\.gain\(\s*([\d.]+)\s*\)/);
+  if (gainMatch) {
+    analysis.gainLevel = parseFloat(gainMatch[1]);
+  }
+
+  return analysis;
+}
+
+function generateSuggestions(layerAnalyses: ReturnType<typeof analyzeLayer>[]): string[] {
+  const suggestions: string[] = [];
+  const bands = layerAnalyses.map((l) => l.frequencyBand);
+
+  if (!bands.includes('low')) {
+    suggestions.push('Missing bass range — consider adding a bass layer with notes in octave 1-2.');
+  }
+  if (!bands.includes('high') && layerAnalyses.length >= 3) {
+    suggestions.push('No high-range layer — consider adding a melody or lead in octave 4-5.');
+  }
+
+  const gains = layerAnalyses.map((l) => l.gainLevel).filter((g): g is number => g !== null);
+  if (gains.length > 0 && gains.every((g) => g > 0.7)) {
+    suggestions.push('All gains are above 0.7 — consider lowering some layers for better dynamic range.');
+  }
+  if (gains.length > 0 && gains.every((g) => g < 0.2)) {
+    suggestions.push('All gains are very low — the mix may be too quiet.');
+  }
+
+  const effectCounts = new Map<string, number>();
+  for (const l of layerAnalyses) {
+    for (const e of l.effects) {
+      effectCounts.set(e, (effectCounts.get(e) ?? 0) + 1);
+    }
+  }
+  if (!effectCounts.has('reverb') && layerAnalyses.length >= 3) {
+    suggestions.push('No reverb on any layer — adding room/size to pads or leads can add depth.');
+  }
+  if (!effectCounts.has('lpf') && !effectCounts.has('hpf') && layerAnalyses.length >= 3) {
+    suggestions.push('No frequency filtering — using lpf/hpf can help separate layers in the mix.');
+  }
+
+  return suggestions;
 }
 
 // ---------------------------------------------------------------------------
@@ -380,11 +518,14 @@ export function registerTools(server: McpServer): void {
         ? { layers: Object.fromEntries(Array.from(layers.entries()).map(([k, v]) => [k, v.code])) }
         : {};
 
+      const ctx = getContext();
+      const contextInfo = ctx ? { codingContext: ctx.activity } : {};
+
       return {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo }),
+            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo, ...contextInfo }),
           },
         ],
       };
@@ -398,13 +539,22 @@ export function registerTools(server: McpServer): void {
     {
       role: z.string().describe('The role/name for this layer, e.g. "drums", "bass", "melody", "chords", "pads", "fx"'),
       prompt: z.string().describe('What this layer should sound like, e.g. "funky breakbeat pattern" or "deep sub bass in C minor"'),
+      added_by: z.string().optional().describe('Name of the session/agent adding this layer'),
+      notes: z.string().optional().describe('Free text notes, e.g. "C minor, 120bpm"'),
+      key: z.string().optional().describe('Musical key, e.g. "C minor", "F# major"'),
+      tempo: z.number().optional().describe('BPM for this layer'),
     },
-    async ({ role, prompt }) => {
+    async ({ role, prompt, added_by, notes, key, tempo }) => {
       return withEvalLock(async () => {
         await ensureEngine();
 
         const { commentary, code: layerCode } = await generateLayerCode(role, prompt);
-        setLayer(role, layerCode);
+        const metadata: LayerMetadata = {};
+        if (added_by) metadata.addedBy = added_by;
+        if (notes) metadata.notes = notes;
+        if (key) metadata.key = key;
+        if (tempo) metadata.tempo = tempo;
+        setLayer(role, layerCode, metadata);
 
         const composed = composeLayers();
         const { currentCode } = getState();
@@ -496,11 +646,18 @@ export function registerTools(server: McpServer): void {
         };
       }
 
-      const entries = Array.from(layers.values()).map((l) => ({
-        role: l.role,
-        code: l.code,
-        addedAt: new Date(l.addedAt).toISOString(),
-      }));
+      const entries = Array.from(layers.values()).map((l) => {
+        const entry: Record<string, unknown> = {
+          role: l.role,
+          code: l.code,
+          addedAt: new Date(l.addedAt).toISOString(),
+        };
+        if (l.addedBy) entry.addedBy = l.addedBy;
+        if (l.notes) entry.notes = l.notes;
+        if (l.key) entry.key = l.key;
+        if (l.tempo) entry.tempo = l.tempo;
+        return entry;
+      });
 
       return {
         content: [
@@ -509,6 +666,384 @@ export function registerTools(server: McpServer): void {
             text: JSON.stringify({ layers: entries, composed: composeLayers() }),
           },
         ],
+      };
+    },
+  );
+
+  // =========================================================================
+  // Feature Set 1 — Reactive DJ
+  // =========================================================================
+
+  // -- set_context ----------------------------------------------------------
+  server.tool(
+    'set_context',
+    'Tell DJ Claude what you\'re working on so the music adapts to your coding activity. Context is injected into music generation prompts for more relevant vibes.',
+    {
+      activity: z.string().describe('What you\'re doing, e.g. "debugging test failures", "writing a new API endpoint", "reviewing PRs"'),
+      auto_adapt: z.boolean().optional().describe('If true and music is playing, immediately generate a transition to match the new context (default false)'),
+    },
+    async ({ activity, auto_adapt }) => {
+      const shouldAdapt = auto_adapt ?? false;
+      setContext(activity, shouldAdapt);
+
+      if (shouldAdapt && getState().isPlaying) {
+        try {
+          const { commentary, code } = await generateAndPlay(
+            `The coding activity just changed to: ${activity}. Smoothly transition the current music to match this new context.`,
+          );
+          return {
+            content: [
+              {
+                type: 'text' as const,
+                text: `Context set to "${activity}" — music adapting!\n\n${commentary}\n\n\`\`\`javascript\n${code}\n\`\`\``,
+              },
+            ],
+          };
+        } catch {
+          return {
+            content: [{ type: 'text' as const, text: `Context set to "${activity}". Auto-adapt failed (no API key?). Music will reflect context on next generation.` }],
+          };
+        }
+      }
+
+      return {
+        content: [{ type: 'text' as const, text: `Context set to "${activity}". Music will reflect this on next generation.` }],
+      };
+    },
+  );
+
+  // =========================================================================
+  // Feature Set 2 — Jam Coordination
+  // =========================================================================
+
+  // -- jam_preview ----------------------------------------------------------
+  server.tool(
+    'jam_preview',
+    'Preview what a jam layer would sound like without actually adding it. Generates code but does NOT evaluate, store, or play it. Use this to audition ideas before committing.',
+    {
+      role: z.string().describe('The role to preview, e.g. "drums", "bass", "melody"'),
+      prompt: z.string().describe('What this layer should sound like'),
+    },
+    async ({ role, prompt }) => {
+      const { commentary, code } = await generateLayerCode(role, prompt);
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ role, code, commentary, preview: true }),
+          },
+        ],
+      };
+    },
+  );
+
+  // -- mix_analysis ---------------------------------------------------------
+  server.tool(
+    'mix_analysis',
+    'Analyze the current jam mix — detects octave ranges, effects, gain levels, and frequency band occupancy across all layers. Returns suggestions for improving the mix. No API key needed.',
+    {},
+    async () => {
+      const layers = getLayers();
+      if (layers.size === 0) {
+        return {
+          content: [{ type: 'text' as const, text: 'No active layers to analyze. Use the jam tool to add layers first.' }],
+        };
+      }
+
+      const layerAnalyses = Array.from(layers.values()).map((l) => analyzeLayer(l.role, l.code));
+      const suggestions = generateSuggestions(layerAnalyses);
+
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: JSON.stringify({ layers: layerAnalyses, suggestions, totalLayers: layers.size }),
+          },
+        ],
+      };
+    },
+  );
+
+  // =========================================================================
+  // Feature Set 3 — Conductor Mode
+  // =========================================================================
+
+  // -- conduct --------------------------------------------------------------
+  server.tool(
+    'conduct',
+    'Orchestrate a full band — generates multiple layers at once from a single directive. Matches band templates (jazz combo, rock band, electronic, ambient, etc.) or specify custom roles. Clears existing layers first.',
+    {
+      directive: z.string().describe('What the band should play, e.g. "jazz combo in C minor, late night mood" or "electronic ambient with evolving textures"'),
+      roles: z.array(z.string()).optional().describe('Custom roles to override template matching, e.g. ["drums", "bass", "keys", "sax"]'),
+    },
+    async ({ directive, roles: customRoles }) => {
+      const roles = customRoles ?? matchBandTemplate(directive);
+
+      clearLayers();
+      await ensureEngine();
+
+      const results: { role: string; success: boolean; commentary: string; code: string; error?: string }[] = [];
+
+      for (const role of roles) {
+        await withEvalLock(async () => {
+          try {
+            const { commentary, code: layerCode } = await generateLayerCode(role, `${directive} — generate the ${role} part.`);
+            setLayer(role, layerCode);
+
+            const composed = composeLayers();
+            const { currentCode } = getState();
+            const evalResult = await safeEvaluate(composed, currentCode);
+
+            if (!evalResult.success) {
+              removeLayer(role);
+              results.push({ role, success: false, commentary: '', code: '', error: evalResult.error });
+            } else {
+              updateAfterPlay(composed, commentary);
+              results.push({ role, success: true, commentary, code: layerCode });
+            }
+          } catch (err) {
+            results.push({ role, success: false, commentary: '', code: '', error: err instanceof Error ? err.message : String(err) });
+          }
+        });
+      }
+
+      const succeeded = results.filter((r) => r.success);
+      const failed = results.filter((r) => !r.success);
+
+      let summary = `# Conductor — ${succeeded.length}/${roles.length} layers created\n\n`;
+      summary += `**Directive:** ${directive}\n`;
+      summary += `**Template:** ${roles.join(', ')}\n\n`;
+
+      for (const r of succeeded) {
+        summary += `## ${r.role}\n`;
+        if (r.commentary) summary += `${r.commentary}\n`;
+        summary += `\`\`\`javascript\n${r.code}\n\`\`\`\n\n`;
+      }
+
+      if (failed.length > 0) {
+        summary += `### Skipped\n`;
+        for (const r of failed) {
+          summary += `- **${r.role}**: ${r.error}\n`;
+        }
+      }
+
+      return {
+        content: [{ type: 'text' as const, text: summary }],
+      };
+    },
+  );
+
+  // -- conduct_evolve -------------------------------------------------------
+  server.tool(
+    'conduct_evolve',
+    'Evolve all active layers through multiple stages — each layer gets modified 20-40% per stage with pauses between. Requires active layers from a jam or conduct session.',
+    {
+      directive: z.string().describe('Evolution direction, e.g. "shift darker", "build energy", "deconstruct gradually"'),
+      stages: z.number().min(1).max(6).optional().describe('Number of evolution stages (default 3, max 6)'),
+    },
+    async ({ directive, stages: stagesParam }) => {
+      const stageCount = stagesParam ?? 3;
+      const layers = getLayers();
+
+      if (layers.size === 0) {
+        return {
+          content: [{ type: 'text' as const, text: 'No active layers to evolve. Use jam or conduct first.' }],
+        };
+      }
+
+      const log: { stage: number; results: { role: string; success: boolean }[] }[] = [];
+
+      for (let stage = 1; stage <= stageCount; stage++) {
+        if (stage > 1) {
+          await new Promise((r) => setTimeout(r, 15_000));
+        }
+
+        if (!getState().isPlaying) {
+          break;
+        }
+
+        const stageResults: { role: string; success: boolean }[] = [];
+        const currentLayers = Array.from(getLayers().values());
+
+        for (const layer of currentLayers) {
+          const previousCode = layer.code;
+
+          await withEvalLock(async () => {
+            try {
+              const { code: newCode } = await generateLayerCode(
+                layer.role,
+                `Evolve the ${layer.role} part — ${directive}. Modify 20-40% of the pattern while keeping coherence with the other layers. Stage ${stage}/${stageCount}.`,
+              );
+              setLayer(layer.role, newCode);
+
+              const composed = composeLayers();
+              const { currentCode } = getState();
+              const evalResult = await safeEvaluate(composed, currentCode);
+
+              if (!evalResult.success) {
+                // Rollback this layer
+                setLayer(layer.role, previousCode);
+                stageResults.push({ role: layer.role, success: false });
+              } else {
+                updateAfterPlay(composed, '');
+                stageResults.push({ role: layer.role, success: true });
+              }
+            } catch {
+              // Rollback on error
+              setLayer(layer.role, previousCode);
+              stageResults.push({ role: layer.role, success: false });
+            }
+          });
+        }
+
+        log.push({ stage, results: stageResults });
+      }
+
+      let summary = `# Evolution — "${directive}" across ${log.length} stage(s)\n\n`;
+      for (const entry of log) {
+        const ok = entry.results.filter((r) => r.success).length;
+        const total = entry.results.length;
+        summary += `**Stage ${entry.stage}:** ${ok}/${total} layers evolved\n`;
+      }
+
+      return {
+        content: [{ type: 'text' as const, text: summary }],
+      };
+    },
+  );
+
+  // =========================================================================
+  // Feature Set 4 — Mix as Artifact
+  // =========================================================================
+
+  // -- snapshot_save --------------------------------------------------------
+  server.tool(
+    'snapshot_save',
+    'Save the current mix (all layers + composed code) as a named snapshot. No API key needed.',
+    {
+      name: z.string().describe('Name for this snapshot, e.g. "verse1", "drop", "chill-mix"'),
+    },
+    async ({ name }) => {
+      const layers = getLayers();
+      if (layers.size === 0 && !getState().currentCode) {
+        return {
+          content: [{ type: 'text' as const, text: 'Nothing to save — no layers or code playing.' }],
+        };
+      }
+
+      const snapshot = saveSnapshot(name);
+      const layerNames = Array.from(snapshot.layers.keys());
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `Snapshot "${name}" saved with ${layerNames.length} layer(s)${layerNames.length > 0 ? `: ${layerNames.join(', ')}` : ''}.`,
+          },
+        ],
+      };
+    },
+  );
+
+  // -- snapshot_load --------------------------------------------------------
+  server.tool(
+    'snapshot_load',
+    'Restore a previously saved mix snapshot — loads all layers and resumes playback. No API key needed.',
+    {
+      name: z.string().describe('Name of the snapshot to load'),
+    },
+    async ({ name }) => {
+      const snapshot = loadSnapshot(name);
+      if (!snapshot) {
+        const available = listSnapshots().map((s) => s.name);
+        return {
+          content: [
+            {
+              type: 'text' as const,
+              text: available.length > 0
+                ? `Snapshot "${name}" not found. Available: ${available.join(', ')}`
+                : `Snapshot "${name}" not found. No snapshots saved yet.`,
+            },
+          ],
+        };
+      }
+
+      // Evaluate the snapshot's code to resume playback
+      const codeToPlay = snapshot.composedCode || snapshot.currentCode;
+      if (codeToPlay) {
+        await ensureEngine();
+        const result = await safeEvaluate(codeToPlay, getState().currentCode);
+        if (!result.success) {
+          return {
+            content: [{ type: 'text' as const, text: `Snapshot "${name}" loaded but evaluation failed: ${result.error}` }],
+            isError: true,
+          };
+        }
+        updateAfterPlay(codeToPlay, '');
+      }
+
+      const layerNames = Array.from(snapshot.layers.keys());
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `Snapshot "${name}" loaded with ${layerNames.length} layer(s)${layerNames.length > 0 ? `: ${layerNames.join(', ')}` : ''}. Music resumed.`,
+          },
+        ],
+      };
+    },
+  );
+
+  // -- snapshot_list --------------------------------------------------------
+  server.tool(
+    'snapshot_list',
+    'List all saved mix snapshots. No API key needed.',
+    {},
+    async () => {
+      const snapshots = listSnapshots();
+      if (snapshots.length === 0) {
+        return {
+          content: [{ type: 'text' as const, text: 'No snapshots saved yet. Use snapshot_save to save the current mix.' }],
+        };
+      }
+
+      const list = snapshots.map((s) => ({
+        name: s.name,
+        layers: Array.from(s.layers.keys()),
+        savedAt: new Date(s.savedAt).toISOString(),
+      }));
+
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify(list) }],
+      };
+    },
+  );
+
+  // -- export_code ----------------------------------------------------------
+  server.tool(
+    'export_code',
+    'Export the current Strudel code with header comments showing date and layer names. No API key needed.',
+    {},
+    async () => {
+      const { currentCode, isPlaying } = getState();
+      if (!currentCode) {
+        return {
+          content: [{ type: 'text' as const, text: 'Nothing to export — no code playing.' }],
+        };
+      }
+
+      const layers = getLayers();
+      const layerNames = Array.from(layers.keys());
+      const date = new Date().toISOString();
+
+      let exported = `// DJ Claude Export — ${date}\n`;
+      if (layerNames.length > 0) {
+        exported += `// Layers: ${layerNames.join(', ')}\n`;
+      }
+      exported += `// Status: ${isPlaying ? 'playing' : 'stopped'}\n\n`;
+      exported += currentCode;
+
+      return {
+        content: [{ type: 'text' as const, text: exported }],
       };
     },
   );

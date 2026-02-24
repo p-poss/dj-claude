@@ -92,6 +92,14 @@ The easiest way to use DJ Claude with Claude Code. Installs the MCP server and g
 | `/dj-claude:now-playing` | Check what's currently playing |
 | `/dj-claude:strudel [code]` | Evaluate raw Strudel code directly |
 | `/dj-claude:browser` | Switch between Node and browser audio backends mid-session |
+| `/dj-claude:context [activity]` | Set coding context so music adapts to your work |
+| `/dj-claude:preview [role] [prompt]` | Preview a jam layer without adding it |
+| `/dj-claude:analyze` | Analyze the mix for frequency balance and suggestions |
+| `/dj-claude:conduct [directive]` | Orchestrate a full band from a single directive |
+| `/dj-claude:save [name]` | Save the current mix as a named snapshot |
+| `/dj-claude:load [name]` | Restore a saved mix snapshot |
+| `/dj-claude:list-saves` | List all saved snapshots |
+| `/dj-claude:export` | Export current Strudel code with header comments |
 
 Or just ask naturally — Claude will call the right tool:
 
@@ -117,7 +125,16 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
       "mcp__dj-claude__now_playing",
       "mcp__dj-claude__jam",
       "mcp__dj-claude__jam_clear",
-      "mcp__dj-claude__jam_status"
+      "mcp__dj-claude__jam_status",
+      "mcp__dj-claude__set_context",
+      "mcp__dj-claude__jam_preview",
+      "mcp__dj-claude__mix_analysis",
+      "mcp__dj-claude__conduct",
+      "mcp__dj-claude__conduct_evolve",
+      "mcp__dj-claude__snapshot_save",
+      "mcp__dj-claude__snapshot_load",
+      "mcp__dj-claude__snapshot_list",
+      "mcp__dj-claude__export_code"
     ]
   }
 }
@@ -168,6 +185,15 @@ For higher quality audio through the browser's Web Audio engine:
 | `hush` | Stop all music playback |
 | `now_playing` | Check what's currently playing |
 | `switch_audio` | Switch between Node and browser audio backends at runtime |
+| `set_context` | Set coding context so music adapts to your activity |
+| `jam_preview` | Preview a jam layer without adding it to the mix |
+| `mix_analysis` | Analyze the mix for frequency balance, gains, and suggestions |
+| `conduct` | Orchestrate a full band from a single directive |
+| `conduct_evolve` | Evolve all layers through multiple stages |
+| `snapshot_save` | Save the current mix as a named snapshot |
+| `snapshot_load` | Restore a previously saved snapshot |
+| `snapshot_list` | List all saved snapshots |
+| `export_code` | Export current Strudel code with header comments |
 
 ## Multi-Agent Jam Session
 
@@ -208,6 +234,43 @@ Agent 2: jam(role: "bass", prompt: "deep sub bass in C minor")
 Agent 1: jam(role: "melody", prompt: "ethereal sine lead")
 Agent 2: jam_clear(role: "bass")  # remove just the bass layer
 Agent 1: jam_status               # see all active layers
+```
+
+## Conductor Mode
+
+Orchestrate a full band from a single directive — `conduct` generates multiple layers at once.
+
+```
+conduct(directive: "jazz combo in C minor, late night mood")
+# → creates drums, bass, chords, melody layers automatically
+```
+
+Band templates are auto-detected from the directive:
+- **jazz combo** — drums, bass, chords, melody
+- **rock band** — drums, bass, chords, lead
+- **electronic** — drums, bass, pads, lead, fx
+- **ambient** — pads, atmosphere, fx, melody
+- **full band** — drums, bass, chords, melody, pads, fx
+- **minimal** — drums, bass, melody
+- **orchestral** — bass, chords, pads, melody, fx, atmosphere
+
+Use `conduct_evolve` to evolve all layers through stages:
+
+```
+conduct_evolve(directive: "shift darker", stages: 3)
+# → evolves each layer 3 times with 15s pauses
+```
+
+## Mix Snapshots
+
+Save and restore your mixes:
+
+```
+snapshot_save(name: "verse1")    # save the current mix
+snapshot_save(name: "drop")      # save another version
+snapshot_list                    # see all saved snapshots
+snapshot_load(name: "verse1")    # restore and resume playback
+export_code                      # get raw Strudel code with headers
 ```
 
 ## Keyboard Shortcuts (TUI)

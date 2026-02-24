@@ -45,6 +45,9 @@ next-env.d.ts
 *.png
 Screenshot*
 
+# internal planning docs
+FUTURE.md
+
 # secrets and credentials
 .mcpregistry_*
 .npmrc
