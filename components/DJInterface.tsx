@@ -871,7 +871,7 @@ export function DJInterface() {
             transition: 'transform 0.15s ease-out',
           }}
         >
-          <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} onClickCharacter={handleBingBong} />
+          <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} crtEnabled={crtEnabled} onClickCharacter={handleBingBong} />
           <SpeechBubble text={currentMcCommentary} isVisible={isSpeaking || !!currentMcCommentary} color={theme.text} />
         </div>
       </div>
