@@ -820,7 +820,7 @@ export function DJInterface() {
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> • To use in CLI, run NPX DJ-CLAUDE</pre>
+                    <pre className="m-0 flex-1"> • Claude Code: /install plugin dj-claude</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={{ fontFamily: 'inherit' }}>
