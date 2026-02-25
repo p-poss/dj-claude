@@ -10,6 +10,7 @@ interface CodeParserResult {
   nightMode?: boolean;
   discoMode?: boolean;
   raveMode?: boolean;
+  liveMixMode?: boolean;
 }
 
 export function useCodeParser(streamingText: string): CodeParserResult {
@@ -80,6 +81,7 @@ export function useCodeParser(streamingText: string): CodeParserResult {
               nightMode: typeof parsed.nightMode === 'boolean' ? parsed.nightMode : undefined,
               discoMode: typeof parsed.discoMode === 'boolean' ? parsed.discoMode : undefined,
               raveMode: typeof parsed.raveMode === 'boolean' ? parsed.raveMode : undefined,
+              liveMixMode: typeof parsed.liveMixMode === 'boolean' ? parsed.liveMixMode : undefined,
             };
           }
         } catch {

@@ -20,7 +20,7 @@ export function DJInterface() {
   const { theme, toggleSwap, isSwapped, setSwapped } = useTheme();
   const { selectedElevenLabsVoice } = useVoice();
   const { streamCode } = useClaudeStream();
-  const { isComplete, extractedCode, displayCode, mcCommentary, nightMode, discoMode, raveMode } = useCodeParser(state.streamingCode);
+  const { isComplete, extractedCode, displayCode, mcCommentary, nightMode, discoMode, raveMode, liveMixMode } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
 
   const editorRef = useRef<StrudelEditorAPI>(null);
@@ -49,6 +49,16 @@ export function DJInterface() {
   const [splashMounted, setSplashMounted] = useState(true);
   const [promptCount, setPromptCount] = useState(0);
   const [promptHasValue, setPromptHasValue] = useState(false);
+  const [liveMixActive, setLiveMixActive] = useState(false);
+  const liveMixTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const currentCodeRef = useRef(state.currentCode);
+  currentCodeRef.current = state.currentCode;
+  const messagesRef = useRef(state.messages);
+  messagesRef.current = state.messages;
+  const streamCodeRef = useRef(streamCode);
+  streamCodeRef.current = streamCode;
+  const isStreamingRef = useRef(state.isStreaming);
+  isStreamingRef.current = state.isStreaming;
 
   // Splash screen fade out
   useEffect(() => {
@@ -164,6 +174,14 @@ export function DJInterface() {
     "The decks are set. Give me something to work with.",
   ];
 
+  const evolutionPrompts = [
+    "Evolve this into something fresh. Keep the key and tempo. Modify some elements — swap a synth, shift the rhythm, add or remove a layer. It should feel like a natural transition, not a new track.",
+    "Take this pattern and push it forward. Change up the melody or rhythm while keeping the same energy. Smooth transition — like a DJ blending into the next phrase.",
+    "Time to switch things up. Keep the foundation but introduce a new element — a different lead sound, a rhythmic variation, or a texture change. Keep it cohesive.",
+    "Build on what's playing. Add complexity or strip something back. Change the feel slightly — maybe more driving, maybe more spacious. Natural evolution only.",
+    "Remix this live. Keep the tempo and key but rework the arrangement — new patterns, different sounds, shifted emphasis. It should sound like the next chapter of the same set.",
+  ];
+
   // Short phrases for idle DJ commentary — mix of chill and energetic
   const idleHypePhrases = [
     "Yeah.",
@@ -229,6 +247,45 @@ export function DJInterface() {
     return () => clearTimeout(timer);
   }, [isPlaying, mcEnabled, state.isStreaming, isSpeaking, speak]);
 
+  // Live mix auto-evolution loop
+  // Uses refs to avoid re-triggering on every state change
+  useEffect(() => {
+    if (!liveMixActive || !currentCodeRef.current) return;
+
+    let cancelled = false;
+
+    const scheduleEvolution = () => {
+      liveMixTimerRef.current = setTimeout(async () => {
+        if (cancelled || !currentCodeRef.current || isStreamingRef.current) return;
+
+        const prompt = evolutionPrompts[Math.floor(Math.random() * evolutionPrompts.length)];
+        setPromptCount(c => c + 1);
+        try {
+          await streamCodeRef.current({
+            prompt,
+            currentCode: currentCodeRef.current,
+            history: messagesRef.current,
+          });
+        } catch (err) {
+          console.error('Live mix evolution error:', err);
+        }
+
+        // Schedule next evolution after this one completes
+        if (!cancelled) {
+          scheduleEvolution();
+        }
+      }, 45000 + Math.random() * 30000);
+    };
+
+    scheduleEvolution();
+
+    return () => {
+      cancelled = true;
+      if (liveMixTimerRef.current) clearTimeout(liveMixTimerRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveMixActive]);
+
   // Update strudel editor code as streaming happens
   // This shows the code being "typed" in the editor
   useEffect(() => {
@@ -249,6 +306,7 @@ export function DJInterface() {
       if (typeof nightMode === 'boolean') setSwapped(nightMode);
       if (typeof discoMode === 'boolean') setPartyEnabled(discoMode);
       if (typeof raveMode === 'boolean') setCrtEnabled(raveMode);
+      if (typeof liveMixMode === 'boolean') setLiveMixActive(liveMixMode);
 
       // Start MC commentary TTS if available and MC mode is enabled
       if (mcCommentary) {
@@ -274,7 +332,7 @@ export function DJInterface() {
           });
       }, 100);
     }
-  }, [isComplete, extractedCode, mcCommentary, nightMode, discoMode, raveMode, dispatch, speak, mcEnabled, setSwapped, promptCount]);
+  }, [isComplete, extractedCode, mcCommentary, nightMode, discoMode, raveMode, liveMixMode, dispatch, speak, mcEnabled, setSwapped, promptCount]);
 
   // Reset execution flag and stop TTS when new stream starts
   // Refocus input when streaming ends
@@ -443,6 +501,9 @@ export function DJInterface() {
       editorRef.current.stop();
     }
     setIsPlaying(false);
+    setLiveMixActive(false);
+    // Prevent auto-execute of any in-flight stream from overriding the pause
+    hasExecutedRef.current = true;
     dispatch({ type: 'HUSH' });
   }, [dispatch]);
 
@@ -538,12 +599,17 @@ export function DJInterface() {
   }, [state.previousCode, dispatch]);
 
   const handleBingBong = useCallback((headphonesGoingDown: boolean) => {
-    const message = headphonesGoingDown ? 'Yee-haw!' : 'Bing Bong!';
+    const message = headphonesGoingDown ? 'Do you like my hat?' : 'And we\'re back.';
     setCurrentMcCommentary(message);
     speak(message);
     if (bingBongTimerRef.current) clearTimeout(bingBongTimerRef.current);
     bingBongTimerRef.current = setTimeout(() => setCurrentMcCommentary(''), 3000);
   }, [speak]);
+
+  const handleToggleLiveMix = useCallback(() => {
+    unlockAudio();
+    setLiveMixActive(prev => !prev);
+  }, [unlockAudio]);
 
   return (
     <>
@@ -703,6 +769,7 @@ export function DJInterface() {
                   <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
                 </div>
               </button>
+
             </div>
           </div>
 
@@ -814,14 +881,16 @@ export function DJInterface() {
             <PromptInput
               ref={promptInputRef}
               onSubmit={handlePromptSubmit}
-              disabled={state.isStreaming || !editorReady}
+              disabled={state.isStreaming || !editorReady || liveMixActive}
               isStreaming={state.isStreaming}
               placeholder={
-                state.isStreaming
-                  ? streamingMessages[streamingMessageIndex]
-                  : editorReady
-                    ? "Make it darker, Add percussion, Speed it up..."
-                    : "Initializing..."
+                liveMixActive
+                  ? '\u00A0\u00A0LIVE MIX active — toggle off to take control'
+                  : state.isStreaming
+                    ? streamingMessages[streamingMessageIndex]
+                    : editorReady
+                      ? "Make it darker, Add percussion, Speed it up..."
+                      : "Initializing..."
               }
               themeColors={{
                 text: theme.text,
@@ -835,14 +904,14 @@ export function DJInterface() {
           {/* Submit button - mobile only */}
           <button
             onClick={() => promptInputRef.current?.submit()}
-            disabled={!promptHasValue || state.isStreaming || !editorReady}
+            disabled={!promptHasValue || state.isStreaming || !editorReady || liveMixActive}
             data-testid="submit-button"
             aria-label="Submit"
-            aria-disabled={!promptHasValue || state.isStreaming || !editorReady}
-            className={`group phosphor-glow ascii-box text-xs select-none ${promptHasValue && !state.isStreaming && editorReady ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-            style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, opacity: promptHasValue && !state.isStreaming && editorReady ? 1 : 0.3 }}
+            aria-disabled={!promptHasValue || state.isStreaming || !editorReady || liveMixActive}
+            className={`group phosphor-glow ascii-box text-xs select-none ${promptHasValue && !state.isStreaming && editorReady && !liveMixActive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            style={{ width: 'fit-content', lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text, opacity: promptHasValue && !state.isStreaming && editorReady && !liveMixActive ? 1 : 0.3 }}
           >
-            <div className={promptHasValue && !state.isStreaming && editorReady ? 'group-hover:opacity-30' : ''}>
+            <div className={promptHasValue && !state.isStreaming && editorReady && !liveMixActive ? 'group-hover:opacity-30' : ''}>
               <pre className="m-0">╔═══╗</pre>
               <div className="flex" style={{ fontFamily: 'inherit' }}>
                 <pre className="m-0">║</pre>
@@ -900,6 +969,28 @@ export function DJInterface() {
               <pre className="m-0">║</pre>
             </div>
             <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+          </div>
+        </button>
+
+        {/* Live Mix toggle button */}
+        <button
+          onClick={state.currentCode ? handleToggleLiveMix : undefined}
+          disabled={!state.currentCode}
+          data-testid="live-mix-button"
+          aria-label={liveMixActive ? 'Stop live mix' : 'Start live mix'}
+          aria-pressed={liveMixActive}
+          aria-disabled={!state.currentCode}
+          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          style={{ width: 'fit-content' }}
+        >
+          <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
+            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+            <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <pre className="m-0">║</pre>
+              <pre className="m-0 flex-1 text-center">{liveMixActive ? 'LIVE MIX: On' : 'LIVE MIX: Off'}</pre>
+              <pre className="m-0">║</pre>
+            </div>
+            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
           </div>
         </button>
 
