@@ -2,6 +2,9 @@ import Anthropic from '@anthropic-ai/sdk';
 import { SYSTEM_PROMPT } from '@/lib/prompts';
 import { Message } from '@/lib/types';
 
+export const runtime = 'nodejs';
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   try {
     const apiKey = process.env.ANTHROPIC_API_KEY;
