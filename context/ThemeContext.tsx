@@ -61,6 +61,7 @@ interface ThemeContextType {
   selectTheme: (index: number) => void;
   isSwapped: boolean;
   toggleSwap: () => void;
+  setSwapped: (value: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
@@ -84,8 +85,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setIsSwapped((prev) => !prev);
   }, []);
 
+  const setSwappedValue = useCallback((value: boolean) => {
+    setIsSwapped(value);
+  }, []);
+
   return (
-    <ThemeContext.Provider value={{ theme, themeName: theme.name, themeIndex, cycleTheme, selectTheme, isSwapped, toggleSwap }}>
+    <ThemeContext.Provider value={{ theme, themeName: theme.name, themeIndex, cycleTheme, selectTheme, isSwapped, toggleSwap, setSwapped: setSwappedValue }}>
       {children}
     </ThemeContext.Provider>
   );

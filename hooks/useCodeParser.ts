@@ -7,6 +7,9 @@ interface CodeParserResult {
   extractedCode: string;
   displayCode: string;  // Code without markdown backticks for display
   mcCommentary: string; // MC commentary for TTS
+  nightMode?: boolean;
+  discoMode?: boolean;
+  raveMode?: boolean;
 }
 
 export function useCodeParser(streamingText: string): CodeParserResult {
@@ -74,6 +77,9 @@ export function useCodeParser(streamingText: string): CodeParserResult {
               extractedCode: code.trim(),
               displayCode: code.trim(),
               mcCommentary: parsed.mcCommentary || '',
+              nightMode: typeof parsed.nightMode === 'boolean' ? parsed.nightMode : undefined,
+              discoMode: typeof parsed.discoMode === 'boolean' ? parsed.discoMode : undefined,
+              raveMode: typeof parsed.raveMode === 'boolean' ? parsed.raveMode : undefined,
             };
           }
         } catch {

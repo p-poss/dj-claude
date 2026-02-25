@@ -17,10 +17,10 @@ import { ClubSelector } from './ClubSelector';
 
 export function DJInterface() {
   const { state, dispatch } = useDJ();
-  const { theme, toggleSwap, isSwapped } = useTheme();
+  const { theme, toggleSwap, isSwapped, setSwapped } = useTheme();
   const { selectedElevenLabsVoice } = useVoice();
   const { streamCode } = useClaudeStream();
-  const { isComplete, extractedCode, displayCode, mcCommentary } = useCodeParser(state.streamingCode);
+  const { isComplete, extractedCode, displayCode, mcCommentary, nightMode, discoMode, raveMode } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
 
   const editorRef = useRef<StrudelEditorAPI>(null);
@@ -245,6 +245,11 @@ export function DJInterface() {
       // Set final code in editor
       editorRef.current.setCode(extractedCode);
 
+      // Apply visual mode controls from agent response
+      if (typeof nightMode === 'boolean') setSwapped(nightMode);
+      if (typeof discoMode === 'boolean') setPartyEnabled(discoMode);
+      if (typeof raveMode === 'boolean') setCrtEnabled(raveMode);
+
       // Start MC commentary TTS if available and MC mode is enabled
       if (mcCommentary) {
         setCurrentMcCommentary(mcCommentary);
@@ -269,7 +274,7 @@ export function DJInterface() {
           });
       }, 100);
     }
-  }, [isComplete, extractedCode, mcCommentary, dispatch, speak, mcEnabled, promptCount]);
+  }, [isComplete, extractedCode, mcCommentary, nightMode, discoMode, raveMode, dispatch, speak, mcEnabled, setSwapped, promptCount]);
 
   // Reset execution flag and stop TTS when new stream starts
   // Refocus input when streaming ends
