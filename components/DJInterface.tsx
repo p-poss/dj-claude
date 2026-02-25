@@ -584,6 +584,9 @@ export function DJInterface() {
       // Set previous code in editor
       editorRef.current.setCode(state.previousCode);
 
+      // Prevent auto-execute of any in-flight stream from overriding the revert
+      hasExecutedRef.current = true;
+
       // Evaluate to play the previous code
       try {
         await editorRef.current.evaluate(state.previousCode);
