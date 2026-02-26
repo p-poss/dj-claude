@@ -252,6 +252,7 @@ Guidelines:
 - Turn off liveMixMode when the user wants to take manual control or stop the auto-evolution
 - If the user explicitly asks to enable/disable a mode, always comply
 - Don't toggle modes on every response — only when the vibe meaningfully shifts
+- When changing a visual mode, always tell the user in your mcCommentary what you're changing and why (e.g. "Switching on night mode to match this dark ambient vibe")
 
 ## Prompt Interpretation
 
