@@ -302,7 +302,7 @@ export function DJInterface() {
         if (!cancelled) {
           scheduleEvolution();
         }
-      }, 45000 + Math.random() * 30000);
+      }, 40000 + Math.random() * 20000);
     };
 
     scheduleEvolution();

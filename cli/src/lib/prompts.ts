@@ -91,7 +91,7 @@ Usage examples:
 
 ### Advanced Pattern Techniques
 - .superimpose(fn) — layer a transformed copy ON TOP of the original
-  e.g. note("c3 e3 g3").superimpose(x => x.add(12)) — octave doubling
+  e.g. note("c3 e3 g3").superimpose(x => x.add(12)).s("sawtooth") — octave doubling (apply .add() BEFORE .s()!)
 - .arp("up") / .arp("down") / .arp("updown") — arpeggiate chords
   e.g. note("[c3,e3,g3,b3]").arp("up").s("triangle") — rising arp
 - .struct("x ~ x x ~ x ~ x") — impose a rhythmic structure on any pattern
@@ -126,7 +126,8 @@ Usage examples:
 7. When using .scale(), use n() with numbers, NOT note() with letter names
 8. .slow() makes patterns LONGER/SLOWER, .fast() makes them SHORTER/FASTER
 9. .cpm() goes on the outermost pattern, not individual layers
-10. NEVER use .shape(), .crush(), or .coarse() — they require AudioWorklet which is not available`;
+10. NEVER use .shape(), .crush(), or .coarse() — they require AudioWorklet which is not available
+11. NEVER use .add() inside .superimpose() or .jux() AFTER .s() or other control methods like .gain(), .lpf() — this causes "Can't do arithmetic on control pattern" console spam. Always place .superimpose(x => x.add(12)) or .jux(x => x.add(0.05)) BEFORE .s() in the chain`;
 
 // ---------------------------------------------------------------------------
 // Full system prompt — used by the main generateAndPlay flow.
@@ -228,9 +229,9 @@ Build grooves with character, not just metronomic hits:
 - Use .speed() on percussion to pitch-shift drums into new territory
 - Detune layers: stack the same synth note with one copy slightly .speed(1.01) for thickness
 - Use sample variants (bd:0, bd:1, sd:0, sd:1) for subtle timbral shifts in drum patterns
-- Unison detune: superimpose the same note with .add(0.1) for subtle chorus/thickness
-- Wide unison: .jux(x => x.add(0.05)) for stereo detune effect
-- Octave layers: .superimpose(x => x.add(12).gain(0.3)) for instant fullness
+- Unison detune: note("c3").superimpose(x => x.add(0.1)).s("sawtooth") — .add() BEFORE .s() to avoid control pattern warnings
+- Wide unison: note("c3").jux(x => x.add(0.05)).s("sawtooth") — .add() BEFORE .s()
+- Octave layers: n("0 2 4").superimpose(x => x.add(12)).s("sawtooth").gain(0.3) — octave doubling before synth/effects
 - FM bass: note("c1").s("sine").fmh(2).fmi(3).lpf(400) — sub bass with harmonic complexity
 
 ## Prompt Interpretation
@@ -302,7 +303,7 @@ User: "something dark and heavy"
 
 User: "make it funky"
 {
-  "code": "stack(\\n  n(\\"0 ~ 0 ~ ~ 3 ~ 5\\")\\n    .scale(\\"C:dorian\\")\\n    .s(\\"sawtooth\\")\\n    .lpf(900)\\n    .gain(0.6),\\n  n(\\"<[0,2,4,6] ~ [3,5,7,9] [~ [4,6,8,10]]>/2\\")\\n    .scale(\\"C:dorian\\")\\n    .s(\\"square\\")\\n    .lpf(1800)\\n    .attack(0.005).decay(0.15).sustain(0.05).release(0.1)\\n    .gain(0.3)\\n    .room(0.2)\\n    .superimpose(x => x.add(12).gain(0.15)),\\n  n(\\"<7 ~ 9 [8 7]> <~ 4 ~ 5>\\")\\n    .scale(\\"C:dorian\\")\\n    .s(\\"square\\")\\n    .lpf(2500)\\n    .gain(0.2)\\n    .delay(0.2).delaytime(0.125),\\n  s(\\"bd ~ [bd ~] [~ bd]\\")\\n    .gain(0.8),\\n  s(\\"~ sd ~ [sd ~ sd?]\\")\\n    .gain(0.6)\\n    .room(0.15),\\n  s(\\"[~ hh]*4\\")\\n    .gain(0.35),\\n  s(\\"cp(5,8)\\")\\n    .gain(0.25)\\n    .pan(0.7)\\n    .every(3, x => x.rev()),\\n  s(\\"cb*8\\")\\n    .gain(perlin.range(0.05, 0.2))\\n    .pan(sine.slow(2))\\n).swing(0.6).cpm(63).hpf(40)",
+  "code": "stack(\\n  n(\\"0 ~ 0 ~ ~ 3 ~ 5\\")\\n    .scale(\\"C:dorian\\")\\n    .s(\\"sawtooth\\")\\n    .lpf(900)\\n    .gain(0.6),\\n  n(\\"<[0,2,4,6] ~ [3,5,7,9] [~ [4,6,8,10]]>/2\\")\\n    .scale(\\"C:dorian\\")\\n    .superimpose(x => x.add(12))\\n    .s(\\"square\\")\\n    .lpf(1800)\\n    .attack(0.005).decay(0.15).sustain(0.05).release(0.1)\\n    .gain(0.3)\\n    .room(0.2),\\n  n(\\"<7 ~ 9 [8 7]> <~ 4 ~ 5>\\")\\n    .scale(\\"C:dorian\\")\\n    .s(\\"square\\")\\n    .lpf(2500)\\n    .gain(0.2)\\n    .delay(0.2).delaytime(0.125),\\n  s(\\"bd ~ [bd ~] [~ bd]\\")\\n    .gain(0.8),\\n  s(\\"~ sd ~ [sd ~ sd?]\\")\\n    .gain(0.6)\\n    .room(0.15),\\n  s(\\"[~ hh]*4\\")\\n    .gain(0.35),\\n  s(\\"cp(5,8)\\")\\n    .gain(0.25)\\n    .pan(0.7)\\n    .every(3, x => x.rev()),\\n  s(\\"cb*8\\")\\n    .gain(perlin.range(0.05, 0.2))\\n    .pan(sine.slow(2))\\n).swing(0.6).cpm(63).hpf(40)",
   "mcCommentary": "Dorian scale funk with staccato chord stabs. Swing feel and superimposed octaves. Groove city!"
 }
 
