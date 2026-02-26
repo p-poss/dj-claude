@@ -22,7 +22,7 @@ export default function RootLayout({
       <head>
         <link rel="preload" href="https://unpkg.com/@strudel/repl@latest" as="script" />
       </head>
-      <body className="antialiased crt-screen">
+      <body className="antialiased">
         <ThemeProvider>
           <VoiceProvider>
             <DJProvider>
