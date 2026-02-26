@@ -73,6 +73,14 @@ const IDLE_HYPE_PHRASES = [
   "There it is.",
 ];
 
+// Reusable inline style objects — created once, shared across all renders
+const FIT_CONTENT_STYLE: React.CSSProperties = { width: 'fit-content' };
+const FIT_CONTENT_ML_AUTO_STYLE: React.CSSProperties = { width: 'fit-content', marginLeft: 'auto' };
+const FONT_INHERIT_STYLE: React.CSSProperties = { fontFamily: 'inherit' };
+const FLEX_GAP_STYLE: React.CSSProperties = { columnGap: '8px', rowGap: '0px' };
+const DROPDOWN_STYLE: React.CSSProperties = { top: '100%' };
+const MIN_HEIGHT_STYLE: React.CSSProperties = { minHeight: '35px' };
+
 const LOGO_RESPONSIVE_STYLES = `
   .logo-full { display: block; }
   .logo-no-e { display: none; }
@@ -153,6 +161,8 @@ export function DJInterface() {
   streamCodeRef.current = streamCode;
   const isStreamingRef = useRef(state.isStreaming);
   isStreamingRef.current = state.isStreaming;
+  const isPlayingRef = useRef(isPlaying);
+  isPlayingRef.current = isPlaying;
 
   // Splash screen fade out
   useEffect(() => {
@@ -264,13 +274,13 @@ export function DJInterface() {
         // Double-check conditions before speaking (state may have changed)
         const randomPhrase = IDLE_HYPE_PHRASES[Math.floor(Math.random() * IDLE_HYPE_PHRASES.length)];
         setCurrentMcCommentary(randomPhrase);
-        speak(randomPhrase);
+        speakRef.current(randomPhrase);
       }, getRandomDelay());
     };
 
     const timer = scheduleNextPhrase();
     return () => clearTimeout(timer);
-  }, [isPlaying, mcEnabled, state.isStreaming, isSpeaking, speak]);
+  }, [isPlaying, mcEnabled, state.isStreaming, isSpeaking]);
 
   // Live mix auto-evolution loop
   // Uses refs to avoid re-triggering on every state change
@@ -540,23 +550,27 @@ export function DJInterface() {
     }
   }, [isPlaying, handlePause, handlePlay]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts — uses refs for frequently-changing state to avoid listener churn
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Space to toggle play/pause (only when not focused on input)
-      if (e.key === ' ' && state.currentCode && document.activeElement?.tagName !== 'INPUT') {
+      if (e.key === ' ' && currentCodeRef.current && document.activeElement?.tagName !== 'INPUT') {
         e.preventDefault();
-        handleTogglePlayback();
+        if (isPlayingRef.current) {
+          handlePause();
+        } else {
+          handlePlay();
+        }
       }
       // Escape to pause
-      if (e.key === 'Escape' && isPlaying) {
+      if (e.key === 'Escape' && isPlayingRef.current) {
         handlePause();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPlaying, state.currentCode, handleTogglePlayback, handlePause]);
+  }, [handlePause, handlePlay]);
 
   // Handle editor ready
   const handleEditorReady = useCallback(() => {
@@ -637,16 +651,16 @@ export function DJInterface() {
       {/* ASCII Header - displayed above the editor */}
       {/* Box drawn with separate elements for perfect alignment */}
       <div className="pt-4 pb-2 text-xs select-none phosphor-glow" style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: theme.text }}>
-        <div className="flex flex-wrap items-start justify-between" style={{ columnGap: '8px', rowGap: '0px' }}>
+        <div className="flex flex-wrap items-start justify-between" style={FLEX_GAP_STYLE}>
 
           {/* Container A: Logo / Status / Controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
             {/* Row 1: Welcome box + On Deck status (hidden on mobile) */}
-            <div className="hidden md:flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+            <div className="hidden md:flex flex-wrap items-start" style={FLEX_GAP_STYLE}>
               {/* Welcome box */}
-              <div className="ascii-box" style={{ width: 'fit-content' }}>
+              <div className="ascii-box" style={FIT_CONTENT_STYLE}>
                 <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <div className="flex" style={FONT_INHERIT_STYLE}>
                   <pre className="m-0">║</pre>
                   <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 0.1.17</span></pre>
                   <pre className="m-0">║</pre>
@@ -655,9 +669,9 @@ export function DJInterface() {
               </div>
 
               {/* Playing status box */}
-              <div className="ascii-box" style={{ width: 'fit-content' }}>
+              <div className="ascii-box" style={FIT_CONTENT_STYLE}>
                 <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-                <div className="flex" style={{ fontFamily: 'inherit' }}>
+                <div className="flex" style={FONT_INHERIT_STYLE}>
                   <pre className="m-0">║</pre>
                   <pre className="m-0 flex-1 text-center">
                     {!editorReady ? '◌ Booting Up' : state.isStreaming ? <><span className="queuing-pulse">◎</span> Queuing</> : isPlaying ? '● Mixing' : state.currentCode ? '○ On Break' : '○ On Deck'}
@@ -702,7 +716,7 @@ export function DJInterface() {
             </div>
 
             {/* Row 3: Night, Disco, Rave */}
-            <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+            <div className="flex flex-wrap items-start" style={FLEX_GAP_STYLE}>
               {/* Night toggle button */}
               <button
                 onClick={toggleSwap}
@@ -710,11 +724,11 @@ export function DJInterface() {
                 aria-label="Toggle color flip"
                 aria-pressed={isSwapped}
                 className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
+                style={FIT_CONTENT_STYLE}
               >
                 <div className="group-hover:opacity-30">
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
                     <pre className="m-0">║</pre>
@@ -730,11 +744,11 @@ export function DJInterface() {
                 aria-label="Toggle disco mode"
                 aria-pressed={partyEnabled}
                 className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
+                style={FIT_CONTENT_STYLE}
               >
                 <div className="group-hover:opacity-30">
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DISCO: On' : 'DISCO: Off'}</pre>
                     <pre className="m-0">║</pre>
@@ -750,11 +764,11 @@ export function DJInterface() {
                 aria-label="Toggle rave mode"
                 aria-pressed={crtEnabled}
                 className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
+                style={FIT_CONTENT_STYLE}
               >
                 <div className="group-hover:opacity-30">
                   <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
                     <pre className="m-0">║</pre>
@@ -767,7 +781,7 @@ export function DJInterface() {
           </div>
 
           {/* Container B: Info + MC */}
-          <div className="flex flex-wrap items-start" style={{ columnGap: '8px', rowGap: '0px' }}>
+          <div className="flex flex-wrap items-start" style={FLEX_GAP_STYLE}>
             {/* Info button with modal */}
             <div ref={infoRef} className="relative"
               onMouseEnter={() => { if (!infoPinned) setShowInfo(true); }}
@@ -786,11 +800,11 @@ export function DJInterface() {
                 data-testid="info-button"
                 aria-label="Show info"
                 className="group phosphor-glow ascii-box cursor-pointer"
-                style={{ width: 'fit-content' }}
+                style={FIT_CONTENT_STYLE}
               >
                 <div className={`group-hover:opacity-30 ${showInfo ? 'opacity-30' : ''}`}>
                   <pre className="m-0">╔═══╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1 text-center">i</pre>
                     <pre className="m-0">║</pre>
@@ -803,30 +817,30 @@ export function DJInterface() {
               {showInfo && (
                 <div
                   className="absolute left-0 z-50 phosphor-glow ascii-box"
-                  style={{ top: '100%' }}
+                  style={DROPDOWN_STYLE}
                 >
                   <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> • Agentic live coding music in Strudel</pre>
                     <pre className="m-0">║</pre>
                   </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> • Claude Code: /install plugin dj-claude</pre>
                     <pre className="m-0">║</pre>
                   </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> • AI agents can now DJ while they work</pre>
                     <pre className="m-0">║</pre>
                   </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <a href="https://github.com/p-poss/dj-claude" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> GITHUB: github.com/p-poss/dj-claude</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
-                  <div className="flex" style={{ fontFamily: 'inherit' }}>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> DISCLAIMER: Non-official Anthropic product</pre>
                     <pre className="m-0">║</pre>
@@ -906,7 +920,7 @@ export function DJInterface() {
           >
             <div className={promptHasValue && !state.isStreaming && editorReady && !liveMixActive ? 'group-hover:opacity-30' : ''}>
               <pre className="m-0">╔═══╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">↓</pre>
                 <pre className="m-0">║</pre>
@@ -920,7 +934,7 @@ export function DJInterface() {
 
       {/* Main content area - Strudel Editor as primary view */}
       {/* This enables inline visualizations (pianoroll, scope) and mini locations (active highlighting) */}
-      <div className="flex-1 relative" style={{ minHeight: '35px' }}>
+      <div className="flex-1 relative" style={MIN_HEIGHT_STYLE}>
         <StrudelEditor
           ref={editorRef}
           onReady={handleEditorReady}
@@ -952,11 +966,11 @@ export function DJInterface() {
           aria-label={isPlaying ? 'Pause music' : 'Play music'}
           aria-disabled={!state.currentCode}
           className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-          style={{ width: 'fit-content' }}
+          style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
             <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
+            <div className="flex" style={FONT_INHERIT_STYLE}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">{isPlaying ? '▪ PAUSE' : '▶ PLAY'}</pre>
               <pre className="m-0">║</pre>
@@ -974,11 +988,11 @@ export function DJInterface() {
           aria-pressed={liveMixActive}
           aria-disabled={!state.currentCode}
           className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-          style={{ width: 'fit-content' }}
+          style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
             <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
+            <div className="flex" style={FONT_INHERIT_STYLE}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">{liveMixActive ? 'LIVE MIX: On' : 'LIVE MIX: Off'}</pre>
               <pre className="m-0">║</pre>
@@ -995,11 +1009,11 @@ export function DJInterface() {
           aria-label="Re-run"
           aria-disabled={!state.currentCode}
           className={`md:hidden ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
-          style={{ width: 'fit-content', marginLeft: 'auto' }}
+          style={FIT_CONTENT_ML_AUTO_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
             <pre className="m-0">╔═══╗</pre>
-            <div className="flex" style={{ fontFamily: 'inherit' }}>
+            <div className="flex" style={FONT_INHERIT_STYLE}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">⟳</pre>
               <pre className="m-0">║</pre>
@@ -1016,13 +1030,13 @@ export function DJInterface() {
           aria-label="Revert to previous code"
           aria-disabled={!state.previousCode}
           className={`md:!ml-auto ${state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
-          style={{ width: 'fit-content' }}
+          style={FIT_CONTENT_STYLE}
         >
           <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
             {/* Mobile: icon only */}
             <div className="md:hidden">
               <pre className="m-0">╔═══╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">↩</pre>
                 <pre className="m-0">║</pre>
@@ -1032,7 +1046,7 @@ export function DJInterface() {
             {/* Desktop: full label */}
             <div className="hidden md:block">
               <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">↩ REVERT</pre>
                 <pre className="m-0">║</pre>
@@ -1050,13 +1064,13 @@ export function DJInterface() {
           aria-label="Copy code to clipboard"
           aria-disabled={!state.currentCode}
           className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
-          style={{ width: 'fit-content' }}
+          style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
             {/* Mobile: icon only */}
             <div className="md:hidden">
               <pre className="m-0">╔═══╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">{copied ? '✓' : '⎘'}</pre>
                 <pre className="m-0">║</pre>
@@ -1066,7 +1080,7 @@ export function DJInterface() {
             {/* Desktop: full label */}
             <div className="hidden md:block">
               <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-              <div className="flex" style={{ fontFamily: 'inherit' }}>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">{copied ? '✓ COPIED!' : '⎘ EXPORT'}</pre>
                 <pre className="m-0">║</pre>

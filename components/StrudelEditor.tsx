@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, useState, useMemo, memo, forwardRef, useImperativeHandle } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 // Module-level flag to track if editor has been initialized (persists across remounts)
@@ -206,7 +206,7 @@ interface StrudelEditorProps {
   onError?: (error: string) => void;
 }
 
-export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
+export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProps>(
   function StrudelEditor({ initialCode = '', onReady, onError }, ref) {
     const { theme } = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
@@ -646,4 +646,4 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
       </>
     );
   }
-);
+));
