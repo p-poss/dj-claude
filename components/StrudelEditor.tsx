@@ -6,6 +6,191 @@ import { useTheme } from '@/context/ThemeContext';
 // Module-level flag to track if editor has been initialized (persists across remounts)
 let editorHasBeenInitialized = false;
 
+// Helper to convert hex to rgba
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// Static CSS using CSS custom properties — never changes between renders
+const STRUDEL_STYLES = `
+  /* Strudel editor wrapper - dynamic theme styling */
+  .strudel-editor-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .strudel-editor-wrapper strudel-editor {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+  }
+  /* Force CodeMirror to fill container */
+  .strudel-editor-wrapper .cm-editor {
+    height: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: transparent !important;
+  }
+  .strudel-editor-wrapper .cm-scroller {
+    overflow: auto !important;
+    height: 100% !important;
+    background-color: transparent !important;
+    /* Hide scrollbar visually but keep scroll functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+  }
+  .strudel-editor-wrapper .cm-scroller::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Opera */
+  }
+  /* Theme-aware syntax styling */
+  .strudel-editor-wrapper .cm-content {
+    color: var(--strudel-text) !important;
+    caret-color: var(--strudel-text) !important;
+  }
+  .strudel-editor-wrapper .cm-cursor {
+    border-left-color: var(--strudel-text) !important;
+    border-left-width: 2px !important;
+  }
+  .strudel-editor-wrapper .cm-selectionBackground {
+    background-color: var(--strudel-text-30) !important;
+  }
+  .strudel-editor-wrapper .cm-gutters {
+    background-color: var(--strudel-text) !important;
+    border-right: none !important;
+    width: 32px !important;
+    min-width: 32px !important;
+  }
+  .strudel-editor-wrapper .cm-lineNumbers {
+    width: 32px !important;
+    min-width: 32px !important;
+  }
+  .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
+    color: transparent !important;
+    font-size: 0 !important;
+    width: 32px !important;
+    min-width: 32px !important;
+    position: relative !important;
+  }
+  .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 9px;
+    height: 9px;
+    border-radius: 1px;
+    background: var(--strudel-bg);
+  }
+  /* Circle inner glow when CRT mode is enabled */
+  body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
+    box-shadow:
+      inset 0 0 2px var(--strudel-text),
+      inset 0 0 4px var(--strudel-text),
+      inset 0 0 8px var(--strudel-text);
+  }
+  /* Glowing gutter when CRT mode is enabled */
+  body.crt-screen .strudel-editor-wrapper .cm-gutters {
+    box-shadow:
+      0 0 2px var(--strudel-text),
+      0 0 4px var(--strudel-text),
+      0 0 8px var(--strudel-text) !important;
+  }
+  /* Outer border glow when CRT mode is enabled - both outward and inward */
+  body.crt-screen .strudel-editor-wrapper {
+    box-shadow:
+      0 0 2px var(--strudel-text),
+      0 0 4px var(--strudel-text),
+      0 0 8px var(--strudel-text),
+      inset 0 0 2px var(--strudel-text),
+      inset 0 0 4px var(--strudel-text),
+      inset 0 0 8px var(--strudel-text) !important;
+  }
+  /* Keyboard hint glow when CRT mode is enabled */
+  body.crt-screen .keyboard-hint {
+    text-shadow:
+      0 0 2px var(--strudel-text),
+      0 0 4px var(--strudel-text),
+      0 0 8px var(--strudel-text);
+  }
+  .strudel-editor-wrapper .cm-activeLine {
+    background-color: var(--strudel-text-05) !important;
+  }
+  /* Override Strudel's CSS variables for theming */
+  .strudel-editor-wrapper {
+    --foreground: var(--strudel-text);
+    --background: var(--strudel-bg);
+  }
+  /* Strudel mini locations (active highlighting) */
+  .strudel-editor-wrapper .cm-strudel-highlight,
+  .strudel-editor-wrapper .cm-strudel-flash {
+    background-color: var(--strudel-text-20) !important;
+    box-shadow: 0 0 8px var(--strudel-text-40) !important;
+  }
+  /* Solid fill for highlighted spans (replaces outline) */
+  .strudel-editor-wrapper span[style*="outline"] {
+    border-radius: 1.5px !important;
+    outline: none !important;
+    background-color: var(--strudel-text) !important;
+  }
+  /* Glow for highlighted spans when CRT mode is enabled */
+  body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
+    box-shadow:
+      0 0 2px var(--strudel-text),
+      0 0 4px var(--strudel-text),
+      0 0 8px var(--strudel-text) !important;
+  }
+  /* Code content glow when CRT mode is enabled */
+  body.crt-screen .strudel-editor-wrapper .cm-content {
+    text-shadow:
+      0 0 2px currentColor,
+      0 0 4px currentColor,
+      0 0 8px currentColor;
+  }
+  /* Slider glow when CRT mode is enabled */
+  body.crt-screen .strudel-editor-wrapper input[type="range"] {
+    color: #7C7C7C; /* Set color to match slider handle for currentColor */
+    filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor);
+  }
+  /* Scope visualization glow when CRT mode is enabled */
+  body.crt-screen .strudel-editor-wrapper canvas {
+    filter:
+      drop-shadow(0 0 2px #FFFFFF)
+      drop-shadow(0 0 4px #FFFFFF);
+  }
+  /* Syntax highlighting - monochromatic theme shades */
+  .strudel-editor-wrapper .cm-string { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-number { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-keyword { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-comment { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-function { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-variableName { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-operator { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-punctuation { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-propertyName { color: var(--strudel-text) !important; }
+  .strudel-editor-wrapper .cm-bracket { color: var(--strudel-text) !important; }
+  /* Fade-in: start hidden, JS will animate in */
+  .strudel-editor-wrapper .cm-editor {
+    opacity: var(--editor-opacity, 0);
+    transition: var(--editor-transition, none);
+  }
+`;
+
 // Editor API interface
 export interface StrudelEditorAPI {
   setCode: (code: string) => void;
@@ -406,197 +591,21 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
       waitForComponent();
     }, [scriptLoaded, initialCode, isLoaded, onReady, onError]);
 
-    // Helper to convert hex to rgba
-    const hexToRgba = (hex: string, alpha: number) => {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    };
-
     return (
       <>
-        <style>{`
-          /* Strudel editor wrapper - dynamic theme styling */
-          .strudel-editor-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-          }
-          .strudel-editor-wrapper strudel-editor {
-            display: block !important;
-            width: 100% !important;
-            height: 100% !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-          }
-          /* Force CodeMirror to fill container */
-          .strudel-editor-wrapper .cm-editor {
-            height: 100% !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            background-color: transparent !important;
-          }
-          .strudel-editor-wrapper .cm-scroller {
-            overflow: auto !important;
-            height: 100% !important;
-            background-color: transparent !important;
-            /* Hide scrollbar visually but keep scroll functionality */
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
-          }
-          .strudel-editor-wrapper .cm-scroller::-webkit-scrollbar {
-            display: none; /* Chrome/Safari/Opera */
-          }
-          /* Theme-aware syntax styling */
-          .strudel-editor-wrapper .cm-content {
-            color: ${theme.text} !important;
-            caret-color: ${theme.text} !important;
-          }
-          .strudel-editor-wrapper .cm-cursor {
-            border-left-color: ${theme.text} !important;
-            border-left-width: 2px !important;
-          }
-          .strudel-editor-wrapper .cm-selectionBackground {
-            background-color: ${hexToRgba(theme.text, 0.3)} !important;
-          }
-          .strudel-editor-wrapper .cm-gutters {
-            background-color: ${theme.text} !important;
-            border-right: none !important;
-            width: 32px !important;
-            min-width: 32px !important;
-          }
-          .strudel-editor-wrapper .cm-lineNumbers {
-            width: 32px !important;
-            min-width: 32px !important;
-          }
-          .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement {
-            color: transparent !important;
-            font-size: 0 !important;
-            width: 32px !important;
-            min-width: 32px !important;
-            position: relative !important;
-          }
-          .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 9px;
-            height: 9px;
-            border-radius: 1px;
-            background: ${theme.background};
-          }
-          /* Circle inner glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper .cm-lineNumbers .cm-gutterElement::before {
-            box-shadow:
-              inset 0 0 2px ${theme.text},
-              inset 0 0 4px ${theme.text},
-              inset 0 0 8px ${theme.text};
-          }
-          /* Glowing gutter when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper .cm-gutters {
-            box-shadow:
-              0 0 2px ${theme.text},
-              0 0 4px ${theme.text},
-              0 0 8px ${theme.text} !important;
-          }
-          /* Outer border glow when CRT mode is enabled - both outward and inward */
-          body.crt-screen .strudel-editor-wrapper {
-            box-shadow:
-              0 0 2px ${theme.text},
-              0 0 4px ${theme.text},
-              0 0 8px ${theme.text},
-              inset 0 0 2px ${theme.text},
-              inset 0 0 4px ${theme.text},
-              inset 0 0 8px ${theme.text} !important;
-          }
-          /* Keyboard hint glow when CRT mode is enabled */
-          body.crt-screen .keyboard-hint {
-            text-shadow:
-              0 0 2px ${theme.text},
-              0 0 4px ${theme.text},
-              0 0 8px ${theme.text};
-          }
-          .strudel-editor-wrapper .cm-activeLine {
-            background-color: ${hexToRgba(theme.text, 0.05)} !important;
-          }
-          /* Override Strudel's CSS variables for theming */
-          .strudel-editor-wrapper {
-            --foreground: ${theme.text};
-            --background: ${theme.background};
-          }
-          /* Strudel mini locations (active highlighting) */
-          .strudel-editor-wrapper .cm-strudel-highlight,
-          .strudel-editor-wrapper .cm-strudel-flash {
-            background-color: ${hexToRgba(theme.text, 0.2)} !important;
-            box-shadow: 0 0 8px ${hexToRgba(theme.text, 0.4)} !important;
-          }
-          /* Solid fill for highlighted spans (replaces outline) */
-          .strudel-editor-wrapper span[style*="outline"] {
-            border-radius: 1.5px !important;
-            outline: none !important;
-            background-color: ${theme.text} !important;
-          }
-          /* Glow for highlighted spans when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper span[style*="outline"] {
-            box-shadow:
-              0 0 2px ${theme.text},
-              0 0 4px ${theme.text},
-              0 0 8px ${theme.text} !important;
-          }
-                              /* Code content glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper .cm-content {
-            text-shadow:
-              0 0 2px currentColor,
-              0 0 4px currentColor,
-              0 0 8px currentColor;
-          }
-          /* Slider glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper input[type="range"] {
-            color: #7C7C7C; /* Set color to match slider handle for currentColor */
-            filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 4px currentColor);
-          }
-          /* Scope visualization glow when CRT mode is enabled */
-          body.crt-screen .strudel-editor-wrapper canvas {
-            filter:
-              drop-shadow(0 0 2px #FFFFFF)
-              drop-shadow(0 0 4px #FFFFFF);
-          }
-          /* Syntax highlighting - monochromatic theme shades */
-          .strudel-editor-wrapper .cm-string { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-number { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-keyword { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-comment { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-function { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-variableName { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-operator { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-punctuation { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-propertyName { color: ${theme.text} !important; }
-          .strudel-editor-wrapper .cm-bracket { color: ${theme.text} !important; }
-          /* Fade-in: start hidden, JS will animate in */
-          .strudel-editor-wrapper .cm-editor {
-            opacity: var(--editor-opacity, 0);
-            transition: var(--editor-transition, none);
-          }
-        `}</style>
+        <style>{STRUDEL_STYLES}</style>
         <div
           ref={containerRef}
           data-testid="strudel-editor"
           data-code={currentCode}
           className="strudel-editor-wrapper phosphor-glow"
           style={{
+            '--strudel-text': theme.text,
+            '--strudel-bg': theme.background,
+            '--strudel-text-30': hexToRgba(theme.text, 0.3),
+            '--strudel-text-20': hexToRgba(theme.text, 0.2),
+            '--strudel-text-05': hexToRgba(theme.text, 0.05),
+            '--strudel-text-40': hexToRgba(theme.text, 0.4),
             width: '100%',
             height: '100%',
             backgroundColor: 'transparent',
@@ -604,7 +613,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
             borderRadius: '2px',
             overflow: 'hidden',
             position: 'relative',
-          }}
+          } as React.CSSProperties}
           suppressHydrationWarning
         />
         <div

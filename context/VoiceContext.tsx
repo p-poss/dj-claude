@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useState, useCallback, useMemo } from 'react';
 
 // ElevenLabs voice configuration
 export interface ElevenLabsVoice {
@@ -32,12 +32,14 @@ export function VoiceProvider({ children }: { children: ReactNode }) {
     setSelectedElevenLabsVoiceState(voice);
   }, []);
 
+  const value = useMemo(() => ({
+    selectedElevenLabsVoice,
+    setSelectedElevenLabsVoice,
+    elevenLabsVoices: ELEVENLABS_VOICES,
+  }), [selectedElevenLabsVoice, setSelectedElevenLabsVoice]);
+
   return (
-    <VoiceContext.Provider value={{
-      selectedElevenLabsVoice,
-      setSelectedElevenLabsVoice,
-      elevenLabsVoices: ELEVENLABS_VOICES,
-    }}>
+    <VoiceContext.Provider value={value}>
       {children}
     </VoiceContext.Provider>
   );

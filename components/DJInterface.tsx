@@ -73,6 +73,24 @@ const IDLE_HYPE_PHRASES = [
   "There it is.",
 ];
 
+const DJ_ANNOUNCEMENT_TEMPLATES: ((name: string) => string)[] = [
+  (name) => `DJ ${name} in the building.`,
+  (name) => `Switching it up. DJ ${name} on the mic.`,
+  (name) => `DJ ${name}, taking over.`,
+  (name) => `Give it up for DJ ${name}.`,
+  (name) => `New voice, same energy. DJ ${name} is here.`,
+  (name) => `DJ ${name}, reporting for duty.`,
+  (name) => `The one and only, DJ ${name}.`,
+  (name) => `DJ ${name} on the ones and twos.`,
+  (name) => `And just like that, DJ ${name} is live.`,
+  (name) => `DJ ${name} has entered the booth.`,
+  (name) => `Ladies and gentlemen, DJ ${name}.`,
+  (name) => `DJ ${name} on the decks.`,
+  (name) => `DJ ${name} in the mix.`,
+  (name) => `The booth belongs to ${name} tonight.`,
+  (name) => `You're now rocking with ${name}.`,
+];
+
 export function DJInterface() {
   const { state, dispatch } = useDJ();
   const { theme, toggleSwap, isSwapped, setSwapped } = useTheme();
@@ -354,24 +372,8 @@ export function DJInterface() {
   // DJ announcement messages
   const getDjAnnouncement = useCallback(() => {
     const voiceName = selectedElevenLabsVoice?.name || 'Claude';
-    const messages = [
-      `DJ ${voiceName} in the building.`,
-      `Switching it up. DJ ${voiceName} on the mic.`,
-      `DJ ${voiceName}, taking over.`,
-      `Give it up for DJ ${voiceName}.`,
-      `New voice, same energy. DJ ${voiceName} is here.`,
-      `DJ ${voiceName}, reporting for duty.`,
-      `The one and only, DJ ${voiceName}.`,
-      `DJ ${voiceName} on the ones and twos.`,
-      `And just like that, DJ ${voiceName} is live.`,
-      `DJ ${voiceName} has entered the booth.`,
-      `Ladies and gentlemen, DJ ${voiceName}.`,
-      `DJ ${voiceName} on the decks.`,
-      `DJ ${voiceName} in the mix.`,
-      `The booth belongs to ${voiceName} tonight.`,
-      `You're now rocking with ${voiceName}.`,
-    ];
-    return messages[Math.floor(Math.random() * messages.length)];
+    const template = DJ_ANNOUNCEMENT_TEMPLATES[Math.floor(Math.random() * DJ_ANNOUNCEMENT_TEMPLATES.length)];
+    return template(voiceName);
   }, [selectedElevenLabsVoice]);
 
   // Announce voice change with DJ-themed message

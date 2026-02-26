@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useState, useCallback } from 'react';
+import { createContext, useContext, ReactNode, useState, useCallback, useMemo } from 'react';
 
 // Theme color definitions
 export interface ThemeColors {
@@ -89,8 +89,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setIsSwapped(value);
   }, []);
 
+  const value = useMemo(() => ({
+    theme, themeName: theme.name, themeIndex, cycleTheme, selectTheme, isSwapped, toggleSwap, setSwapped: setSwappedValue,
+  }), [theme, themeIndex, cycleTheme, selectTheme, isSwapped, toggleSwap, setSwappedValue]);
+
   return (
-    <ThemeContext.Provider value={{ theme, themeName: theme.name, themeIndex, cycleTheme, selectTheme, isSwapped, toggleSwap, setSwapped: setSwappedValue }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );
