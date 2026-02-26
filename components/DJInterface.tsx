@@ -73,6 +73,25 @@ const IDLE_HYPE_PHRASES = [
   "There it is.",
 ];
 
+const LOGO_RESPONSIVE_STYLES = `
+  .logo-full { display: block; }
+  .logo-no-e { display: none; }
+  .logo-no-de { display: none; }
+  .logo-no-ude { display: none; }
+  @media (max-width: 524px) {
+    .logo-full { display: none; }
+    .logo-no-e { display: block; }
+  }
+  @media (max-width: 460px) {
+    .logo-no-e { display: none; }
+    .logo-no-de { display: block; }
+  }
+  @media (max-width: 400px) {
+    .logo-no-de { display: none; }
+    .logo-no-ude { display: block; }
+  }
+`;
+
 const DJ_ANNOUNCEMENT_TEMPLATES: ((name: string) => string)[] = [
   (name) => `DJ ${name} in the building.`,
   (name) => `Switching it up. DJ ${name} on the mic.`,
@@ -318,7 +337,7 @@ export function DJInterface() {
       if (mcCommentary) {
         setCurrentMcCommentary(mcCommentary);
         if (mcEnabled) {
-          speak(mcCommentary);
+          speakRef.current(mcCommentary);
         }
       }
 
@@ -338,7 +357,7 @@ export function DJInterface() {
           });
       }, 100);
     }
-  }, [isComplete, extractedCode, mcCommentary, nightMode, discoMode, raveMode, liveMixMode, dispatch, speak, mcEnabled, setSwapped, promptCount]);
+  }, [isComplete, extractedCode, mcCommentary, nightMode, discoMode, raveMode, liveMixMode, dispatch, mcEnabled, setSwapped, promptCount]);
 
   // Reset execution flag and stop TTS when new stream starts
   // Refocus input when streaming ends
@@ -651,24 +670,7 @@ export function DJInterface() {
 
             {/* Row 2: DJ Claude ASCII Logo - responsive letter hiding */}
             <div>
-              <style>{`
-                .logo-full { display: block; }
-                .logo-no-e { display: none; }
-                .logo-no-de { display: none; }
-                .logo-no-ude { display: none; }
-                @media (max-width: 524px) {
-                  .logo-full { display: none; }
-                  .logo-no-e { display: block; }
-                }
-                @media (max-width: 460px) {
-                  .logo-no-e { display: none; }
-                  .logo-no-de { display: block; }
-                }
-                @media (max-width: 400px) {
-                  .logo-no-de { display: none; }
-                  .logo-no-ude { display: block; }
-                }
-              `}</style>
+              <style>{LOGO_RESPONSIVE_STYLES}</style>
               <pre className="m-0 logo-full">{`
  ██████╗      ██╗     ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗
  ██╔══██╗     ██║    ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝

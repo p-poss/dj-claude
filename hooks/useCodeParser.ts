@@ -2,6 +2,14 @@
 
 import { useMemo } from 'react';
 
+// Precompiled regex patterns — avoids recompilation on every invocation
+const RE_CODE_COMPLETE = /"code"\s*:\s*"((?:[^"\\]|\\.)*)"/;
+const RE_CODE_INCOMPLETE = /"code"\s*:\s*"((?:[^"\\]|\\.)*)/;
+const RE_BACKTICKS = /```/g;
+const RE_CODE_BLOCK = /```(?:javascript|js)?\s*\n?([\s\S]*?)```/;
+const RE_OPENING_FENCE = /```(?:javascript|js)?\s*\n?/;
+const RE_CLOSING_FENCE = /```\s*$/;
+
 interface CodeParserResult {
   isComplete: boolean;
   extractedCode: string;
@@ -91,7 +99,7 @@ export function useCodeParser(streamingText: string): CodeParserResult {
 
       // JSON started but not complete yet - try to extract partial code for display
       // Match the code field value, handling escaped characters
-      const codeMatch = textFromBrace.match(/"code"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+      const codeMatch = textFromBrace.match(RE_CODE_COMPLETE);
       if (codeMatch) {
         const partialCode = codeMatch[1]
           .replace(/\\n/g, '\n')
@@ -106,7 +114,7 @@ export function useCodeParser(streamingText: string): CodeParserResult {
       }
 
       // Try to extract incomplete code (no closing quote yet)
-      const incompleteCodeMatch = textFromBrace.match(/"code"\s*:\s*"((?:[^"\\]|\\.)*)/);
+      const incompleteCodeMatch = textFromBrace.match(RE_CODE_INCOMPLETE);
       if (incompleteCodeMatch) {
         const partialCode = incompleteCodeMatch[1]
           .replace(/\\n/g, '\n')
@@ -131,7 +139,8 @@ export function useCodeParser(streamingText: string): CodeParserResult {
 
     // Legacy format: markdown code blocks (for backwards compatibility)
     // Count backtick groups (```)
-    const backtickMatches = streamingText.match(/```/g) || [];
+    RE_BACKTICKS.lastIndex = 0; // Reset stateful global regex
+    const backtickMatches = streamingText.match(RE_BACKTICKS) || [];
     const backtickCount = backtickMatches.length;
 
     // Has at least opening and closing ```
@@ -140,8 +149,7 @@ export function useCodeParser(streamingText: string): CodeParserResult {
     // Extract code if complete
     let extractedCode = '';
     if (isComplete) {
-      const codeBlockRegex = /```(?:javascript|js)?\s*\n?([\s\S]*?)```/;
-      const match = streamingText.match(codeBlockRegex);
+      const match = streamingText.match(RE_CODE_BLOCK);
       if (match) {
         extractedCode = match[1].trim();
       }
@@ -151,12 +159,12 @@ export function useCodeParser(streamingText: string): CodeParserResult {
     let displayCode = streamingText;
 
     // Check if we have an opening code fence
-    const openingMatch = streamingText.match(/```(?:javascript|js)?\s*\n?/);
+    const openingMatch = streamingText.match(RE_OPENING_FENCE);
     if (openingMatch) {
       // Get content after the opening fence
       const afterOpening = streamingText.slice(openingMatch.index! + openingMatch[0].length);
       // Remove closing fence if present
-      displayCode = afterOpening.replace(/```\s*$/, '');
+      displayCode = afterOpening.replace(RE_CLOSING_FENCE, '');
     }
 
     return {

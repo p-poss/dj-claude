@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, useState, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 // Module-level flag to track if editor has been initialized (persists across remounts)
@@ -591,6 +591,22 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
       waitForComponent();
     }, [scriptLoaded, initialCode, isLoaded, onReady, onError]);
 
+    const wrapperStyle = useMemo(() => ({
+      '--strudel-text': theme.text,
+      '--strudel-bg': theme.background,
+      '--strudel-text-30': hexToRgba(theme.text, 0.3),
+      '--strudel-text-20': hexToRgba(theme.text, 0.2),
+      '--strudel-text-05': hexToRgba(theme.text, 0.05),
+      '--strudel-text-40': hexToRgba(theme.text, 0.4),
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'transparent',
+      border: `1px solid ${theme.text}`,
+      borderRadius: '2px',
+      overflow: 'hidden',
+      position: 'relative',
+    } as React.CSSProperties), [theme]);
+
     return (
       <>
         <style>{STRUDEL_STYLES}</style>
@@ -599,21 +615,7 @@ export const StrudelEditor = forwardRef<StrudelEditorAPI, StrudelEditorProps>(
           data-testid="strudel-editor"
           data-code={currentCode}
           className="strudel-editor-wrapper phosphor-glow"
-          style={{
-            '--strudel-text': theme.text,
-            '--strudel-bg': theme.background,
-            '--strudel-text-30': hexToRgba(theme.text, 0.3),
-            '--strudel-text-20': hexToRgba(theme.text, 0.2),
-            '--strudel-text-05': hexToRgba(theme.text, 0.05),
-            '--strudel-text-40': hexToRgba(theme.text, 0.4),
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'transparent',
-            border: `1px solid ${theme.text}`,
-            borderRadius: '2px',
-            overflow: 'hidden',
-            position: 'relative',
-          } as React.CSSProperties}
+          style={wrapperStyle}
           suppressHydrationWarning
         />
         <div

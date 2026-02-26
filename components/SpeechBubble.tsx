@@ -1,12 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 interface SpeechBubbleProps {
   text: string;
   isVisible: boolean;
   color?: string;
 }
+
+const OUTER_STYLE: React.CSSProperties = {
+  position: 'absolute',
+  left: '130px',
+  top: '8px',
+  transition: 'opacity 0.3s ease-in-out',
+  fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+  fontSize: '12px',
+  lineHeight: '15px',
+  zIndex: 100,
+  pointerEvents: 'none',
+};
+
+const BUBBLE_STYLE: React.CSSProperties = {
+  border: '1px solid var(--bubble-color)',
+  borderRadius: '2px',
+  padding: '6px 12px',
+  width: 'max-content',
+  maxWidth: '335px',
+  height: '60px',
+  boxShadow:
+    '0 0 2px var(--bubble-color), 0 0 4px var(--bubble-color), 0 0 8px var(--bubble-color), ' +
+    'inset 0 0 2px var(--bubble-color), inset 0 0 4px var(--bubble-color), inset 0 0 8px var(--bubble-color)',
+  whiteSpace: 'pre-wrap',
+  overflow: 'hidden',
+};
+
+const TAIL_STYLE: React.CSSProperties = {
+  marginLeft: '12px',
+  marginTop: '0.5px',
+  color: 'var(--bubble-color)',
+  textShadow:
+    '0 0 2px var(--bubble-color), 0 0 4px var(--bubble-color), 0 0 8px var(--bubble-color)',
+};
 
 export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbleProps) {
   const [shouldRender, setShouldRender] = useState(false);
@@ -27,6 +61,13 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
     }
   }, [isVisible, text]);
 
+  const outerStyle = useMemo(() => ({
+    ...OUTER_STYLE,
+    '--bubble-color': color,
+    opacity,
+    color,
+  } as React.CSSProperties), [color, opacity]);
+
   if (!shouldRender || !text) return null;
 
   return (
@@ -34,46 +75,15 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
       className="phosphor-glow"
       aria-live="polite"
       role="status"
-      style={{
-        position: 'absolute',
-        left: '130px',
-        top: '8px',
-        opacity,
-        transition: 'opacity 0.3s ease-in-out',
-        fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-        fontSize: '12px',
-        lineHeight: '15px',
-        color: color,
-        zIndex: 100,
-        pointerEvents: 'none',
-      }}
+      style={outerStyle}
     >
       {/* Bubble container */}
-      <div
-        style={{
-          border: `1px solid ${color}`,
-          borderRadius: '2px',
-          padding: '6px 12px',
-          width: 'max-content',
-          maxWidth: '335px',
-          height: '60px',
-          boxShadow: `0 0 2px ${color}, 0 0 4px ${color}, 0 0 8px ${color}, inset 0 0 2px ${color}, inset 0 0 4px ${color}, inset 0 0 8px ${color}`,
-          whiteSpace: 'pre-wrap',
-          overflow: 'hidden',
-        }}
-      >
+      <div style={BUBBLE_STYLE}>
         {text}
       </div>
 
       {/* Tail pointing to character */}
-      <div
-        style={{
-          marginLeft: '12px',
-          marginTop: '0.5px',
-          color: color,
-          textShadow: `0 0 2px ${color}, 0 0 4px ${color}, 0 0 8px ${color}`,
-        }}
-      >
+      <div style={TAIL_STYLE}>
         ◢
       </div>
     </div>
