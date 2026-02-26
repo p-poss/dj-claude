@@ -123,7 +123,7 @@ export function DJInterface() {
   const { theme, toggleSwap, isSwapped, setSwapped } = useTheme();
   const { selectedElevenLabsVoice } = useVoice();
   const { streamCode } = useClaudeStream();
-  const { isComplete, extractedCode, displayCode, mcCommentary, nightMode, discoMode, raveMode, liveMixMode } = useCodeParser(state.streamingCode);
+  const { isComplete, extractedCode, displayCode, mcCommentary, discoMode, raveMode, liveMixMode } = useCodeParser(state.streamingCode);
   const { speak, stop: stopTTS, isSpeaking } = useTTS();
 
   const editorRef = useRef<StrudelEditorAPI>(null);
@@ -331,7 +331,7 @@ export function DJInterface() {
       editorRef.current.setCode(extractedCode);
 
       // Apply visual mode controls from agent response
-      if (typeof nightMode === 'boolean') setSwapped(nightMode);
+      // nightMode is user-controlled only — agent cannot toggle it
       if (typeof discoMode === 'boolean') setPartyEnabled(discoMode);
       if (typeof raveMode === 'boolean') setCrtEnabled(raveMode);
       if (typeof liveMixMode === 'boolean') setLiveMixActive(liveMixMode);
@@ -360,7 +360,7 @@ export function DJInterface() {
           });
       }, 100);
     }
-  }, [isComplete, extractedCode, mcCommentary, nightMode, discoMode, raveMode, liveMixMode, dispatch, mcEnabled, setSwapped, promptCount]);
+  }, [isComplete, extractedCode, mcCommentary, discoMode, raveMode, liveMixMode, dispatch, mcEnabled, promptCount]);
 
   // Reset execution flag and stop TTS when new stream starts
   // Refocus input when streaming ends
