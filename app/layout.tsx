@@ -19,6 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preload" href="https://unpkg.com/@strudel/repl@latest" as="script" />
+      </head>
       <body className="antialiased crt-screen">
         <ThemeProvider>
           <VoiceProvider>

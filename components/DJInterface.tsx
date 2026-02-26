@@ -197,42 +197,29 @@ export function DJInterface() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [infoPinned]);
 
-  // Toggle CRT effects on body element
+  // Toggle body CSS classes for visual modes
   useEffect(() => {
-    if (crtEnabled) {
-      document.body.classList.add('crt-screen');
-    } else {
-      document.body.classList.remove('crt-screen');
-    }
-  }, [crtEnabled]);
-
-  // Toggle Party mode effects on body element
-  useEffect(() => {
-    if (partyEnabled) {
-      document.body.classList.add('party-mode');
-    } else {
-      document.body.classList.remove('party-mode');
-    }
-  }, [partyEnabled]);
-
-  // Toggle inverted colors on body element
-  useEffect(() => {
-    if (isSwapped) {
-      document.body.classList.add('inverted');
-    } else {
-      document.body.classList.remove('inverted');
-    }
-  }, [isSwapped]);
+    document.body.classList.toggle('crt-screen', crtEnabled);
+    document.body.classList.toggle('party-mode', partyEnabled);
+    document.body.classList.toggle('inverted', isSwapped);
+  }, [crtEnabled, partyEnabled, isSwapped]);
 
   // Track cursor/touch position to slide character (inverted direction)
   // Uses ref-based DOM update to avoid re-rendering the entire tree on every mousemove
+  // Throttled to screen refresh rate via requestAnimationFrame
   useEffect(() => {
+    let pendingFrame = 0;
+
     const updateOffset = (clientX: number) => {
-      const centerX = window.innerWidth / 2;
-      const offset = ((clientX - centerX) / centerX) * -119;
-      if (characterContainerRef.current) {
-        characterContainerRef.current.style.transform = `translateX(${offset}px)`;
-      }
+      if (pendingFrame) return;
+      pendingFrame = requestAnimationFrame(() => {
+        pendingFrame = 0;
+        const centerX = window.innerWidth / 2;
+        const offset = ((clientX - centerX) / centerX) * -119;
+        if (characterContainerRef.current) {
+          characterContainerRef.current.style.transform = `translateX(${offset}px)`;
+        }
+      });
     };
 
     const onMouse = (e: MouseEvent) => updateOffset(e.clientX);
@@ -243,6 +230,7 @@ export function DJInterface() {
     return () => {
       window.removeEventListener('mousemove', onMouse);
       window.removeEventListener('touchmove', onTouch);
+      if (pendingFrame) cancelAnimationFrame(pendingFrame);
     };
   }, []);
 

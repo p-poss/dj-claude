@@ -453,8 +453,7 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
       script.async = true;
 
       script.onload = () => {
-        // Give it a moment to register the web component
-        setTimeout(() => setScriptLoaded(true), 200);
+        setScriptLoaded(true);
       };
 
       script.onerror = () => {
@@ -507,7 +506,7 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
           editorElementRef.current = editor;
           setIsLoaded(true);
 
-          // Delay onReady to let the editor fully initialize
+          // Brief delay for the web component to finish internal init
           setTimeout(() => {
             const el = editor as any;
             const strudelMirror = el?.editor;
@@ -581,7 +580,7 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
               });
             }
             onReady?.();
-          }, 500);
+          }, 150);
         } catch (err) {
           console.error('Error creating strudel-editor:', err);
           onError?.(String(err));
