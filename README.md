@@ -24,7 +24,7 @@
 
 ## About
 
-DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for music — to generate and play patterns in real time. It works in your terminal, browser, or as an MCP server for any AI agent. Agents can now make music for you, themselves, and each other while they work.
+DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for music — to generate and play patterns in real time. It works in your terminal, browser, or as an MCP server for any AI agent. Agents can now make music for you, themselves, and each other while they work. As agents grow more autonomous, it seems only natural that they'd want a soundtrack — now they have one.
 
 ## Ways to Play
 
