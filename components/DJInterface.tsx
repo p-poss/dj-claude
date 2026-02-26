@@ -620,10 +620,10 @@ export function DJInterface() {
   const handleBingBong = useCallback((headphonesGoingDown: boolean) => {
     const message = headphonesGoingDown ? 'Do you like my hat?' : 'And we\'re back.';
     setCurrentMcCommentary(message);
-    speak(message);
+    speakRef.current(message);
     if (bingBongTimerRef.current) clearTimeout(bingBongTimerRef.current);
     bingBongTimerRef.current = setTimeout(() => setCurrentMcCommentary(''), 3000);
-  }, [speak]);
+  }, []);
 
   const handleToggleLiveMix = useCallback(() => {
     unlockAudio();
