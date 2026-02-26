@@ -152,6 +152,7 @@ export function DJInterface() {
   const [promptCount, setPromptCount] = useState(0);
   const [promptHasValue, setPromptHasValue] = useState(false);
   const [liveMixActive, setLiveMixActive] = useState(false);
+  const lastIdlePhraseRef = useRef('');
   const liveMixTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentCodeRef = useRef(state.currentCode);
   currentCodeRef.current = state.currentCode;
@@ -266,13 +267,17 @@ export function DJInterface() {
       return;
     }
 
-    // Random delay between 12-25 seconds for natural feel
-    const getRandomDelay = () => 12000 + Math.random() * 13000;
+    // Random delay between 25-45 seconds for natural feel
+    const getRandomDelay = () => 25000 + Math.random() * 20000;
 
     const scheduleNextPhrase = () => {
       return setTimeout(() => {
-        // Double-check conditions before speaking (state may have changed)
-        const randomPhrase = IDLE_HYPE_PHRASES[Math.floor(Math.random() * IDLE_HYPE_PHRASES.length)];
+        // Pick a random phrase, avoiding the last one said
+        let randomPhrase: string;
+        do {
+          randomPhrase = IDLE_HYPE_PHRASES[Math.floor(Math.random() * IDLE_HYPE_PHRASES.length)];
+        } while (randomPhrase === lastIdlePhraseRef.current && IDLE_HYPE_PHRASES.length > 1);
+        lastIdlePhraseRef.current = randomPhrase;
         setCurrentMcCommentary(randomPhrase);
         speakRef.current(randomPhrase);
       }, getRandomDelay());
