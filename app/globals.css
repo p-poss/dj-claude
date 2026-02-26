@@ -180,3 +180,13 @@ body:not(.crt-screen) * {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Party mode marker class - actual effects in PartyOverlay.tsx */
+
+/* Hue cycling animation for party/disco mode — replaces JS setInterval + state */
+@keyframes party-hue-cycle {
+  from { filter: hue-rotate(0deg); }
+  to { filter: hue-rotate(360deg); }
+}
+
+.party-hue-cycle {
+  animation: party-hue-cycle 14.4s linear infinite;
+}

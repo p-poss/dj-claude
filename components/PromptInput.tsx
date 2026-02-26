@@ -22,6 +22,106 @@ interface PromptInputProps {
   onHasValueChange?: (hasValue: boolean) => void;
 }
 
+// Static style block — uses CSS custom properties instead of JS interpolation
+// so React sees identical content across renders and skips DOM updates
+const PROMPT_STYLES = `
+  /* Neon glow on prompt borders when CRT mode is enabled */
+  body.crt-screen .prompt-box {
+    box-shadow:
+      0 0 2px var(--prompt-text),
+      0 0 4px var(--prompt-text),
+      0 0 8px var(--prompt-text),
+      inset 0 0 2px var(--prompt-text),
+      inset 0 0 4px var(--prompt-text),
+      inset 0 0 8px var(--prompt-text) !important;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  .prompt-input-wrapper {
+    position: relative;
+    flex: 1;
+  }
+  @media (max-width: 767px) {
+    .prompt-input,
+    .cursor-overlay {
+      font-size: 16px !important;
+      line-height: 1 !important;
+    }
+    .prompt-input:focus {
+      color: transparent !important;
+      -webkit-text-fill-color: transparent !important;
+      text-shadow: none !important;
+    }
+  }
+  .mobile-text-overlay {
+    visibility: hidden;
+  }
+  @media (max-width: 767px) {
+    .mobile-text-overlay {
+      visibility: visible;
+    }
+  }
+  .prompt-input {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    caret-color: transparent;
+    padding: 0;
+    margin: 0;
+    height: auto;
+    line-height: 1.2;
+    text-indent: 4px;
+    text-shadow: 0 0 2px currentColor, 0 0 4px currentColor;
+  }
+  .prompt-input-overflow::-webkit-scrollbar {
+    display: none;
+  }
+  .prompt-input::placeholder {
+    color: inherit;
+    opacity: 0.6;
+  }
+  .prompt-input::selection {
+    background-color: var(--prompt-text);
+    color: var(--prompt-bg);
+  }
+  .prompt-input:focus::placeholder {
+    color: transparent;
+  }
+  .cursor-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    color: transparent;
+    z-index: 10;
+  }
+  @keyframes spin {
+    0% { content: '⠋'; }
+    8% { content: '⠙'; }
+    16% { content: '⠹'; }
+    24% { content: '⠸'; }
+    32% { content: '⠼'; }
+    40% { content: '⠴'; }
+    48% { content: '⠦'; }
+    56% { content: '⠧'; }
+    64% { content: '⠇'; }
+    72% { content: '⠏'; }
+    80% { content: '⠋'; }
+    100% { content: '⠋'; }
+  }
+  .streaming-spinner::before {
+    content: '⠋';
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+  }
+`;
+
 export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
   function PromptInput({ onSubmit, disabled, placeholder, isStreaming, themeColors, crtEnabled = false, onHasValueChange }, ref) {
     const colors = themeColors || { text: '#737373', background: '#0a0a0a' };
@@ -73,105 +173,15 @@ export const PromptInput = forwardRef<PromptInputAPI, PromptInputProps>(
     return (
       <div
         className="text-xs select-none phosphor-glow"
-        style={{ lineHeight: '1.2', fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace', color: colors.text }}
+        style={{
+          lineHeight: '1.2',
+          fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
+          color: colors.text,
+          '--prompt-text': colors.text,
+          '--prompt-bg': colors.background,
+        } as React.CSSProperties}
       >
-        <style>{`
-          /* Neon glow on prompt borders when CRT mode is enabled */
-          body.crt-screen .prompt-box {
-            box-shadow:
-              0 0 2px ${colors.text},
-              0 0 4px ${colors.text},
-              0 0 8px ${colors.text},
-              inset 0 0 2px ${colors.text},
-              inset 0 0 4px ${colors.text},
-              inset 0 0 8px ${colors.text} !important;
-          }
-          @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-          }
-          .prompt-input-wrapper {
-            position: relative;
-            flex: 1;
-          }
-          @media (max-width: 767px) {
-            .prompt-input,
-            .cursor-overlay {
-              font-size: 16px !important;
-              line-height: 1 !important;
-            }
-            .prompt-input:focus {
-              color: transparent !important;
-              -webkit-text-fill-color: transparent !important;
-              text-shadow: none !important;
-            }
-          }
-          .mobile-text-overlay {
-            visibility: hidden;
-          }
-          @media (max-width: 767px) {
-            .mobile-text-overlay {
-              visibility: visible;
-            }
-          }
-          .prompt-input {
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            caret-color: transparent;
-            padding: 0;
-            margin: 0;
-            height: auto;
-            line-height: 1.2;
-            text-indent: 4px;
-            text-shadow: 0 0 2px currentColor, 0 0 4px currentColor;
-          }
-          .prompt-input-overflow::-webkit-scrollbar {
-            display: none;
-          }
-          .prompt-input::placeholder {
-            color: inherit;
-            opacity: 0.6;
-          }
-          .prompt-input::selection {
-            background-color: ${colors.text};
-            color: ${colors.background};
-          }
-          .prompt-input:focus::placeholder {
-            color: transparent;
-          }
-          .cursor-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            height: 100%;
-            color: transparent;
-            z-index: 10;
-          }
-          @keyframes spin {
-            0% { content: '⠋'; }
-            8% { content: '⠙'; }
-            16% { content: '⠹'; }
-            24% { content: '⠸'; }
-            32% { content: '⠼'; }
-            40% { content: '⠴'; }
-            48% { content: '⠦'; }
-            56% { content: '⠧'; }
-            64% { content: '⠇'; }
-            72% { content: '⠏'; }
-            80% { content: '⠋'; }
-            100% { content: '⠋'; }
-          }
-          .streaming-spinner::before {
-            content: '⠋';
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
-          }
-        `}</style>
+        <style>{PROMPT_STYLES}</style>
         {/* Input row with submit button */}
         <div className="flex items-start">
           {/* Input box with CSS border - top and bottom only */}

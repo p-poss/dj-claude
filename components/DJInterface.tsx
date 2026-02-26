@@ -15,6 +15,64 @@ import { PartyOverlay } from './PartyOverlay';
 import { VoiceSelector } from './VoiceSelector';
 import { ClubSelector } from './ClubSelector';
 
+const STREAMING_MESSAGES = [
+  '\u00A0\u00A0Mixing...',
+  '\u00A0\u00A0Composing...',
+  '\u00A0\u00A0Cooking...',
+  '\u00A0\u00A0Building the beat...',
+  '\u00A0\u00A0Finding the groove...',
+  '\u00A0\u00A0Layering sounds...',
+  '\u00A0\u00A0Crafting the vibe...',
+];
+
+const WELCOME_MESSAGES = [
+  "Welcome to the session. Tell me a mood, a genre, or just a weird idea.",
+  "DJ Claude, ready and waiting. What are we making today?",
+  "The booth is yours. Describe a vibe and I'll bring it to life.",
+  "Another day, another beat. What's on your mind?",
+  "Live coding, live vibes. Drop me a prompt and let's see what happens.",
+  "Algorithms and basslines. Tell me what you're feeling.",
+  "Synths are warm, drums are loaded. Give me a direction.",
+  "What's the vibe? Chill? Dark? Cosmic? Funky? I'm down for anything.",
+  "Hey. I turn words into waveforms. Try me.",
+  "The decks are set. Give me something to work with.",
+];
+
+const EVOLUTION_PROMPTS = [
+  "Evolve this into something fresh. Keep the key and tempo. Modify some elements — swap a synth, shift the rhythm, add or remove a layer. It should feel like a natural transition, not a new track.",
+  "Take this pattern and push it forward. Change up the melody or rhythm while keeping the same energy. Smooth transition — like a DJ blending into the next phrase.",
+  "Time to switch things up. Keep the foundation but introduce a new element — a different lead sound, a rhythmic variation, or a texture change. Keep it cohesive.",
+  "Build on what's playing. Add complexity or strip something back. Change the feel slightly — maybe more driving, maybe more spacious. Natural evolution only.",
+  "Remix this live. Keep the tempo and key but rework the arrangement — new patterns, different sounds, shifted emphasis. It should sound like the next chapter of the same set.",
+];
+
+const IDLE_HYPE_PHRASES = [
+  "Yeah.",
+  "Mmmm.",
+  "Feel that.",
+  "Right there.",
+  "That's the one.",
+  "Listen to that.",
+  "Nice and smooth.",
+  "Stay right here.",
+  "Beautiful.",
+  "Let it breathe.",
+  "We're locked in.",
+  "Hear that?",
+  "This is the moment.",
+  "Let it ride.",
+  "So good.",
+  "Just vibing.",
+  "Don't touch a thing.",
+  "The groove is alive.",
+  "Ride it out.",
+  "That's a mood.",
+  "We're in the zone.",
+  "Ohhh yes.",
+  "Keep it rolling.",
+  "There it is.",
+];
+
 export function DJInterface() {
   const { state, dispatch } = useDJ();
   const { theme, toggleSwap, isSwapped, setSwapped } = useTheme();
@@ -41,10 +99,9 @@ export function DJInterface() {
   const [streamingMessageIndex, setStreamingMessageIndex] = useState(0);
   const [currentMcCommentary, setCurrentMcCommentary] = useState('');
   const [mcEnabled, setMcEnabled] = useState(true);
-  const [characterOffset, setCharacterOffset] = useState(0);
+  const characterContainerRef = useRef<HTMLDivElement>(null);
   const [crtEnabled, setCrtEnabled] = useState(false);
   const [partyEnabled, setPartyEnabled] = useState(false);
-  const [partyHue, setPartyHue] = useState(0);
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashMounted, setSplashMounted] = useState(true);
   const [promptCount, setPromptCount] = useState(0);
@@ -77,20 +134,6 @@ export function DJInterface() {
       clearTimeout(removeTimer);
     };
   }, []);
-
-  // Party mode: cycle through rainbow hues
-  useEffect(() => {
-    if (!partyEnabled) {
-      setPartyHue(0);
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setPartyHue((h) => h + 5); // No modulo - CSS handles values > 360
-    }, 200); // Smooth color cycling
-
-    return () => clearInterval(interval);
-  }, [partyEnabled]);
 
   // Close info modal when clicking outside (only when pinned)
   useEffect(() => {
@@ -134,10 +177,14 @@ export function DJInterface() {
   }, [isSwapped]);
 
   // Track cursor/touch position to slide character (inverted direction)
+  // Uses ref-based DOM update to avoid re-rendering the entire tree on every mousemove
   useEffect(() => {
     const updateOffset = (clientX: number) => {
       const centerX = window.innerWidth / 2;
-      setCharacterOffset(((clientX - centerX) / centerX) * -119);
+      const offset = ((clientX - centerX) / centerX) * -119;
+      if (characterContainerRef.current) {
+        characterContainerRef.current.style.transform = `translateX(${offset}px)`;
+      }
     };
 
     const onMouse = (e: MouseEvent) => updateOffset(e.clientX);
@@ -151,71 +198,12 @@ export function DJInterface() {
     };
   }, []);
 
-  const streamingMessages = [
-    '\u00A0\u00A0Mixing...',
-    '\u00A0\u00A0Composing...',
-    '\u00A0\u00A0Cooking...',
-    '\u00A0\u00A0Building the beat...',
-    '\u00A0\u00A0Finding the groove...',
-    '\u00A0\u00A0Layering sounds...',
-    '\u00A0\u00A0Crafting the vibe...',
-  ];
-
-  const welcomeMessages = [
-    "Welcome to the session. Tell me a mood, a genre, or just a weird idea.",
-    "DJ Claude, ready and waiting. What are we making today?",
-    "The booth is yours. Describe a vibe and I'll bring it to life.",
-    "Another day, another beat. What's on your mind?",
-    "Live coding, live vibes. Drop me a prompt and let's see what happens.",
-    "Algorithms and basslines. Tell me what you're feeling.",
-    "Synths are warm, drums are loaded. Give me a direction.",
-    "What's the vibe? Chill? Dark? Cosmic? Funky? I'm down for anything.",
-    "Hey. I turn words into waveforms. Try me.",
-    "The decks are set. Give me something to work with.",
-  ];
-
-  const evolutionPrompts = [
-    "Evolve this into something fresh. Keep the key and tempo. Modify some elements — swap a synth, shift the rhythm, add or remove a layer. It should feel like a natural transition, not a new track.",
-    "Take this pattern and push it forward. Change up the melody or rhythm while keeping the same energy. Smooth transition — like a DJ blending into the next phrase.",
-    "Time to switch things up. Keep the foundation but introduce a new element — a different lead sound, a rhythmic variation, or a texture change. Keep it cohesive.",
-    "Build on what's playing. Add complexity or strip something back. Change the feel slightly — maybe more driving, maybe more spacious. Natural evolution only.",
-    "Remix this live. Keep the tempo and key but rework the arrangement — new patterns, different sounds, shifted emphasis. It should sound like the next chapter of the same set.",
-  ];
-
-  // Short phrases for idle DJ commentary — mix of chill and energetic
-  const idleHypePhrases = [
-    "Yeah.",
-    "Mmmm.",
-    "Feel that.",
-    "Right there.",
-    "That's the one.",
-    "Listen to that.",
-    "Nice and smooth.",
-    "Stay right here.",
-    "Beautiful.",
-    "Let it breathe.",
-    "We're locked in.",
-    "Hear that?",
-    "This is the moment.",
-    "Let it ride.",
-    "So good.",
-    "Just vibing.",
-    "Don't touch a thing.",
-    "The groove is alive.",
-    "Ride it out.",
-    "That's a mood.",
-    "We're in the zone.",
-    "Ohhh yes.",
-    "Keep it rolling.",
-    "There it is.",
-  ];
-
   // Greet user on page load with random welcome message (speech bubble only)
   // Note: TTS is skipped because browsers block audio until user interaction
   useEffect(() => {
     if (editorReady) {
       const timer = setTimeout(() => {
-        const randomMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+        const randomMessage = WELCOME_MESSAGES[Math.floor(Math.random() * WELCOME_MESSAGES.length)];
         setCurrentMcCommentary(randomMessage);
       }, 300);
       return () => clearTimeout(timer);
@@ -237,7 +225,7 @@ export function DJInterface() {
     const scheduleNextPhrase = () => {
       return setTimeout(() => {
         // Double-check conditions before speaking (state may have changed)
-        const randomPhrase = idleHypePhrases[Math.floor(Math.random() * idleHypePhrases.length)];
+        const randomPhrase = IDLE_HYPE_PHRASES[Math.floor(Math.random() * IDLE_HYPE_PHRASES.length)];
         setCurrentMcCommentary(randomPhrase);
         speak(randomPhrase);
       }, getRandomDelay());
@@ -258,7 +246,7 @@ export function DJInterface() {
       liveMixTimerRef.current = setTimeout(async () => {
         if (cancelled || !currentCodeRef.current || isStreamingRef.current) return;
 
-        const prompt = evolutionPrompts[Math.floor(Math.random() * evolutionPrompts.length)];
+        const prompt = EVOLUTION_PROMPTS[Math.floor(Math.random() * EVOLUTION_PROMPTS.length)];
         setPromptCount(c => c + 1);
         try {
           await streamCodeRef.current({
@@ -421,11 +409,11 @@ export function DJInterface() {
     }
 
     const interval = setInterval(() => {
-      setStreamingMessageIndex((prev) => (prev + 1) % streamingMessages.length);
+      setStreamingMessageIndex((prev) => (prev + 1) % STREAMING_MESSAGES.length);
     }, 2000);
 
     return () => clearInterval(interval);
-  }, [state.isStreaming, streamingMessages.length]);
+  }, [state.isStreaming, STREAMING_MESSAGES.length]);
 
   // Unlock audio for Safari - must be called synchronously during user gesture
   // This unlocks both Web Audio API (for Strudel) and HTMLAudioElement (for TTS)
@@ -615,7 +603,7 @@ export function DJInterface() {
   }, [unlockAudio]);
 
   return (
-    <>
+    <div className={partyEnabled ? 'party-hue-cycle' : ''}>
     <div
       data-testid="dj-interface"
       className="flex flex-col gap-3"
@@ -623,8 +611,6 @@ export function DJInterface() {
         height: '100dvh',
         padding: '4px 8px',
         backgroundColor: theme.background,
-        filter: partyEnabled ? `hue-rotate(${partyHue}deg)` : 'none',
-        transition: 'filter 0.05s linear',
       }}
     >
       {/* ASCII Header - displayed above the editor */}
@@ -865,9 +851,9 @@ export function DJInterface() {
       {/* Dancing Claude character with speech bubble */}
       <div className="flex justify-center">
         <div
+          ref={characterContainerRef}
           style={{
             position: 'relative',
-            transform: `translateX(${characterOffset}px)`,
             transition: 'transform 0.15s ease-out',
           }}
         >
@@ -890,7 +876,7 @@ export function DJInterface() {
                 liveMixActive
                   ? '\u00A0\u00A0LIVE MIX active — toggle off to take control'
                   : state.isStreaming
-                    ? streamingMessages[streamingMessageIndex]
+                    ? STREAMING_MESSAGES[streamingMessageIndex]
                     : editorReady
                       ? "Make it darker, Add percussion, Speed it up..."
                       : "Initializing..."
@@ -1090,7 +1076,7 @@ export function DJInterface() {
     </div>
 
     {/* Party mode overlay */}
-    <PartyOverlay enabled={partyEnabled} color={theme.text} hue={partyHue} />
+    <PartyOverlay enabled={partyEnabled} color={theme.text} />
 
     {/* Splash screen - fades out on load */}
     {splashMounted && (
@@ -1106,6 +1092,6 @@ export function DJInterface() {
         }}
       />
     )}
-    </>
+    </div>
   );
 }

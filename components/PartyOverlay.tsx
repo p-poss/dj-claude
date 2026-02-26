@@ -1,35 +1,34 @@
 'use client';
 
+import { memo } from 'react';
+
 interface PartyOverlayProps {
   enabled: boolean;
   color: string;
-  hue: number;
 }
 
-export function PartyOverlay({ enabled, color, hue }: PartyOverlayProps) {
-  if (!enabled) return null;
+// Static confetti data — computed once at module load
+const CONFETTI_CHARS = [
+  '█', '▓', '▒', '░', '▀', '▄',
+  '*', '#', '@', '+', '×', '·', '○', '◆',
+  '[*]', '<>', '{}', '/*', '*/', '::',
+];
 
-  // Generate confetti particles with ASCII/pixel art
-  const confettiChars = [
-    // Unicode block characters (pixel-like)
-    '█', '▓', '▒', '░', '▀', '▄',
-    // ASCII symbols
-    '*', '#', '@', '+', '×', '·', '○', '◆',
-    // Small ASCII art shapes
-    '[*]', '<>', '{}', '/*', '*/', '::',
-  ];
-  const confettiParticles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    char: confettiChars[i % confettiChars.length],
-    left: `${(i * 5) % 100}%`,
-    animationDelay: `${(i * 0.3) % 4}s`,
-    animationDuration: `${3 + (i % 3)}s`,
-    fontSize: `${16 + (i % 12)}px`,
-  }));
+const CONFETTI_PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  char: CONFETTI_CHARS[i % CONFETTI_CHARS.length],
+  left: `${(i * 5) % 100}%`,
+  animationDelay: `${(i * 0.3) % 4}s`,
+  animationDuration: `${3 + (i % 3)}s`,
+  fontSize: `${16 + (i % 12)}px`,
+}));
+
+export const PartyOverlay = memo(function PartyOverlay({ enabled, color }: PartyOverlayProps) {
+  if (!enabled) return null;
 
   return (
     <>
-      {/* Confetti container */}
+      {/* Confetti container — hue cycling handled by parent CSS animation */}
       <div
         style={{
           position: 'fixed',
@@ -37,11 +36,9 @@ export function PartyOverlay({ enabled, color, hue }: PartyOverlayProps) {
           pointerEvents: 'none',
           zIndex: 9997,
           overflow: 'hidden',
-          filter: `hue-rotate(${hue}deg)`,
-          transition: 'filter 0.05s linear',
         }}
       >
-        {confettiParticles.map((particle) => (
+        {CONFETTI_PARTICLES.map((particle) => (
           <div
             key={particle.id}
             className="phosphor-glow"
@@ -114,4 +111,4 @@ export function PartyOverlay({ enabled, color, hue }: PartyOverlayProps) {
       `}</style>
     </>
   );
-}
+});
