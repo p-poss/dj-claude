@@ -261,7 +261,7 @@ Point your MCP clients at the HTTP endpoint:
 {
   "mcpServers": {
     "dj-claude": {
-      "type": "streamable-http",
+      "type": "http",
       "url": "http://127.0.0.1:4321/mcp"
     }
   }
