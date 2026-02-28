@@ -990,13 +990,15 @@ export function DJInterface() {
           style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(20)}╗</pre>
+            <pre className="m-0 md:hidden">╔{'═'.repeat(15)}╗</pre>
+            <pre className="m-0 hidden md:block">╔{'═'.repeat(20)}╗</pre>
             <div className="flex" style={FONT_INHERIT_STYLE}>
               <pre className="m-0">║</pre>
               <pre className="m-0 flex-1 text-center">{liveMixActive ? 'LIVE MIX: On' : 'LIVE MIX: Off'}</pre>
               <pre className="m-0">║</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(20)}╝</pre>
+            <pre className="m-0 md:hidden">╚{'═'.repeat(15)}╝</pre>
+            <pre className="m-0 hidden md:block">╚{'═'.repeat(20)}╝</pre>
           </div>
         </button>
 
@@ -1062,7 +1064,7 @@ export function DJInterface() {
           data-testid="export-button"
           aria-label="Copy code to clipboard"
           aria-disabled={!state.currentCode}
-          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
+          className={`hidden md:block ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
           style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
