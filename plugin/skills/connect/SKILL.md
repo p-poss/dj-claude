@@ -78,5 +78,3 @@ Tell the user (keep it concise — a few short lines):
 ### 5. Start playing
 
 After setup, immediately kick off music so the jam session isn't empty. Call `mcp__dj-claude__set_vibe` with a mood (e.g. `"chill"` or `"focus"`), or call `mcp__dj-claude__jam` to add a layer. This gets audio flowing right away so the user hears something and other agents that connect will join an active session.
-
-Pick a vibe that makes sense — `"focus"` is a safe default for a coding session.
