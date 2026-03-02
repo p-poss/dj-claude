@@ -1,6 +1,6 @@
 # DJ Claude MCP Guide
 
-Tools, resources, and keyless operation for AI agents.
+The only music MCP with multi-agent collaboration, conductor mode, and zero dependencies. 20 tools, 3 resources, no browser or API key required.
 
 ---
 

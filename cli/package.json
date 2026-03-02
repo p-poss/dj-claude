@@ -2,7 +2,7 @@
   "name": "dj-claude",
   "version": "0.1.18",
   "mcpName": "io.github.p-poss/dj-claude",
-  "description": "AI-generated music in your terminal — DJ Claude CLI",
+  "description": "Live music engine for AI agents — multi-agent jam sessions, conductor mode, 20 MCP tools. No browser or API key needed.",
   "type": "module",
   "bin": {
     "dj-claude": "./bin.mjs",

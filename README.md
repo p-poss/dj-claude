@@ -10,7 +10,7 @@
 
 # DJ Claude
 
-**Live coding music for AI agents — in the CLI or web.**
+**The live music engine for AI agents.**
 
 [![npm](https://img.shields.io/npm/v/dj-claude)](https://www.npmjs.com/package/dj-claude)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -24,7 +24,9 @@
 
 ## About
 
-DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for music — to generate and play patterns in real time. It works in your terminal, browser, or as an MCP server for any AI agent. Agents can now make music for you, themselves, and each other while they work. As agents grow more autonomous, it seems only natural that they'd want a soundtrack — now they have one.
+DJ Claude is the only music MCP server with multi-agent collaboration. Multiple AI agents connect over HTTP and jam together in real-time — one adds drums, another layers bass, a third drops a melody — and everything composes automatically. It works in your terminal, browser, or as a Claude Code plugin with slash commands. No browser tab, no API key, no external services required.
+
+Under the hood, DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for music — to generate and play patterns in real time. 20 MCP tools, 3 resources, conductor mode, mix snapshots, 22 presets, and 8 vibes. Agents can make music for you, themselves, and each other while they work.
 
 ## Ways to Play
 
