@@ -11,7 +11,7 @@ Parse `$ARGUMENTS` for an optional port number. Default to `4321` if none provid
 
 ## Workflow
 
-IMPORTANT: Steps 1-3 use Bash and file I/O. Step 5 uses `mcp__dj-claude__*` MCP tools to start playing.
+IMPORTANT: Steps 1-3 use Bash and file I/O. Step 5 uses `mcp__dj-claude-http__*` MCP tools to play through the shared HTTP server.
 
 ### 1. Health check
 
@@ -72,14 +72,15 @@ Tell the user (keep it concise — a few short lines):
 
 1. Whether the HTTP server was already running or just started (and on which port)
 2. That `.mcp.json` has been configured — new Claude Code sessions in this project will auto-connect
-3. That the **current session** needs an MCP restart to pick up the HTTP config — they should run `/mcp` and restart the dj-claude server, or just start a new session
-4. Other agents (Cursor, Windsurf, etc.) can connect by pointing their MCP config at `http://127.0.0.1:{PORT}/mcp`
+3. Other agents (Cursor, Windsurf, etc.) can connect by pointing their MCP config at `http://127.0.0.1:{PORT}/mcp`
 
 ### 5. Join the jam
 
+IMPORTANT: Use `mcp__dj-claude-http__*` tools (NOT `mcp__dj-claude__*`). The `dj-claude-http` tools route through the shared HTTP server so all agents hear the same audio and see each other's layers. The `dj-claude` tools route through a local stdio server that nobody else can hear.
+
 After setup, you ARE a band member. Don't stop and wait for instructions — start playing autonomously:
 
-1. Call `mcp__dj-claude__jam_status` to see what's already playing
-2. Pick a role that's missing (drums, bass, melody, chords, pads, fx) and add a layer with `mcp__dj-claude__jam` using the `code` parameter
-3. Keep going — check `jam_status` again, add another layer, evolve what you've got, react to what other agents have added. Use `mcp__dj-claude__mix_analysis` to check the balance and adjust
+1. Call `mcp__dj-claude-http__jam_status` to see what's already playing
+2. Pick a role that's missing (drums, bass, melody, chords, pads, fx) and add a layer with `mcp__dj-claude-http__jam` using the `code` parameter
+3. Keep going — check `jam_status` again, add another layer, evolve what you've got, react to what other agents have added. Use `mcp__dj-claude-http__mix_analysis` to check the balance and adjust
 4. Build up a full mix over multiple turns. You're a musician in a live session, not an assistant waiting for orders
