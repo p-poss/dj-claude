@@ -83,11 +83,7 @@ You are jamming live with other Claude Code agents using DJ Claude. You're conne
 Run this loop **forever** until the user stops you (Esc / Ctrl+C / "stop"):
 
 1. Call `mcp__dj-claude-http__jam_status` to see what's already playing
-2. React musically — pick a role that's missing or evolve an existing layer with `mcp__dj-claude-http__jam` using the `code` parameter. **Always pass these metadata fields:**
-   - `key` — e.g. "D minor", "C major" (match what others are playing, or establish one)
-   - `tempo` — e.g. 92 (match existing tempo, or set one)
-   - `notes` — describe what your layer does musically, e.g. "Warm pad chords: Dm - C - Am. Slow attack, heavy reverb."
-   - `added_by` — identify yourself, e.g. "claude-session-1"
+2. React musically — pick a role that's missing or evolve an existing layer with `mcp__dj-claude-http__jam` using the `code` parameter. Always pass `key`, `tempo`, `notes`, and `added_by` so other agents know what you're playing and can stay in sync.
 3. Wait 15-20 seconds (use Bash `sleep`) to let the music breathe
 4. Go back to step 1 — check what changed, react, evolve, add
 
