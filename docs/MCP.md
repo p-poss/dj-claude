@@ -134,7 +134,7 @@ The plugin installs via `/plugin install dj-claude` and configures the MCP serve
 
 **PostToolUse hook** — After certain events (like a successful build or passing tests), the hook nudges Claude to react musically. Claude sees these nudges and can call `set_vibe` or `set_context` on its own.
 
-**Slash commands** give the user direct control (`/dj-claude:play`, `/dj-claude:vibe`, `/dj-claude:conduct`, `/dj-claude:hush`, etc.), but Claude doesn't need them. Because the MCP tools are in its tool list, Claude can proactively call them during normal conversation. If you say "play some music while I work on this PR", Claude will call `set_vibe` or `play_music` on its own. If it sees the context hook after a build, it might set the vibe to `focus` without being asked.
+**Slash commands** give the user direct control (`/dj-claude:play`, `/dj-claude:vibe`, `/dj-claude:conduct`, `/dj-claude:hush`, `/dj-claude:connect`, etc.), but Claude doesn't need them. Because the MCP tools are in its tool list, Claude can proactively call them during normal conversation. If you say "play some music while I work on this PR", Claude will call `set_vibe` or `play_music` on its own. If it sees the context hook after a build, it might set the vibe to `focus` without being asked.
 
 The auto-allow permissions list in `.claude/settings.json` controls whether Claude needs to ask permission for each tool call or can play freely.
 
@@ -173,6 +173,8 @@ Once connected, the agent sees 20 tools and 3 resources. Whether the agent plays
 3. **MCP resources** — An agent can read `strudel://reference` to learn Strudel and start composing without any human input
 
 ### Multi-Agent Collaboration
+
+In Claude Code, run `/dj-claude:connect` to auto-start the HTTP server and configure your project. For other agents, start the server manually and point your MCP config at `http://127.0.0.1:4321/mcp`.
 
 Multiple agents connect to the same HTTP server, sharing one audio engine:
 

@@ -103,6 +103,7 @@ The easiest way to use DJ Claude with Claude Code. Installs the MCP server and g
 | `/dj-claude:load [name]` | Restore a saved mix snapshot |
 | `/dj-claude:list-saves` | List all saved snapshots |
 | `/dj-claude:export` | Export current Strudel code with header comments |
+| `/dj-claude:connect [port]` | Start HTTP server and configure project for multi-agent jam sessions |
 
 Or just ask naturally — Claude will call the right tool:
 
@@ -241,21 +242,32 @@ This means any AI agent connected via MCP can make music, regardless of whether 
 
 ## Multi-Agent Jam Session
 
-Multiple agents can collaborate on music in real time using the HTTP transport and jam tools.
+Multiple agents can collaborate on music in real time using the HTTP transport and jam tools. Each connected client gets its own MCP session, but they all share the same audio engine and layer state — one agent adds drums while another adds bass, and the layers compose automatically with `stack()`.
 
-### Start the HTTP server
+### Claude Code
+
+Run `/dj-claude:connect` to auto-start the HTTP server and configure your project in one step:
+
+```
+/dj-claude:connect
+/dj-claude:connect 8080   # custom port
+```
+
+This starts the HTTP MCP server, writes `.mcp.json`, and all other Claude Code sessions in the same project auto-connect.
+
+### Other agents (Cursor, Windsurf, OpenClaw, etc.)
+
+Start the HTTP server manually:
 
 ```bash
-# Start the HTTP MCP server (default port 4321)
+# Default port 4321
 npx dj-claude-mcp-http
 
 # Or with a custom port
 DJ_CLAUDE_PORT=8080 npx dj-claude-mcp-http
 ```
 
-### Connect agents
-
-Point your MCP clients at the HTTP endpoint:
+Then point your MCP client at the endpoint:
 
 ```json
 {
@@ -267,8 +279,6 @@ Point your MCP clients at the HTTP endpoint:
   }
 }
 ```
-
-Each connected client gets its own MCP session, but they all share the same audio engine and layer state. One agent can add drums while another adds bass — the layers compose automatically with `stack()`.
 
 ### Jam tool workflow
 
