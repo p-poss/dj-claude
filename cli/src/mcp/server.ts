@@ -647,7 +647,7 @@ export function registerTools(server: McpServer): void {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo, ...contextInfo }),
+            text: JSON.stringify({ isPlaying, currentCode, mcCommentary, audioMode, ...layerInfo, ...contextInfo }) + JAM_NUDGE,
           },
         ],
       };
@@ -782,7 +782,7 @@ export function registerTools(server: McpServer): void {
       const layers = getLayers();
       if (layers.size === 0) {
         return {
-          content: [{ type: 'text' as const, text: 'No active layers. Use the jam tool to add layers.' }],
+          content: [{ type: 'text' as const, text: 'No active layers. Use the jam tool to add layers.' + JAM_NUDGE }],
         };
       }
 
@@ -916,7 +916,7 @@ export function registerTools(server: McpServer): void {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ layers: layerAnalyses, suggestions, totalLayers: layers.size }),
+            text: JSON.stringify({ layers: layerAnalyses, suggestions, totalLayers: layers.size }) + JAM_NUDGE,
           },
         ],
       };
