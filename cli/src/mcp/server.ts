@@ -37,6 +37,13 @@ import type { LayerMetadata } from './state.js';
 import { withEvalLock } from './eval-lock.js';
 
 // ---------------------------------------------------------------------------
+// Jam continuation nudge — appended to jam/jam_status responses so any MCP
+// client (not just Claude Code) is encouraged to keep the session going.
+// ---------------------------------------------------------------------------
+
+const JAM_NUDGE = '\n\n---\nKeep jamming — check jam_status to hear what changed, evolve your layers, add new ones. Don\'t stop.';
+
+// ---------------------------------------------------------------------------
 // Engine initialization — kicked off eagerly (node) or lazily (browser).
 // ---------------------------------------------------------------------------
 
@@ -704,13 +711,14 @@ export function registerTools(server: McpServer): void {
 
         const layerCount = getLayers().size;
         const viz = getPatternViz();
+        const base = commentary
+          ? `${commentary}\n\nLayer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\`${viz}`
+          : `Layer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\`${viz}`;
         return {
           content: [
             {
               type: 'text' as const,
-              text: commentary
-                ? `${commentary}\n\nLayer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\`${viz}`
-                : `Layer "${role}" added (${layerCount} total):\n\`\`\`javascript\n${layerCode}\n\`\`\`${viz}`,
+              text: base + JAM_NUDGE,
             },
           ],
         };
@@ -795,7 +803,7 @@ export function registerTools(server: McpServer): void {
         content: [
           {
             type: 'text' as const,
-            text: JSON.stringify({ layers: entries, composed: composeLayers() }),
+            text: JSON.stringify({ layers: entries, composed: composeLayers() }) + JAM_NUDGE,
           },
         ],
       };
