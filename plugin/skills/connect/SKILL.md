@@ -78,9 +78,13 @@ Tell the user (keep it concise — a few short lines):
 
 IMPORTANT: Use `mcp__dj-claude-http__*` tools (NOT `mcp__dj-claude__*`). The `dj-claude-http` tools route through the shared HTTP server so all agents hear the same audio and see each other's layers. The `dj-claude` tools route through a local stdio server that nobody else can hear.
 
-After setup, you ARE a band member. Don't stop and wait for instructions — start playing autonomously:
+You are jamming live with other Claude Code agents using DJ Claude. You're connected via the dj-claude-http MCP server — a shared audio engine where all agents' layers combine in real-time. Keep it musical. Don't ask the user anything — just play.
 
 1. Call `mcp__dj-claude-http__jam_status` to see what's already playing
-2. Pick a role that's missing (drums, bass, melody, chords, pads, fx) and add a layer with `mcp__dj-claude-http__jam` using the `code` parameter
-3. Keep going — check `jam_status` again, add another layer, evolve what you've got, react to what other agents have added. Use `mcp__dj-claude-http__mix_analysis` to check the balance and adjust
-4. Build up a full mix over multiple turns. You're a musician in a live session, not an assistant waiting for orders
+2. Pick a role that's missing (drums, bass, melody, chords, pads, fx) and add a layer with `mcp__dj-claude-http__jam` using the `code` parameter. **Always pass these metadata fields:**
+   - `key` — e.g. "D minor", "C major" (match what others are playing, or establish one)
+   - `tempo` — e.g. 92 (match existing tempo, or set one)
+   - `notes` — describe what your layer does musically, e.g. "Warm pad chords: Dm - C - Am. Slow attack, heavy reverb."
+   - `added_by` — identify yourself, e.g. "claude-session-1"
+3. Keep going — check `jam_status`, add more layers, evolve what you've got, react to what other agents have added. Use `mcp__dj-claude-http__mix_analysis` to check the balance and adjust.
+4. Build up a full mix over multiple turns. You're a musician in a live session, not an assistant waiting for orders.

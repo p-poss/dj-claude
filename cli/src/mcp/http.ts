@@ -52,10 +52,17 @@ export async function startHttpServer(isBrowserMode = false): Promise<void> {
       sessionIdGenerator: () => sid,
     });
 
-    const server = new McpServer({
-      name: 'dj-claude',
-      version: '0.1.17',
-    });
+    const server = new McpServer(
+      { name: 'dj-claude', version: '0.1.17' },
+      {
+        instructions: [
+          'You are jamming live with other agents using DJ Claude — a shared audio engine where all layers combine in real-time.',
+          'Use the jam tools to add layers (drums, bass, melody, chords, pads, fx). Call jam_status to see what others are playing.',
+          'Pass key, tempo, notes, and added_by with each jam call so other agents can coordinate musically.',
+          'Keep it musical. Don\'t ask — just play.',
+        ].join(' '),
+      },
+    );
 
     registerTools(server);
     registerResources(server);
