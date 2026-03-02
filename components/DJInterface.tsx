@@ -661,7 +661,7 @@ export function DJInterface() {
                 <pre className="m-0">╔{'═'.repeat(45)}╗</pre>
                 <div className="flex" style={FONT_INHERIT_STYLE}>
                   <pre className="m-0">║</pre>
-                  <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 0.1.17</span></pre>
+                  <pre className="m-0 flex-1 text-center">Welcome to DJ Claude <span className="opacity-30">v 0.1.18</span></pre>
                   <pre className="m-0">║</pre>
                 </div>
                 <pre className="m-0">╚{'═'.repeat(45)}╝</pre>

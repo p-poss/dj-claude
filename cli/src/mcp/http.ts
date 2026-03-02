@@ -53,7 +53,7 @@ export async function startHttpServer(isBrowserMode = false): Promise<void> {
     });
 
     const server = new McpServer(
-      { name: 'dj-claude', version: '0.1.17' },
+      { name: 'dj-claude', version: '0.1.18' },
       {
         instructions: [
           'You are jamming live with other agents using DJ Claude — a shared audio engine where all layers combine in real-time.',

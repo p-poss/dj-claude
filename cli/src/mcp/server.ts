@@ -1466,7 +1466,7 @@ export async function startServer(isBrowserMode = false): Promise<void> {
 
   const server = new McpServer({
     name: 'dj-claude',
-    version: '0.1.17',
+    version: '0.1.18',
   });
 
   registerTools(server);
