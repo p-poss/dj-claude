@@ -36,14 +36,14 @@ Wait 3 seconds, then re-check with the same curl health check. If it still isn't
 
 ### 3. Write `.mcp.json`
 
-Read the existing `.mcp.json` in the project root (if it exists). Merge a `dj-claude` entry into `mcpServers`, preserving any other server entries. Write the result back.
+Read the existing `.mcp.json` in the project root (if it exists). Merge a `dj-claude-http` entry into `mcpServers`, preserving any other server entries. Write the result back.
 
-The `dj-claude` entry should be:
+The `dj-claude-http` entry should be:
 
 ```json
 {
   "mcpServers": {
-    "dj-claude": {
+    "dj-claude-http": {
       "type": "http",
       "url": "http://127.0.0.1:{PORT}/mcp"
     }
@@ -57,10 +57,10 @@ Use the `jq` approach via Bash to merge safely:
 # If .mcp.json exists, merge; otherwise create from scratch
 if [ -f .mcp.json ]; then
   jq --arg url "http://127.0.0.1:{PORT}/mcp" \
-    '.mcpServers["dj-claude"] = {"type": "http", "url": $url}' \
+    '.mcpServers["dj-claude-http"] = {"type": "http", "url": $url}' \
     .mcp.json > .mcp.json.tmp && mv .mcp.json.tmp .mcp.json
 else
-  echo '{"mcpServers":{"dj-claude":{"type":"http","url":"http://127.0.0.1:{PORT}/mcp"}}}' | jq . > .mcp.json
+  echo '{"mcpServers":{"dj-claude-http":{"type":"http","url":"http://127.0.0.1:{PORT}/mcp"}}}' | jq . > .mcp.json
 fi
 ```
 
@@ -74,7 +74,20 @@ Tell the user (keep it concise — a few short lines):
 2. That `.mcp.json` has been configured — new Claude Code sessions in this project will auto-connect
 3. Other agents (Cursor, Windsurf, etc.) can connect by pointing their MCP config at `http://127.0.0.1:{PORT}/mcp`
 
-### 5. Join the jam
+### 5. Join the jam (or tell the user to restart)
+
+Before calling any `mcp__dj-claude-http__*` tools, check whether they exist in this session. Try calling `mcp__dj-claude-http__jam_status`. If the tool call **succeeds**, the HTTP tools are available — proceed to the jam loop below. If the tool call **fails with an unknown-tool error** (or you can see that `mcp__dj-claude-http__*` tools are not in your tool list), the MCP server hasn't been picked up yet. This is expected on the first run.
+
+**First run (tools NOT available):**
+
+Tell the user:
+- The HTTP server is running and `.mcp.json` is configured
+- They need to restart MCP (run `/mcp` then click restart, or open a new Claude Code session) for the `dj-claude-http` tools to appear
+- After restarting, run `/dj-claude:connect` again and the jam will start automatically
+
+Do NOT attempt to call `mcp__dj-claude-http__*` tools that don't exist. Stop here.
+
+**Returning run (tools available):**
 
 IMPORTANT: Use `mcp__dj-claude-http__*` tools (NOT `mcp__dj-claude__*`). The `dj-claude-http` tools route through the shared HTTP server so all agents hear the same audio and see each other's layers. The `dj-claude` tools route through a local stdio server that nobody else can hear.
 

@@ -158,7 +158,7 @@ Any MCP client — Cursor, Windsurf, Zed, a custom agent built with the MCP SDK 
 ```json
 {
   "mcpServers": {
-    "dj-claude": {
+    "dj-claude-http": {
       "type": "http",
       "url": "http://127.0.0.1:4321/mcp"
     }

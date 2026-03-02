@@ -272,7 +272,7 @@ Then point your MCP client at the endpoint:
 ```json
 {
   "mcpServers": {
-    "dj-claude": {
+    "dj-claude-http": {
       "type": "http",
       "url": "http://127.0.0.1:4321/mcp"
     }
