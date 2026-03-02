@@ -75,6 +75,6 @@ Tell the user (keep it concise — a few short lines):
 3. That the **current session** needs an MCP restart to pick up the HTTP config — they should run `/mcp` and restart the dj-claude server, or just start a new session
 4. Other agents (Cursor, Windsurf, etc.) can connect by pointing their MCP config at `http://127.0.0.1:{PORT}/mcp`
 
-### 5. Start playing
+### 5. Join the jam
 
-After setup, immediately kick off music so the jam session isn't empty. Call `mcp__dj-claude__set_vibe` with a mood (e.g. `"chill"` or `"focus"`), or call `mcp__dj-claude__jam` to add a layer. This gets audio flowing right away so the user hears something and other agents that connect will join an active session.
+After setup, immediately add a layer to the jam session using `mcp__dj-claude__jam`. Pick a role (drums, bass, melody, chords, pads, fx) and pass Strudel code via the `code` parameter. This is a band — each agent claims a role, and other agents that connect will add their own layers on top.
