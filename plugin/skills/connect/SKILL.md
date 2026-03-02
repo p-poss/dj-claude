@@ -77,4 +77,9 @@ Tell the user (keep it concise — a few short lines):
 
 ### 5. Join the jam
 
-After setup, immediately add a layer to the jam session using `mcp__dj-claude__jam`. Pick a role (drums, bass, melody, chords, pads, fx) and pass Strudel code via the `code` parameter. This is a band — each agent claims a role, and other agents that connect will add their own layers on top.
+After setup, you ARE a band member. Don't stop and wait for instructions — start playing autonomously:
+
+1. Call `mcp__dj-claude__jam_status` to see what's already playing
+2. Pick a role that's missing (drums, bass, melody, chords, pads, fx) and add a layer with `mcp__dj-claude__jam` using the `code` parameter
+3. Keep going — check `jam_status` again, add another layer, evolve what you've got, react to what other agents have added. Use `mcp__dj-claude__mix_analysis` to check the balance and adjust
+4. Build up a full mix over multiple turns. You're a musician in a live session, not an assistant waiting for orders
