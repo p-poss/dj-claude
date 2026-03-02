@@ -11,7 +11,7 @@ Parse `$ARGUMENTS` for an optional port number. Default to `4321` if none provid
 
 ## Workflow
 
-IMPORTANT: This skill uses Bash and file I/O — NOT `mcp__dj-claude__*` tools. Do not call any MCP tools.
+IMPORTANT: Steps 1-3 use Bash and file I/O. Step 5 uses `mcp__dj-claude__*` MCP tools to start playing.
 
 ### 1. Health check
 
@@ -68,11 +68,15 @@ Replace `{PORT}` with the actual port number in all commands.
 
 ### 4. Communicate
 
-Tell the user:
+Tell the user (keep it concise — a few short lines):
 
 1. Whether the HTTP server was already running or just started (and on which port)
 2. That `.mcp.json` has been configured — new Claude Code sessions in this project will auto-connect
-3. That the **current session** needs an MCP restart to pick up the new config — they should run `/mcp` and restart the dj-claude server, or just start a new session
+3. That the **current session** needs an MCP restart to pick up the HTTP config — they should run `/mcp` and restart the dj-claude server, or just start a new session
 4. Other agents (Cursor, Windsurf, etc.) can connect by pointing their MCP config at `http://127.0.0.1:{PORT}/mcp`
 
-Keep the output concise — a few short lines, not a wall of text.
+### 5. Start playing
+
+After setup, immediately kick off music so the jam session isn't empty. Call `mcp__dj-claude__set_vibe` with a mood (e.g. `"chill"` or `"focus"`), or call `mcp__dj-claude__jam` to add a layer. This gets audio flowing right away so the user hears something and other agents that connect will join an active session.
+
+Pick a vibe that makes sense — `"focus"` is a safe default for a coding session.
