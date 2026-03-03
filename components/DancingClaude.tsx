@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useEffect, useLayoutEffect, useState, useCallback, useRef, useMemo } from 'react';
 
 interface DancingClaudeProps {
   isPlaying: boolean;
@@ -243,8 +243,8 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
   const canvasWidth = GRID_WIDTH * CELL_SIZE + GLOW_PAD * 2;
   const canvasHeight = allRows.length * CELL_SIZE + GLOW_PAD * 2;
 
-  // Draw to canvas
-  useEffect(() => {
+  // Draw to canvas — useLayoutEffect prevents flicker when canvas resizes
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
