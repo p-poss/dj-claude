@@ -15,7 +15,7 @@
       "author": {
         "name": "p-poss"
       },
-      "homepage": "https://claude.dj",
+      "homepage": "https://github.com/p-poss/dj-claude",
       "repository": "https://github.com/p-poss/dj-claude",
       "license": "MIT",
       "keywords": ["music", "audio", "strudel", "dj", "jam", "live-coding", "multi-agent", "conductor"],

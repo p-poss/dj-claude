@@ -32,7 +32,7 @@ Under the hood, DJ Claude uses [Strudel](https://strudel.cc) — a live coding e
 
 - **Multi-agent jam sessions** — the first music MCP where multiple agents connect over HTTP and build music together in real-time, each adding layers that compose automatically
 - **Zero dependencies** — no browser tab, no API key, no external services. Every tool works out of the box
-- **Claude Code plugin** — one-step install from the marketplace with 19 slash commands
+- **Claude Code plugin** — one-step install from the marketplace with 20 slash commands
 - **Conductor mode** — orchestrate a full band from a single directive, with auto-detected templates (jazz combo, rock band, electronic, ambient, and more)
 - **Agent-native** — 3 MCP resources teach any connected agent the Strudel language so it can compose original music, not just pick from presets
 
@@ -96,6 +96,7 @@ The easiest way to use DJ Claude with Claude Code. Installs the MCP server and g
 | Command | Description |
 |---------|-------------|
 | `/dj-claude:play [prompt]` | Play music from a description |
+| `/dj-claude:play-preset [name]` | Play from 22 curated patterns |
 | `/dj-claude:vibe [mood]` | Set the vibe — chill, dark, hype, focus, funky, dreamy, weird, epic |
 | `/dj-claude:live-mix [prompt]` | Autonomous DJ set — 5-6 evolving stages in one turn |
 | `/dj-claude:jam [role] [prompt]` | Add a layer to the jam session (drums, bass, melody, etc.) |
@@ -149,7 +150,8 @@ By default, Claude Code prompts for permission on every MCP tool call. To let DJ
       "mcp__dj-claude__snapshot_load",
       "mcp__dj-claude__snapshot_list",
       "mcp__dj-claude__export_code",
-      "mcp__dj-claude__play_preset"
+      "mcp__dj-claude__play_preset",
+      "mcp__dj-claude__switch_audio"
     ]
   }
 }

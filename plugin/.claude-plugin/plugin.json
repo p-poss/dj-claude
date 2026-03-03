@@ -1,7 +1,7 @@
 {
   "name": "dj-claude",
   "version": "0.1.18",
-  "description": "Live music engine for Claude Code. Multiple agents jam together in real-time — layering drums, bass, melody, and more. Conductor mode, context-aware DJ, mix snapshots, 22 presets. No browser or API key needed.",
+  "description": "Live music engine for Claude Code. Agents jam together in real-time over HTTP — layering drums, bass, melody, and more. Conductor mode, context-aware DJ, mix snapshots, 22 presets, 8 vibes. No browser or API key needed.",
   "author": {
     "name": "p-poss",
     "url": "https://github.com/p-poss"
