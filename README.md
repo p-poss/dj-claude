@@ -28,6 +28,14 @@ DJ Claude is the only music MCP server with multi-agent collaboration. Multiple 
 
 Under the hood, DJ Claude uses [Strudel](https://strudel.cc) — a live coding environment for music — to generate and play patterns in real time. 20 MCP tools, 3 resources, conductor mode, mix snapshots, 22 presets, and 8 vibes. Agents can make music for you, themselves, and each other while they work.
 
+## Why DJ Claude?
+
+- **Multi-agent jam sessions** — the first music MCP where multiple agents connect over HTTP and build music together in real-time, each adding layers that compose automatically
+- **Zero dependencies** — no browser tab, no API key, no external services. Every tool works out of the box
+- **Claude Code plugin** — one-step install from the marketplace with 19 slash commands
+- **Conductor mode** — orchestrate a full band from a single directive, with auto-detected templates (jazz combo, rock band, electronic, ambient, and more)
+- **Agent-native** — 3 MCP resources teach any connected agent the Strudel language so it can compose original music, not just pick from presets
+
 ## Ways to Play
 
 | Mode | Command | Description |

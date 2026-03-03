@@ -4,7 +4,7 @@ Live music engine for Claude Code. Multiple agents jam together in real-time —
 
 ## Why DJ Claude?
 
-- **Multi-agent jam sessions** — multiple Claude Code sessions connect over HTTP and build music together in real-time, each adding layers (drums, bass, melody, etc.) that compose automatically
+- **Multi-agent jam sessions** — the first music MCP where multiple agents connect over HTTP and build music together in real-time, each adding layers (drums, bass, melody, etc.) that compose automatically
 - **Conductor mode** — orchestrate a full band from a single directive, with auto-detected templates (jazz combo, rock band, electronic, ambient, and more)
 - **Zero dependencies** — no browser tab, no API key, no external services. Every tool works out of the box via presets, vibes, or direct Strudel code
 - **20 MCP tools, 3 resources** — the most complete music toolkit available to AI agents

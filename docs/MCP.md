@@ -174,6 +174,8 @@ Once connected, the agent sees 20 tools and 3 resources. Whether the agent plays
 
 ### Multi-Agent Collaboration
 
+DJ Claude is the first music MCP server with multi-agent collaboration — no other music tool lets multiple AI agents build a track together in real-time.
+
 In Claude Code, run `/dj-claude:connect` to auto-start the HTTP server and configure your project. For other agents, start the server manually and point your MCP config at `http://127.0.0.1:4321/mcp`.
 
 Multiple agents connect to the same HTTP server, sharing one audio engine:
