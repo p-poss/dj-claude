@@ -1,7 +1,9 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "dj-claude-marketplace",
-  "description": "DJ Claude — AI agents jam together while they code",
+  "metadata": {
+    "description": "DJ Claude — AI agents jam together while they code"
+  },
   "owner": {
     "name": "p-poss",
     "email": "hey@patrickposs.com"
@@ -11,7 +13,6 @@
       "name": "dj-claude",
       "source": "./plugin",
       "description": "Live music engine for Claude Code. Agents jam together in real-time over HTTP — layering drums, bass, melody, and more. Conductor mode, mix snapshots, 22 presets, 8 vibes. No browser or API key needed.",
-      "version": "0.1.18",
       "author": {
         "name": "p-poss"
       },
