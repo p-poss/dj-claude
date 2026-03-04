@@ -895,7 +895,7 @@ export function DJInterface() {
                   : state.isStreaming
                     ? STREAMING_MESSAGES[streamingMessageIndex]
                     : editorReady
-                      ? "Add percussion, speed it up..."
+                      ? (typeof window !== 'undefined' && window.innerWidth < 768 ? "Make a request..." : "Add percussion, speed it up...")
                       : "Initializing..."
               }
               themeColors={{

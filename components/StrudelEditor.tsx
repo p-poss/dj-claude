@@ -562,7 +562,7 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
               containerRef.current?.style.setProperty('--editor-opacity', '1');
             }
             // Re-set initial code after CodeMirror is ready (iOS may miss the attribute)
-            const placeholderCode = '// DJ Claude — make a request above';
+            const placeholderCode = window.innerWidth < 768 ? '// DJ Claude — agentic beats' : '// DJ Claude — make a request above';
             const cmView2 = (editor as any)?.editor?.editor;
             if (cmView2?.dispatch) {
               cmView2.dispatch({
