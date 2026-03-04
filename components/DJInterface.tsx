@@ -97,6 +97,8 @@ const LOGO_RESPONSIVE_STYLES = `
   @media (max-width: 400px) {
     .logo-no-de { display: none; }
     .logo-no-ude { display: block; }
+    .btn-w15 { display: none !important; }
+    .btn-w12 { display: block !important; }
   }
 `;
 
@@ -726,13 +728,24 @@ export function DJInterface() {
                 style={FIT_CONTENT_STYLE}
               >
                 <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={FONT_INHERIT_STYLE}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
-                    <pre className="m-0">║</pre>
+                  <div className="btn-w15" style={{ display: 'block' }}>
+                    <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                    <div className="flex" style={FONT_INHERIT_STYLE}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
                   </div>
-                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+                  <div className="btn-w12" style={{ display: 'none' }}>
+                    <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
+                    <div className="flex" style={FONT_INHERIT_STYLE}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1 text-center">{isSwapped ? 'NIGHT: Off' : 'NIGHT: On'}</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
+                  </div>
                 </div>
               </button>
 
@@ -746,13 +759,24 @@ export function DJInterface() {
                 style={FIT_CONTENT_STYLE}
               >
                 <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={FONT_INHERIT_STYLE}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DISCO: On' : 'DISCO: Off'}</pre>
-                    <pre className="m-0">║</pre>
+                  <div className="btn-w15" style={{ display: 'block' }}>
+                    <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                    <div className="flex" style={FONT_INHERIT_STYLE}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DISCO: On' : 'DISCO: Off'}</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
                   </div>
-                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+                  <div className="btn-w12" style={{ display: 'none' }}>
+                    <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
+                    <div className="flex" style={FONT_INHERIT_STYLE}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1 text-center">{partyEnabled ? 'DISCO: On' : 'DISCO: Off'}</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
+                  </div>
                 </div>
               </button>
 
@@ -766,13 +790,24 @@ export function DJInterface() {
                 style={FIT_CONTENT_STYLE}
               >
                 <div className="group-hover:opacity-30">
-                  <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-                  <div className="flex" style={FONT_INHERIT_STYLE}>
-                    <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
-                    <pre className="m-0">║</pre>
+                  <div className="btn-w15" style={{ display: 'block' }}>
+                    <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+                    <div className="flex" style={FONT_INHERIT_STYLE}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
                   </div>
-                  <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+                  <div className="btn-w12" style={{ display: 'none' }}>
+                    <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
+                    <div className="flex" style={FONT_INHERIT_STYLE}>
+                      <pre className="m-0">║</pre>
+                      <pre className="m-0 flex-1 text-center">{crtEnabled ? 'RAVE: On' : 'RAVE: Off'}</pre>
+                      <pre className="m-0">║</pre>
+                    </div>
+                    <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
+                  </div>
                 </div>
               </button>
 
@@ -968,13 +1003,24 @@ export function DJInterface() {
           style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
-            <div className="flex" style={FONT_INHERIT_STYLE}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">{isPlaying ? '▪ PAUSE' : '▶ PLAY'}</pre>
-              <pre className="m-0">║</pre>
+            <div className="btn-w15" style={{ display: 'block' }}>
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{isPlaying ? '▪ PAUSE' : '▶ PLAY'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
             </div>
-            <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            <div className="btn-w12" style={{ display: 'none' }}>
+              <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">{isPlaying ? '▪ PAUSE' : '▶ PLAY'}</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(12)}╝</pre>
+            </div>
           </div>
         </button>
 
