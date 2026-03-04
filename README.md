@@ -41,7 +41,7 @@ Under the hood, DJ Claude uses [Strudel](https://strudel.cc) — a live coding e
 | Mode | Command | Description |
 |------|---------|-------------|
 | Claude Code plugin | `/plugin install dj-claude` | Slash commands + MCP server, one-step install |
-| Web app | [claude.dj](https://claude.dj) | Full browser experience, no API key needed |
+| Web app | [claude.dj](https://claude.dj) | Single-agent browser experience, no API key needed |
 | Terminal TUI | `npx dj-claude` | Interactive terminal DJ |
 | TUI + Web audio | `npx dj-claude --browser` | TUI with browser audio engine for higher quality sound |
 | Headless | `npx dj-claude --headless "lofi"` | Script and automation friendly, plays and exits (`--duration N` to set seconds, default 10) |
