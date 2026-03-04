@@ -210,7 +210,6 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
   function StrudelEditor({ initialCode = '', onReady, onError }, ref) {
     const { theme } = useTheme();
     const containerRef = useRef<HTMLDivElement>(null);
-    const keyboardHintRef = useRef<HTMLDivElement>(null);
     const codeContentRef = useRef<HTMLDivElement>(null);
     const editorElementRef = useRef<HTMLElement | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -553,26 +552,17 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
               if (containerRef.current) {
                 containerRef.current.style.setProperty('--editor-transition', 'opacity 0.4s ease-out');
               }
-              if (keyboardHintRef.current) {
-                keyboardHintRef.current.style.transition = 'opacity 0.4s ease-out';
-              }
 
               // Use requestAnimationFrame to ensure transition is registered before opacity change
               requestAnimationFrame(() => {
                 containerRef.current?.style.setProperty('--editor-opacity', '1');
-                if (keyboardHintRef.current) {
-                  keyboardHintRef.current.style.opacity = '1';
-                }
               });
             } else {
               // Already initialized, just ensure visible (no animation)
               containerRef.current?.style.setProperty('--editor-opacity', '1');
-              if (keyboardHintRef.current) {
-                keyboardHintRef.current.style.opacity = '1';
-              }
             }
             // Re-set initial code after CodeMirror is ready (iOS may miss the attribute)
-            const placeholderCode = window.innerWidth < 768 ? '// Use the prompt area above!' : '// Write DJ Claude a prompt above to start coding music!';
+            const placeholderCode = '// DJ Claude — make a request above';
             const cmView2 = (editor as any)?.editor?.editor;
             if (cmView2?.dispatch) {
               cmView2.dispatch({
@@ -623,25 +613,6 @@ export const StrudelEditor = memo(forwardRef<StrudelEditorAPI, StrudelEditorProp
           aria-hidden="true"
           style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}
         >{currentCode}</div>
-        {/* Keyboard shortcut hint */}
-        <div
-          ref={keyboardHintRef}
-          className="keyboard-hint phosphor-glow hidden md:block"
-          style={{
-            position: 'absolute',
-            top: '9px',
-            right: '10px',
-            fontFamily: 'Menlo, Consolas, "DejaVu Sans Mono", monospace',
-            fontSize: '12px',
-            lineHeight: 1,
-            color: theme.text,
-            pointerEvents: 'none',
-            zIndex: 10,
-            opacity: editorHasBeenInitialized ? 1 : 0,
-          }}
-        >
-          Ctrl+Enter = re-run
-        </div>
       </>
     );
   }

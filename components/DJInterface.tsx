@@ -895,7 +895,7 @@ export function DJInterface() {
                   : state.isStreaming
                     ? STREAMING_MESSAGES[streamingMessageIndex]
                     : editorReady
-                      ? "Make it darker, Add percussion, Speed it up..."
+                      ? "Mix in lofi, add percussion, speed it up..."
                       : "Initializing..."
               }
               themeColors={{
@@ -921,7 +921,7 @@ export function DJInterface() {
               <pre className="m-0">╔═══╗</pre>
               <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
-                <pre className="m-0 flex-1 text-center">↓</pre>
+                <pre className="m-0 flex-1 text-center">→</pre>
                 <pre className="m-0">║</pre>
               </div>
               <pre className="m-0">╚═══╝</pre>
@@ -1002,35 +1002,48 @@ export function DJInterface() {
           </div>
         </button>
 
-        {/* Re-run button - mobile only */}
+        {/* Re-run button */}
         <button
           onClick={state.currentCode ? handlePlay : undefined}
           disabled={!state.currentCode}
           data-testid="rerun-button"
           aria-label="Re-run"
           aria-disabled={!state.currentCode}
-          className={`md:hidden ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
+          className={state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
           style={FIT_CONTENT_ML_AUTO_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
-            <pre className="m-0">╔═══╗</pre>
-            <div className="flex" style={FONT_INHERIT_STYLE}>
-              <pre className="m-0">║</pre>
-              <pre className="m-0 flex-1 text-center">⟳</pre>
-              <pre className="m-0">║</pre>
+            {/* Mobile: icon only */}
+            <div className="md:hidden">
+              <pre className="m-0">╔═══╗</pre>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">⟳</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚═══╝</pre>
             </div>
-            <pre className="m-0">╚═══╝</pre>
+            {/* Desktop: full label */}
+            <div className="hidden md:block">
+              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <div className="flex" style={FONT_INHERIT_STYLE}>
+                <pre className="m-0">║</pre>
+                <pre className="m-0 flex-1 text-center">⟳ RE-RUN</pre>
+                <pre className="m-0">║</pre>
+              </div>
+              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+            </div>
           </div>
         </button>
 
-        {/* Revert button - right-aligned on desktop (re-run takes ml-auto on mobile) */}
+        {/* Revert button */}
         <button
           onClick={state.previousCode ? handleGoBack : undefined}
           disabled={!state.previousCode}
           data-testid="revert-button"
           aria-label="Revert to previous code"
           aria-disabled={!state.previousCode}
-          className={`md:!ml-auto ${state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
+          className={state.previousCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}
           style={FIT_CONTENT_STYLE}
         >
           <div className={state.previousCode ? 'group-hover:opacity-30' : ''}>
