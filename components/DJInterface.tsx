@@ -94,6 +94,9 @@ const LOGO_RESPONSIVE_STYLES = `
     .logo-no-e { display: none; }
     .logo-no-de { display: block; }
   }
+  @media (max-width: 430px) {
+    .export-btn { display: none !important; }
+  }
   @media (max-width: 400px) {
     .logo-no-de { display: none; }
     .logo-no-ude { display: block; }
@@ -1004,13 +1007,15 @@ export function DJInterface() {
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
             <div className="btn-w15" style={{ display: 'block' }}>
-              <pre className="m-0">╔{'═'.repeat(15)}╗</pre>
+              <pre className="m-0 md:hidden">╔{'═'.repeat(15)}╗</pre>
+              <pre className="m-0 hidden md:block">╔{'═'.repeat(20)}╗</pre>
               <div className="flex" style={FONT_INHERIT_STYLE}>
                 <pre className="m-0">║</pre>
                 <pre className="m-0 flex-1 text-center">{isPlaying ? '▪ PAUSE' : '▶ PLAY'}</pre>
                 <pre className="m-0">║</pre>
               </div>
-              <pre className="m-0">╚{'═'.repeat(15)}╝</pre>
+              <pre className="m-0 md:hidden">╚{'═'.repeat(15)}╝</pre>
+              <pre className="m-0 hidden md:block">╚{'═'.repeat(20)}╝</pre>
             </div>
             <div className="btn-w12" style={{ display: 'none' }}>
               <pre className="m-0">╔{'═'.repeat(12)}╗</pre>
@@ -1123,7 +1128,7 @@ export function DJInterface() {
           data-testid="export-button"
           aria-label="Copy code to clipboard"
           aria-disabled={!state.currentCode}
-          className={`hidden md:block ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
+          className={`export-btn ${state.currentCode ? 'group phosphor-glow ascii-box cursor-pointer' : 'opacity-30 cursor-not-allowed phosphor-glow ascii-box'}`}
           style={FIT_CONTENT_STYLE}
         >
           <div className={state.currentCode ? 'group-hover:opacity-30' : ''}>
