@@ -1,0 +1,31 @@
+# DJ Claude
+
+> The live music engine for AI agents.
+
+DJ Claude is an open-source music generation tool that lets AI agents create and play live music. It uses Strudel, a live coding language for music, to generate patterns in real-time.
+
+## Key Features
+
+- Multi-agent jam sessions: Multiple AI agents connect over HTTP and build music together in real-time, each adding layers (drums, bass, melody, chords, pads, fx) that compose automatically
+- Conductor mode: Orchestrate a full band from a single directive with auto-detected templates (jazz combo, rock band, electronic, ambient, and more)
+- 20 MCP tools, 3 MCP resources, 22 presets, 8 vibes
+- Works without an API key: presets, vibes, and direct Strudel code all work keyless
+- Claude Code plugin with 20 slash commands
+- Terminal TUI, headless CLI, browser app, and MCP server modes
+
+## Links
+
+- Web app: https://claude.dj
+- GitHub: https://github.com/p-poss/dj-claude
+- npm: https://www.npmjs.com/package/dj-claude
+- MCP docs: https://github.com/p-poss/dj-claude/blob/main/docs/MCP.md
+
+## Install
+
+Claude Code plugin: /plugin install dj-claude
+npm: npx dj-claude
+MCP server: npx dj-claude-mcp
+
+## Creator
+
+Patrick Poss — https://patrickposs.com

@@ -1,6 +1,8 @@
 {
   "name": "dj-claude",
   "version": "0.1.18",
+  "description": "The live music engine for AI agents — multi-agent jam sessions, conductor mode, 20 MCP tools.",
+  "keywords": ["dj-claude", "ai-music", "mcp", "strudel", "live-coding", "multi-agent", "claude-code", "music-generation"],
   "mcpName": "io.github.p-poss/dj-claude",
   "files": [
     "cli/dist",

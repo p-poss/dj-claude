@@ -40,6 +40,28 @@ export const metadata: Metadata = {
   creator: "Patrick Poss",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "DJ Claude",
+  url: "https://claude.dj",
+  description:
+    "The live music engine for AI agents. Multi-agent jam sessions, conductor mode, 22 presets. No API key or install needed.",
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Any",
+  author: {
+    "@type": "Person",
+    name: "Patrick Poss",
+    url: "https://patrickposs.com",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  license: "https://opensource.org/licenses/MIT",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,6 +71,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="preload" href="https://unpkg.com/@strudel/repl@latest" as="script" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className="antialiased">
         <ThemeProvider>
