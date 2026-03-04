@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useSyncExternalStore } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { themes } from '@/context/ThemeContext';
 
@@ -24,7 +24,12 @@ export function ClubSelector() {
   }, [isOpen]);
 
   const displayName = 'CLUB: ' + themeName.slice(0, 10).padEnd(10);
-  const boxWidth = 20;
+  const isNarrow = useSyncExternalStore(
+    (cb) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); },
+    () => window.innerWidth <= 400,
+    () => false
+  );
+  const boxWidth = isNarrow ? 19 : 20;
 
   const handleSelectTheme = (index: number) => {
     selectTheme(index);

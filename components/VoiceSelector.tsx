@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useSyncExternalStore } from 'react';
 import { useVoice } from '@/context/VoiceContext';
 
 interface VoiceSelectorProps {
@@ -34,7 +34,12 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
   const displayName = mcEnabled
     ? 'MC: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10)
     : 'MC: ' + 'Off'.padEnd(10);
-  const boxWidth = 20;
+  const isNarrow = useSyncExternalStore(
+    (cb) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); },
+    () => window.innerWidth <= 400,
+    () => false
+  );
+  const boxWidth = isNarrow ? 19 : 20;
 
   const handleSelectVoice = (voiceId: string) => {
     const voice = elevenLabsVoices.find(v => v.id === voiceId);
