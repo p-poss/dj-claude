@@ -43,6 +43,8 @@ next-env.d.ts
 
 # screenshots and reference images
 *.png
+!app/opengraph-image.png
+!app/twitter-image.png
 Screenshot*
 
 # internal planning docs
