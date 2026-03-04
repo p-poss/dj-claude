@@ -296,7 +296,7 @@ export function DancingClaude({ isPlaying, isSpeaking = false, color = '#737373'
       role="button"
       aria-label="DJ Claude mascot"
       onClick={handleClick}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: 'default' }}
     >
       <div
         style={{
