@@ -31,15 +31,16 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen]);
 
-  const displayName = mcEnabled
-    ? 'MC: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, 10).padEnd(10)
-    : 'MC: ' + 'Off'.padEnd(10);
-  const isNarrow = useSyncExternalStore(
+  const screenWidth = useSyncExternalStore(
     (cb) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); },
-    () => window.innerWidth <= 400,
-    () => false
+    () => window.innerWidth,
+    () => 800
   );
-  const boxWidth = isNarrow ? 19 : 20;
+  const boxWidth = screenWidth < 372 ? 14 : screenWidth <= 400 ? 19 : 20;
+  const nameWidth = boxWidth - 7; // account for 'MC: ' prefix + '▾ ' suffix + padding
+  const displayName = mcEnabled
+    ? 'MC: ' + (selectedElevenLabsVoice?.name || 'Select').slice(0, nameWidth).padEnd(nameWidth)
+    : 'MC: ' + 'Off'.padEnd(nameWidth);
 
   const handleSelectVoice = (voiceId: string) => {
     const voice = elevenLabsVoices.find(v => v.id === voiceId);
