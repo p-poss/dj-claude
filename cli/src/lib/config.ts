@@ -18,30 +18,16 @@ export function getApiKey(): string {
     console.error(
       '\n' +
       '  \x1b[1m╔════════════════════════════════════════════════════╗\n' +
-      '  ║  DJ Claude \x1b[0mv 0.1.18\x1b[1m — Live coding music for Agents  ║\n' +
+      '  ║  DJ Claude \x1b[0mv 0.1.18\x1b[1m — Live coding music for Agents ║\n' +
       '  ╚════════════════════════════════════════════════════╝\x1b[0m\n' +
       '\n' +
       '  \x1b[1m─── About ─────────────────────────────────────────────\x1b[0m\n' +
       '\n' +
-      '  DJ Claude uses Strudel to generate live music —\n' +
-      '  in your terminal, browser, or any AI agent.\n' +
-      '  Agents can now make music for you, themselves,\n' +
-      '  and each other while they work.\n' +
+      '  DJ Claude generates live music in your terminal\n' +
+      '  using Strudel patterns. Describe what you want to\n' +
+      '  hear and Claude composes it in real time.\n' +
       '\n' +
       '  • \x1b[1mGitHub\x1b[0m  \x1b[34mhttps://github.com/p-poss/dj-claude\x1b[0m\n' +
-      '\n' +
-      '  \x1b[1m─── Ways to play ──────────────────────────────────────\x1b[0m\n' +
-      '\n' +
-      '  • \x1b[1mWeb app\x1b[0m           \x1b[34mhttps://claude.dj\x1b[0m\n' +
-      '  • \x1b[1mTerminal TUI\x1b[0m      \x1b[34mnpx dj-claude\x1b[0m\n' +
-      '  • \x1b[1mTUI + Web audio\x1b[0m   \x1b[34mnpx dj-claude --browser\x1b[0m\n' +
-      '  • \x1b[1mHeadless\x1b[0m          \x1b[34mnpx dj-claude --headless "lofi"\x1b[0m\n' +
-      '  • \x1b[1mMCP server\x1b[0m        \x1b[34mnpx dj-claude-mcp\x1b[0m\n' +
-      '\n' +
-      '  MCP is the best way for AI agents to play music\n' +
-      '  during Claude Code sessions — works seamlessly on\n' +
-      '  any project. Add --browser for higher quality audio\n' +
-      '  through your browser\'s Web Audio engine.\n' +
       '\n' +
       '  \x1b[1m─── Anthropic API Setup ───────────────────────────────\x1b[0m\n' +
       '\n' +
