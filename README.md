@@ -375,7 +375,7 @@ export_code                      # get raw Strudel code with headers
 
 ## Web App
 
-Visit [claude.dj](https://claude.dj) for the full browser experience — no API key or install needed.
+Visit [claude.dj](https://claude.dj) for the single agent browser experience — no API key or install needed.
 
 Features:
 - 5 club themes — Anthropic, Gemini, Codex, Fairlight, OpenClaw
