@@ -1,5 +1,5 @@
 {
-  "description": "Music nudges — suggests DJ Claude vibes based on session events",
+  "description": "Informational hooks — reports DJ Claude availability and session events",
   "hooks": {
     "SessionStart": [
       {
@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"DJ Claude is ready. Consider setting a vibe to match the work ahead.\"}}'",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"DJ Claude plugin is loaded. Use /dj-claude:play or any dj-claude slash command to get started.\"}}'",
             "timeout": 5
           }
         ]

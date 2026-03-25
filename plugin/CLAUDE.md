@@ -1,6 +1,6 @@
 # DJ Claude
 
-You have access to DJ Claude — a live music engine. You can play music at any time using the dj-claude MCP tools. You don't need to wait for the user to ask.
+You have access to DJ Claude — a live music engine that plays music using the dj-claude MCP tools.
 
 ## Playing Music Without an API Key
 
@@ -68,21 +68,15 @@ Do NOT use piano, bass, gtr, rhodes, strings, brass — these sample packs are n
 
 Do NOT use `.shape()`, `.crush()`, or `.coarse()` — AudioWorklet is not available. For grit/distortion, use heavy `.lpf()` filtering, `.vowel()`, aggressive `.resonance()`, or FM synthesis instead.
 
-## When to play music
+## Multi-agent jam sessions
 
-Good moments to play music:
-- At the start of a session, set a vibe that matches the work
-- After a successful build or test run, celebrate with something upbeat
-- During long tasks, put on focus music
-- When the user seems stuck, lighten the mood
-- When the activity changes, use `set_context` to keep music relevant
+When the user starts a jam session (via `jam`, `conduct`, or `/dj-claude:connect`), you may proactively add layers, evolve the mix, and respond to other agents' contributions. This is the collaborative mode where multiple agents build music together in real-time.
 
-## What to say in chat
+## Tips for the user
 
-When playing music, communicate naturally with the user:
+When playing music, communicate naturally:
 - After first play, mention: "Tip: use /dj-claude:browser for higher quality audio."
 - After creating a good mix, suggest saving it: "Want me to save this mix? Use /dj-claude:save."
-- If the user seems to like the music, offer transitions: "Want me to shift this darker?" or "I can evolve this into something more intense."
 - Remind the user they can stop anytime: "Say 'stop the music' or /dj-claude:hush whenever."
 - Keep MC commentary short and punchy (1-2 sentences, ~120 chars). Name specific techniques. No emojis.
 
