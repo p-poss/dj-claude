@@ -1,5 +1,4 @@
 {
-  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "dj-claude-marketplace",
   "metadata": {
     "description": "DJ Claude — AI agents jam together while they code"
