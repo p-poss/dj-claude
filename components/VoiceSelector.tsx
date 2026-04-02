@@ -6,9 +6,10 @@ import { useVoice } from '@/context/VoiceContext';
 interface VoiceSelectorProps {
   mcEnabled: boolean;
   onToggleMC: (enabled: boolean) => void;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
+export function VoiceSelector({ mcEnabled, onToggleMC, onOpenChange }: VoiceSelectorProps) {
   const {
     selectedElevenLabsVoice,
     setSelectedElevenLabsVoice,
@@ -22,6 +23,7 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
+        onOpenChange?.(false);
       }
     };
 
@@ -49,11 +51,13 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
       onToggleMC(true);
     }
     setIsOpen(false);
+    onOpenChange?.(false);
   };
 
   const handleSelectOff = () => {
     onToggleMC(false);
     setIsOpen(false);
+    onOpenChange?.(false);
   };
 
   // Format voice name for dropdown row
@@ -66,7 +70,7 @@ export function VoiceSelector({ mcEnabled, onToggleMC }: VoiceSelectorProps) {
     <div ref={dropdownRef} className="relative">
       {/* Trigger button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { const next = !isOpen; setIsOpen(next); onOpenChange?.(next); }}
         data-testid="voice-selector"
         aria-expanded={isOpen}
         aria-label="Select MC voice"

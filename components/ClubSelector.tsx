@@ -4,7 +4,11 @@ import { useState, useRef, useEffect, useSyncExternalStore } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { themes } from '@/context/ThemeContext';
 
-export function ClubSelector() {
+interface ClubSelectorProps {
+  onOpenChange?: (isOpen: boolean) => void;
+}
+
+export function ClubSelector({ onOpenChange }: ClubSelectorProps) {
   const { themeName, themeIndex, selectTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -14,6 +18,7 @@ export function ClubSelector() {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);
+        onOpenChange?.(false);
       }
     };
 
@@ -34,6 +39,7 @@ export function ClubSelector() {
   const handleSelectTheme = (index: number) => {
     selectTheme(index);
     setIsOpen(false);
+    onOpenChange?.(false);
   };
 
   // Format theme name for dropdown row
@@ -46,7 +52,7 @@ export function ClubSelector() {
     <div ref={dropdownRef} className="relative">
       {/* Trigger button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { const next = !isOpen; setIsOpen(next); onOpenChange?.(next); }}
         data-testid="club-selector"
         aria-expanded={isOpen}
         aria-label="Select club theme"

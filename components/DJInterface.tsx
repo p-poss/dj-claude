@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useCallback, useState, useSyncExternalStore } from 'react';
 import { useDJ } from '@/context/DJContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useVoice } from '@/context/VoiceContext';
@@ -169,6 +169,15 @@ export function DJInterface() {
   isStreamingRef.current = state.isStreaming;
   const isPlayingRef = useRef(isPlaying);
   isPlayingRef.current = isPlaying;
+  const isMobile = useSyncExternalStore(
+    (cb) => { window.addEventListener('resize', cb); return () => window.removeEventListener('resize', cb); },
+    () => window.innerWidth < 768,
+    () => false
+  );
+  const [activeDropdown, setActiveDropdown] = useState<'info' | 'club' | 'mc' | null>(null);
+  const infoModalRef = useRef<HTMLDivElement>(null);
+  const clubSelectorRef = useRef<HTMLDivElement>(null);
+  const mcSelectorRef = useRef<HTMLDivElement>(null);
 
   // Splash screen fade out
   useEffect(() => {
@@ -194,13 +203,14 @@ export function DJInterface() {
       if (infoRef.current && !infoRef.current.contains(e.target as Node)) {
         setShowInfo(false);
         setInfoPinned(false);
+        if (isMobile) setActiveDropdown(prev => prev === 'info' ? null : prev);
       }
     };
     if (infoPinned) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [infoPinned]);
+  }, [infoPinned, isMobile]);
 
   // Toggle body CSS classes for visual modes
   useEffect(() => {
@@ -212,13 +222,20 @@ export function DJInterface() {
   // Track cursor/touch position to slide character (inverted direction)
   // Uses ref-based DOM update to avoid re-rendering the entire tree on every mousemove
   // Throttled to screen refresh rate via requestAnimationFrame
+  // Disabled on mobile — character position is controlled by dropdown state instead
+  const isMobileRef = useRef(isMobile);
+  isMobileRef.current = isMobile;
+
   useEffect(() => {
+    if (isMobile) return;
+
     let pendingFrame = 0;
 
     const updateOffset = (clientX: number) => {
       if (pendingFrame) return;
       pendingFrame = requestAnimationFrame(() => {
         pendingFrame = 0;
+        if (isMobileRef.current) return; // guard against stale rAF after desktop→mobile switch
         const centerX = window.innerWidth / 2;
         const offset = ((clientX - centerX) / centerX) * -119;
         if (characterContainerRef.current) {
@@ -237,7 +254,119 @@ export function DJInterface() {
       window.removeEventListener('touchmove', onTouch);
       if (pendingFrame) cancelAnimationFrame(pendingFrame);
     };
-  }, []);
+  }, [isMobile]);
+
+  // Mobile: position character based on active dropdown
+  // Default: aligned with club button left edge. When dropdown opens: slide next to it.
+  const wasMobileRef = useRef(isMobile);
+
+  useLayoutEffect(() => {
+    const container = characterContainerRef.current;
+    if (!container) return;
+
+    if (!isMobile) {
+      wasMobileRef.current = false;
+      container.style.transform = '';
+      return;
+    }
+
+    // Snap (no transition) on initial desktop→mobile switch
+    const justSwitched = !wasMobileRef.current;
+    wasMobileRef.current = true;
+    if (justSwitched) {
+      container.style.transition = 'none';
+    }
+
+    // Use parent center and actual width for robust calculation
+    const parent = container.parentElement;
+    if (!parent) return;
+    const parentRect = parent.getBoundingClientRect();
+    const naturalCenter = parentRect.left + parentRect.width / 2;
+    const charWidth = container.offsetWidth;
+    const gap = 4;
+
+    const calcOffset = (targetEl: HTMLElement | null, side: 'right' | 'left') => {
+      if (!targetEl) return 0;
+      const rect = targetEl.getBoundingClientRect();
+      if (side === 'right') {
+        return rect.right + gap + charWidth / 2 - naturalCenter;
+      }
+      return rect.left - gap - charWidth / 2 - naturalCenter;
+    };
+
+    let offset: number;
+    if (!activeDropdown) {
+      // Default: character left edge aligns with club button left edge
+      const clubEl = clubSelectorRef.current;
+      if (clubEl) {
+        const clubRect = clubEl.getBoundingClientRect();
+        offset = clubRect.left + charWidth / 2 - naturalCenter;
+      } else {
+        offset = 8 + charWidth / 2 - naturalCenter;
+      }
+    } else {
+      switch (activeDropdown) {
+        case 'info':
+          offset = calcOffset(infoModalRef.current ?? infoRef.current, 'right');
+          break;
+        case 'club':
+          offset = calcOffset(clubSelectorRef.current, 'right');
+          break;
+        case 'mc':
+          offset = calcOffset(mcSelectorRef.current, 'left');
+          break;
+        default:
+          offset = 0;
+      }
+    }
+
+    container.style.transform = `translateX(${offset}px)`;
+
+    // Restore transition after snap
+    if (justSwitched) {
+      // Force reflow so the snap is instant, then restore transition
+      container.offsetHeight;
+      container.style.transition = 'transform 0.3s ease-out';
+    }
+  }, [activeDropdown, isMobile]);
+
+  // Recalculate mobile position on resize (element positions shift)
+  useEffect(() => {
+    if (!isMobile) return;
+    const handler = () => {
+      const container = characterContainerRef.current;
+      const parent = container?.parentElement;
+      if (!container || !parent) return;
+
+      const parentRect = parent.getBoundingClientRect();
+      const naturalCenter = parentRect.left + parentRect.width / 2;
+      const charWidth = container.offsetWidth;
+      const gap = 4;
+
+      if (!activeDropdown) {
+        const clubEl = clubSelectorRef.current;
+        if (clubEl) {
+          const clubRect = clubEl.getBoundingClientRect();
+          container.style.transform = `translateX(${clubRect.left + charWidth / 2 - naturalCenter}px)`;
+        }
+      } else {
+        let targetEl: HTMLElement | null = null;
+        let side: 'right' | 'left' = 'right';
+        if (activeDropdown === 'info') { targetEl = infoModalRef.current ?? infoRef.current; side = 'right'; }
+        else if (activeDropdown === 'club') { targetEl = clubSelectorRef.current; side = 'right'; }
+        else if (activeDropdown === 'mc') { targetEl = mcSelectorRef.current; side = 'left'; }
+        if (targetEl) {
+          const rect = targetEl.getBoundingClientRect();
+          const offset = side === 'right'
+            ? rect.right + gap + charWidth / 2 - naturalCenter
+            : rect.left - gap - charWidth / 2 - naturalCenter;
+          container.style.transform = `translateX(${offset}px)`;
+        }
+      }
+    };
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, [isMobile, activeDropdown]);
 
   // Greet user on page load with random welcome message (speech bubble only)
   // Note: TTS is skipped because browsers block audio until user interaction
@@ -829,9 +958,11 @@ export function DJInterface() {
                   if (infoPinned) {
                     setInfoPinned(false);
                     setShowInfo(false);
+                    if (isMobile) setActiveDropdown(prev => prev === 'info' ? null : prev);
                   } else {
                     setInfoPinned(true);
                     setShowInfo(true);
+                    if (isMobile) setActiveDropdown('info');
                   }
                 }}
                 data-testid="info-button"
@@ -853,6 +984,7 @@ export function DJInterface() {
               {/* Info modal - positioned below info button */}
               {showInfo && (
                 <div
+                  ref={infoModalRef}
                   className="absolute left-0 z-50 phosphor-glow ascii-box"
                   style={DROPDOWN_STYLE}
                 >
@@ -888,15 +1020,27 @@ export function DJInterface() {
             </div>
 
             {/* Club theme selector */}
-            <ClubSelector />
+            <div ref={clubSelectorRef}>
+              <ClubSelector onOpenChange={(open) => {
+                if (!isMobile) return;
+                if (open) setActiveDropdown('club');
+                else setActiveDropdown(prev => prev === 'club' ? null : prev);
+              }} />
+            </div>
 
             {/* MC Voice Selector */}
-            <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
-              if (!enabled) {
-                stopTTS();
-              }
-              setMcEnabled(enabled);
-            }} />
+            <div ref={mcSelectorRef}>
+              <VoiceSelector mcEnabled={mcEnabled} onToggleMC={(enabled) => {
+                if (!enabled) {
+                  stopTTS();
+                }
+                setMcEnabled(enabled);
+              }} onOpenChange={(open) => {
+                if (!isMobile) return;
+                if (open) setActiveDropdown('mc');
+                else setActiveDropdown(prev => prev === 'mc' ? null : prev);
+              }} />
+            </div>
           </div>
 
         </div>
@@ -909,7 +1053,7 @@ export function DJInterface() {
           ref={characterContainerRef}
           style={{
             position: 'relative',
-            transition: 'transform 0.15s ease-out',
+            transition: isMobile ? 'transform 0.3s ease-out' : 'transform 0.15s ease-out',
           }}
         >
           <DancingClaude isPlaying={isPlaying} isSpeaking={isSpeaking} color={theme.text} crtEnabled={crtEnabled} onClickCharacter={handleBingBong} />
