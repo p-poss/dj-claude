@@ -25,13 +25,14 @@ const BUBBLE_STYLE: React.CSSProperties = {
   borderRadius: '2px',
   padding: '6px 12px',
   width: 'max-content',
-  maxWidth: '335px',
+  maxWidth: '200px',
   height: '60px',
   boxShadow:
     '0 0 2px var(--bubble-color), 0 0 4px var(--bubble-color), 0 0 8px var(--bubble-color), ' +
     'inset 0 0 2px var(--bubble-color), inset 0 0 4px var(--bubble-color), inset 0 0 8px var(--bubble-color)',
   whiteSpace: 'pre-wrap',
-  overflow: 'hidden',
+  overflowY: 'auto',
+  overflowX: 'hidden',
 };
 
 const TAIL_STYLE: React.CSSProperties = {
