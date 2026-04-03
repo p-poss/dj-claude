@@ -296,11 +296,11 @@ export function DJInterface() {
 
     let offset: number;
     if (!activeDropdown) {
-      // Default: character left edge aligns with club button left edge
-      const clubEl = clubSelectorRef.current;
-      if (clubEl) {
-        const clubRect = clubEl.getBoundingClientRect();
-        offset = clubRect.left + charWidth / 2 - naturalCenter;
+      // Default: character left edge 12.5px right of info button left edge
+      const infoEl = infoRef.current;
+      if (infoEl) {
+        const infoRect = infoEl.getBoundingClientRect();
+        offset = infoRect.left + 12.5 + charWidth / 2 - naturalCenter;
       } else {
         offset = 8 + charWidth / 2 - naturalCenter;
       }
@@ -344,10 +344,10 @@ export function DJInterface() {
       const gap = 4;
 
       if (!activeDropdown) {
-        const clubEl = clubSelectorRef.current;
-        if (clubEl) {
-          const clubRect = clubEl.getBoundingClientRect();
-          container.style.transform = `translateX(${clubRect.left + charWidth / 2 - naturalCenter}px)`;
+        const infoEl = infoRef.current;
+        if (infoEl) {
+          const infoRect = infoEl.getBoundingClientRect();
+          container.style.transform = `translateX(${infoRect.left + 12.5 + charWidth / 2 - naturalCenter}px)`;
         }
       } else {
         let targetEl: HTMLElement | null = null;
