@@ -29,8 +29,15 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
   const [error, setError] = useState<string | null>(null);
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
 
   const cleanup = useCallback(() => {
+    // Abort any in-flight fetch request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
     if (sourceNodeRef.current) {
       try {
         sourceNodeRef.current.stop();
@@ -63,6 +70,11 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
       return;
     }
 
+    // Track this request so stale responses are ignored
+    const currentRequestId = ++requestIdRef.current;
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
     setIsLoading(true);
     setError(null);
 
@@ -76,6 +88,7 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, voiceId }),
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -83,7 +96,14 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
       }
 
       const arrayBuffer = await response.arrayBuffer();
+
+      // If a newer request was issued while we were waiting, discard this result
+      if (currentRequestId !== requestIdRef.current) return;
+
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+      // Final staleness check after decode
+      if (currentRequestId !== requestIdRef.current) return;
 
       // Create or reuse a GainNode for TTS volume control
       if (!gainNodeRef.current || gainNodeRef.current.context !== audioContext) {
@@ -105,6 +125,8 @@ export function useElevenLabsTTS(): UseElevenLabsTTSReturn {
       setIsLoading(false);
       setIsSpeaking(true);
     } catch (err) {
+      // Silently ignore aborted requests
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       setError(err instanceof Error ? err.message : 'TTS failed');
       setIsLoading(false);
       setIsSpeaking(false);
