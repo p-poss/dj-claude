@@ -5,8 +5,49 @@ import { Message } from '@/lib/types';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
+const RATE_LIMIT = 10;
+const RATE_WINDOW_MS = 60_000;
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    return false;
+  }
+  entry.count++;
+  if (rateLimitMap.size > 500) {
+    for (const [k, v] of rateLimitMap) {
+      if (now > v.resetAt) rateLimitMap.delete(k);
+    }
+  }
+  return entry.count > RATE_LIMIT;
+}
+
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+  const allowed = (process.env.ALLOWED_ORIGINS ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return allowed.includes(origin);
+}
+
 export async function POST(request: Request) {
   try {
+    if (!isAllowedOrigin(request.headers.get('origin'))) {
+      return new Response('Forbidden', { status: 403 });
+    }
+
+    const ip =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+      request.headers.get('x-real-ip') ??
+      'unknown';
+    if (isRateLimited(ip)) {
+      return new Response('Too many requests', { status: 429 });
+    }
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
       return new Response('ANTHROPIC_API_KEY not configured', { status: 500 });
