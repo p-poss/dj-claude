@@ -17,7 +17,6 @@ const OUTER_STYLE: React.CSSProperties = {
   fontSize: '12px',
   lineHeight: '15px',
   zIndex: 100,
-  pointerEvents: 'none',
 };
 
 const BUBBLE_STYLE: React.CSSProperties = {
@@ -79,7 +78,7 @@ export function SpeechBubble({ text, isVisible, color = '#737373' }: SpeechBubbl
       style={outerStyle}
     >
       {/* Bubble container */}
-      <div style={BUBBLE_STYLE}>
+      <div className="hide-scrollbar" style={BUBBLE_STYLE}>
         {text}
       </div>
 

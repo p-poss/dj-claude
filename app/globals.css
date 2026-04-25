@@ -92,6 +92,15 @@ body.inverted {
   background: #666;
 }
 
+/* Hide scrollbar but keep scrolling */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Selection */
 ::selection {
   background: var(--accent);
