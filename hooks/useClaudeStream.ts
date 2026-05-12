@@ -8,12 +8,13 @@ interface StreamOptions {
   prompt: string;
   currentCode: string;
   history: Message[];
+  turnstileToken?: string | null;
 }
 
 export function useClaudeStream() {
   const { dispatch } = useDJ();
 
-  const streamCode = useCallback(async ({ prompt, currentCode, history }: StreamOptions): Promise<string> => {
+  const streamCode = useCallback(async ({ prompt, currentCode, history, turnstileToken }: StreamOptions): Promise<string> => {
     dispatch({ type: 'START_STREAMING' });
     dispatch({ type: 'ADD_USER_MESSAGE', content: prompt });
 
@@ -21,7 +22,7 @@ export function useClaudeStream() {
       const response = await fetch('/api/stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, currentCode, history }),
+        body: JSON.stringify({ prompt, currentCode, history, turnstileToken: turnstileToken ?? undefined }),
       });
 
       if (!response.ok) {
