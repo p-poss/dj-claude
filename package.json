@@ -2,7 +2,16 @@
   "name": "dj-claude",
   "version": "0.1.18",
   "description": "The live music engine for AI agents — multi-agent jam sessions, conductor mode, 20 MCP tools.",
-  "keywords": ["dj-claude", "ai-music", "mcp", "strudel", "live-coding", "multi-agent", "claude-code", "music-generation"],
+  "keywords": [
+    "dj-claude",
+    "ai-music",
+    "mcp",
+    "strudel",
+    "live-coding",
+    "multi-agent",
+    "claude-code",
+    "music-generation"
+  ],
   "mcpName": "io.github.p-poss/dj-claude",
   "files": [
     "cli/dist",
@@ -26,6 +35,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@strudel/web": "^1.2.6",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"

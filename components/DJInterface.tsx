@@ -14,6 +14,9 @@ import { SpeechBubble } from './SpeechBubble';
 import { PartyOverlay } from './PartyOverlay';
 import { VoiceSelector } from './VoiceSelector';
 import { ClubSelector } from './ClubSelector';
+import { TurnstileWidget, TurnstileWidgetAPI } from './TurnstileWidget';
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 const STREAMING_MESSAGES = [
   '\u00A0\u00A0Mixing...',
@@ -157,6 +160,10 @@ export function DJInterface() {
   const [promptCount, setPromptCount] = useState(0);
   const [promptHasValue, setPromptHasValue] = useState(false);
   const [liveMixActive, setLiveMixActive] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileTokenRef = useRef<string | null>(null);
+  turnstileTokenRef.current = turnstileToken;
+  const turnstileWidgetRef = useRef<TurnstileWidgetAPI>(null);
   const lastIdlePhraseRef = useRef('');
   const liveMixTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentCodeRef = useRef(state.currentCode);
@@ -427,7 +434,10 @@ export function DJInterface() {
             prompt,
             currentCode: currentCodeRef.current,
             history: messagesRef.current,
+            turnstileToken: turnstileTokenRef.current,
           });
+          turnstileWidgetRef.current?.reset();
+          setTurnstileToken(null);
         } catch (err) {
           console.error('Live mix evolution error:', err);
         }
@@ -641,11 +651,14 @@ export function DJInterface() {
         prompt,
         currentCode: state.currentCode,
         history: state.messages,
+        turnstileToken,
       });
+      turnstileWidgetRef.current?.reset();
+      setTurnstileToken(null);
     } catch (error) {
       console.error('Stream error:', error);
     }
-  }, [streamCode, state.currentCode, state.messages, unlockAudio]);
+  }, [streamCode, state.currentCode, state.messages, unlockAudio, turnstileToken]);
 
   // Handle pause
   const handlePause = useCallback(() => {
@@ -1087,6 +1100,14 @@ export function DJInterface() {
               crtEnabled={crtEnabled}
               onHasValueChange={setPromptHasValue}
             />
+            {TURNSTILE_SITE_KEY && (
+              <TurnstileWidget
+                ref={turnstileWidgetRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onToken={setTurnstileToken}
+                onExpire={() => setTurnstileToken(null)}
+              />
+            )}
           </div>
 
           {/* Submit button - mobile only */}
