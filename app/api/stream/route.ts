@@ -8,8 +8,8 @@ import { Message } from '@/lib/types';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const MAX_TOKENS = 2000;
-const HISTORY_WINDOW = 4;
+const MAX_TOKENS = 8000;
+const HISTORY_WINDOW = 8;
 const TURNSTILE_VERIFY_URL =
   'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
