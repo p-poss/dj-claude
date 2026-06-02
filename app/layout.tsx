@@ -59,7 +59,7 @@ const jsonLd = {
     price: "0",
     priceCurrency: "USD",
   },
-  license: "https://opensource.org/licenses/MIT",
+  license: "https://www.gnu.org/licenses/agpl-3.0.html",
 };
 
 export default function RootLayout({
