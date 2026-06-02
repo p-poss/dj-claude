@@ -31,7 +31,7 @@
     "live-coding",
     "claude-code"
   ],
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "build": "tsc",
     "start": "node bin.mjs",

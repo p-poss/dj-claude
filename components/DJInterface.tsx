@@ -996,17 +996,17 @@ export function DJInterface() {
                   </div>
                   <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
-                    <pre className="m-0 flex-1"> • Claude Code: /install plugin dj-claude</pre>
-                    <pre className="m-0">║</pre>
-                  </div>
-                  <div className="flex" style={FONT_INHERIT_STYLE}>
-                    <pre className="m-0">║</pre>
                     <pre className="m-0 flex-1"> • AI agents can now DJ while they work</pre>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={FONT_INHERIT_STYLE}>
                     <pre className="m-0">║</pre>
                     <a href="https://github.com/p-poss/dj-claude" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> GITHUB: github.com/p-poss/dj-claude</pre></a>
+                    <pre className="m-0">║</pre>
+                  </div>
+                  <div className="flex" style={FONT_INHERIT_STYLE}>
+                    <pre className="m-0">║</pre>
+                    <a href="https://strudel.cc" target="_blank" rel="noopener noreferrer" className="flex-1" style={{ cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}><pre className="m-0"> ENGINE: Strudel · AGPL-3.0 · strudel.cc</pre></a>
                     <pre className="m-0">║</pre>
                   </div>
                   <div className="flex" style={FONT_INHERIT_STYLE}>
