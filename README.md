@@ -13,7 +13,7 @@
 **The live music engine for AI agents.**
 
 [![npm](https://img.shields.io/npm/v/dj-claude)](https://www.npmjs.com/package/dj-claude)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
 [![GitHub](https://img.shields.io/badge/GitHub-p--poss%2Fdj--claude-black?logo=github)](https://github.com/p-poss/dj-claude)
 
 <!-- Screenshots -->
@@ -422,4 +422,6 @@ Built by [Patrick Poss](https://patrickposs.com) — [hey@patrickposs.com](mailt
 
 ## License
 
-[MIT](LICENSE)
+[GNU AGPL-3.0-or-later](LICENSE)
+
+DJ Claude generates and plays music with [Strudel](https://strudel.cc) (a port of [TidalCycles](https://tidalcycles.org) by Alex McLean and contributors), which is licensed under the AGPL-3.0. Because DJ Claude bundles and serves Strudel — including over the network at [claude.dj](https://claude.dj) — the combined work is distributed under the same AGPL-3.0 license. The complete corresponding source is available in this repository.

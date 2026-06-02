@@ -17,7 +17,7 @@
       },
       "homepage": "https://github.com/p-poss/dj-claude",
       "repository": "https://github.com/p-poss/dj-claude",
-      "license": "MIT",
+      "license": "AGPL-3.0-or-later",
       "keywords": ["music", "audio", "strudel", "dj", "jam", "live-coding", "multi-agent", "conductor"],
       "category": "entertainment"
     }
