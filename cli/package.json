@@ -45,6 +45,7 @@
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@strudel/core": "1.1.0",
     "@strudel/mini": "1.1.0",
+    "@strudel/tonal": "1.1.0",
     "@strudel/webaudio": "1.1.0",
     "dotenv": "^16.4.7",
     "express": "^5.1.0",

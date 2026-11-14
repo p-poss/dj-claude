@@ -27,10 +27,15 @@ declare module '@strudel/webaudio' {
 }
 
 declare module 'superdough' {
-  export function setDefaultAudioContext(ctx: unknown): void;
+  export function setDefaultAudioContext(ctx?: unknown): unknown;
   export function getAudioContext(): unknown;
   export function registerSynthSounds(): Promise<void>;
+  export function resetGlobalEffects(): void;
+  export function initializeAudioOutput(): void;
 }
+
+// Imported for its side effect of registering .scale(), .voicing(), etc.
+declare module '@strudel/tonal';
 
 declare module 'ink-text-input' {
   import { FC } from 'react';

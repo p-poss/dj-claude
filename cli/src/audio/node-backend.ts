@@ -28,6 +28,24 @@ export class NodeAudioBackend implements AudioBackend {
       }
     }
 
+    // Load @strudel/tonal: importing it registers .scale(), .voicing(),
+    // .transpose() etc. on Pattern. Without it any code using them throws
+    // "n(...).scale is not a function" — and the prompts recommend .scale().
+    // (The browser backend gets tonal via the @strudel/web bundle.)
+    try {
+      const tonal = await import('@strudel/tonal');
+      for (const [key, value] of Object.entries(tonal)) {
+        if (key !== 'default' && key !== '__esModule') {
+          g[key] = value;
+        }
+      }
+    } catch (err) {
+      console.error(
+        '[dj-claude] Failed to load @strudel/tonal; .scale()/.voicing() unavailable:',
+        err instanceof Error ? err.message : err,
+      );
+    }
+
     // Register mini notation as the default string parser
     if (typeof mini.miniAllStrings === 'function') {
       mini.miniAllStrings();
@@ -49,13 +67,46 @@ export class NodeAudioBackend implements AudioBackend {
     compressor.release.value = 0.05;
     masterGain.connect(compressor);
     compressor.connect(realDestination);
+    // superdough's output bus reads destination.maxChannelCount and sets
+    // destination.channelCount, so make the master gain look like a (stereo)
+    // destination node.
+    Object.defineProperty(masterGain, 'maxChannelCount', {
+      value: realDestination.channelCount,
+      configurable: true,
+    });
     Object.defineProperty(this.audioContext, 'destination', {
       get: () => masterGain,
       configurable: true,
     });
 
+    // superdough 1.1.0's setDefaultAudioContext() ignores its argument and
+    // always does `new AudioContext()`. Passing our context therefore gave
+    // superdough a SECOND context: all sound bypassed the master chain above,
+    // and the scheduler (this context's clock) and the synths (the other
+    // context's clock) could drift apart, after which superdough drops every
+    // note as "cannot schedule sounds in the past". Hand it our context by
+    // making that constructor call return it.
     if (typeof superdough.setDefaultAudioContext === 'function') {
-      superdough.setDefaultAudioContext(this.audioContext);
+      const ownContext = this.audioContext;
+      const GlobalAudioContext = g.AudioContext;
+      g.AudioContext = function () { return ownContext; };
+      try {
+        superdough.setDefaultAudioContext(ownContext);
+      } finally {
+        g.AudioContext = GlobalAudioContext;
+      }
+    }
+    if (typeof superdough.getAudioContext === 'function' && superdough.getAudioContext() !== this.audioContext) {
+      console.error('[dj-claude] Warning: superdough is not using the backend AudioContext; master chain bypassed.');
+    }
+    // Rebuild superdough's cached output bus and effect nodes on this context;
+    // otherwise they still point at the previous (closed) context after a
+    // backend switch (switch_audio browser -> node).
+    if (typeof superdough.resetGlobalEffects === 'function') {
+      superdough.resetGlobalEffects();
+    }
+    if (typeof superdough.initializeAudioOutput === 'function') {
+      superdough.initializeAudioOutput();
     }
 
     // Silence noisy Strudel logging
@@ -80,7 +131,10 @@ export class NodeAudioBackend implements AudioBackend {
       }),
       core.repl({
         defaultOutput: webaudio.webaudioOutput,
-        getTime: () => (this.audioContext as unknown as { currentTime: number }).currentTime,
+        // Schedule against the clock superdough actually plays on.
+        getTime: () => ((typeof superdough.getAudioContext === 'function'
+          ? superdough.getAudioContext()
+          : this.audioContext) as { currentTime: number }).currentTime,
       }),
     ]);
     this.repl = replInstance;
@@ -101,6 +155,14 @@ export class NodeAudioBackend implements AudioBackend {
       throw new Error('Engine not initialized. Call init() first.');
     }
     await this.repl.evaluate(code);
+    // Strudel's repl.evaluate() catches errors internally (after hushing) and
+    // only records them in state.evalError, so failures looked like success:
+    // play_strudel reported "Now playing" over silence and safeEvaluate never
+    // rolled back. Re-throw so callers see the error.
+    const evalError = (this.repl as any).state?.evalError;
+    if (evalError) {
+      throw evalError instanceof Error ? evalError : new Error(String(evalError));
+    }
   }
 
   async safeEvaluate(newCode: string, previousCode: string): Promise<SafeEvalResult> {
